@@ -1,3 +1,0 @@
-include tidal_gui/resource/themeDefault.qss
-include tidal_gui/resource/svg/*.svg
-include tidal_gui/resource/svg/*/*.svg

@@ -2,7 +2,7 @@ rm -rf dist
 rm -rf build 
 rm -rf __init__.spec
 
-cd TIDALDL-PY
+cd build
 rm -rf __init__.spec 
 rm -rf dist
 rm -rf build 
@@ -11,10 +11,8 @@ rm -rf MANIFEST.in
 rm -rf *.egg-info
 
 python setup.py sdist bdist_wheel
-pyinstaller -F tidal_dl/__init__.py
-mkdir exe
-mv dist/__init__.exe exe/tidal-dl.exe
+pyinstaller -F build/__init__.py
 
-pip uninstall -y tidal-dl
+pip uninstall -y tidalrr
 
 cd ..
