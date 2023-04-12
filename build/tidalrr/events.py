@@ -27,14 +27,14 @@ START DOWNLOAD
 
 def start_album(obj: Album):
     Printf.album(obj)
-    tracks, videos = TIDAL_API.getItems(obj.id, Type.Album)
+    tracks = TIDAL_API.getItems(obj.id, Type.Album)
     if SETTINGS.saveAlbumInfo:
         downloadAlbumInfo(obj, tracks)
     if SETTINGS.saveCovers and obj.cover is not None:
         downloadCover(obj)
     downloadTracks(tracks, obj)
-    if SETTINGS.downloadVideos:
-        downloadVideos(videos, obj)
+"""     if SETTINGS.downloadVideos:
+        downloadVideos(videos, obj) """
 
 
 def start_track(obj: Track):
@@ -44,8 +44,8 @@ def start_track(obj: Track):
     downloadTrack(obj, album)
 
 
-def start_video(obj: Video):
-    downloadVideo(obj, obj.album)
+""" def start_video(obj: Video):
+    downloadVideo(obj, obj.album) """
 
 
 def start_artist(obj: Artist):
@@ -57,16 +57,16 @@ def start_artist(obj: Artist):
 
 def start_playlist(obj: Playlist):
     Printf.playlist(obj)
-    tracks, videos = TIDAL_API.getItems(obj.uuid, Type.Playlist)
+    tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     downloadTracks(tracks, None, obj)
-    if SETTINGS.downloadVideos:
-        downloadVideos(videos, None, obj)
+"""     if SETTINGS.downloadVideos:
+        downloadVideos(videos, None, obj) """
 
 
 def start_mix(obj: Mix):
     Printf.mix(obj)
     downloadTracks(obj.tracks, None, None)
-    downloadVideos(obj.videos, None, None)
+"""     downloadVideos(obj.videos, None, None) """
 
 
 def start_file(string):
@@ -90,8 +90,6 @@ def start_type(etype: Type, obj):
         start_album(obj)
     elif etype == Type.Track:
         start_track(obj)
-    elif etype == Type.Video:
-        start_video(obj)
     elif etype == Type.Artist:
         start_artist(obj)
     elif etype == Type.Playlist:
@@ -151,10 +149,10 @@ def changePathSettings():
         LANG.select.CHANGE_TRACK_FILE_FORMAT,
         SETTINGS.trackFileFormat,
         SETTINGS.getDefaultPathFormat(Type.Track))
-    SETTINGS.videoFileFormat = Printf.enterFormat(
+    """ SETTINGS.videoFileFormat = Printf.enterFormat(
         LANG.select.CHANGE_VIDEO_FILE_FORMAT,
         SETTINGS.videoFileFormat,
-        SETTINGS.getDefaultPathFormat(Type.Video))
+        SETTINGS.getDefaultPathFormat(Type.Video)) """
     SETTINGS.save()
 
 
@@ -164,10 +162,10 @@ def changeQualitySettings():
         int(Printf.enterLimit(LANG.select.CHANGE_AUDIO_QUALITY,
                               LANG.select.MSG_INPUT_ERR,
                               ['0', '1', '2', '3'])))
-    SETTINGS.videoQuality = VideoQuality(
+    """ SETTINGS.videoQuality = VideoQuality(
         int(Printf.enterLimit(LANG.select.CHANGE_VIDEO_QUALITY,
                               LANG.select.MSG_INPUT_ERR,
-                              ['1080', '720', '480', '360'])))
+                              ['1080', '720', '480', '360']))) """
     SETTINGS.save()
 
 
@@ -179,7 +177,7 @@ def changeSettings():
     SETTINGS.includeEP = Printf.enterBool(LANG.select.CHANGE_INCLUDE_EP)
     SETTINGS.saveCovers = Printf.enterBool(LANG.select.CHANGE_SAVE_COVERS)
     SETTINGS.saveAlbumInfo = Printf.enterBool(LANG.select.CHANGE_SAVE_ALBUM_INFO)
-    SETTINGS.downloadVideos = Printf.enterBool(LANG.select.CHANGE_DOWNLOAD_VIDEOS)
+    #SETTINGS.downloadVideos = Printf.enterBool(LANG.select.CHANGE_DOWNLOAD_VIDEOS)
     SETTINGS.lyricFile = Printf.enterBool(LANG.select.CHANGE_ADD_LRC_FILE)
     SETTINGS.multiThread = Printf.enterBool(LANG.select.CHANGE_MULITHREAD_DOWNLOAD)
     SETTINGS.usePlaylistFolder = Printf.enterBool(LANG.select.SETTING_USE_PLAYLIST_FOLDER + "('0'-No,'1'-Yes):")

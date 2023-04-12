@@ -19,13 +19,12 @@ def mainCommand():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 
                                    "hvgl:o:q:r:", 
-                                   ["help", "version", "gui", "link=", "output=", "quality", "resolution"])
+                                   ["help", "version", "link=", "output=", "quality", "resolution"])
     except getopt.GetoptError as errmsg:
         Printf.err(vars(errmsg)['msg'] + ". Use 'tidalrr -h' for useage.")
         return
 
     link = None
-    showGui = False
     for opt, val in opts:
         if opt in ('-h', '--help'):
             Printf.usage()
@@ -33,9 +32,6 @@ def mainCommand():
         if opt in ('-v', '--version'):
             Printf.logo()
             return
-        if opt in ('-g', '--gui'):
-            showGui = True
-            continue
         if opt in ('-l', '--link'):
             link = val
             continue
@@ -47,10 +43,10 @@ def mainCommand():
             SETTINGS.audioQuality = SETTINGS.getAudioQuality(val)
             SETTINGS.save()
             continue
-        if opt in ('-r', '--resolution'):
+        """ if opt in ('-r', '--resolution'):
             SETTINGS.videoQuality = SETTINGS.getVideoQuality(val)
             SETTINGS.save()
-            continue
+            continue """
     
     if not aigpy.path.mkdirs(SETTINGS.downloadPath):
         Printf.err(LANG.select.MSG_PATH_ERR + SETTINGS.downloadPath)
@@ -115,7 +111,7 @@ def test():
         loginByWeb()
         
     SETTINGS.audioQuality = AudioQuality.Normal
-    SETTINGS.videoFileFormat = VideoQuality.P240
+    #SETTINGS.videoFileFormat = VideoQuality.P240
     SETTINGS.checkExist = False
     SETTINGS.includeEP = True
     SETTINGS.saveCovers = True
@@ -123,13 +119,13 @@ def test():
     SETTINGS.showProgress = True
     SETTINGS.showTrackInfo = True
     SETTINGS.saveAlbumInfo = True
-    SETTINGS.downloadVideos = True
+    #SETTINGS.downloadVideos = True
     SETTINGS.downloadPath = "./download/"
     SETTINGS.usePlaylistFolder = True
     SETTINGS.albumFolderFormat = R"{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]"
     SETTINGS.playlistFolderFormat = R"Playlist/{PlaylistName} [{PlaylistUUID}]"
     SETTINGS.trackFileFormat = R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
-    SETTINGS.videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
+    #SETTINGS.videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
     SETTINGS.multiThread = True
 
     Printf.settings()

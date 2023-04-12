@@ -110,7 +110,7 @@ def downloadAlbumInfo(album, tracks):
     aigpy.file.write(path, infos, "w+")
 
 
-def downloadVideo(video: Video, album: Album = None, playlist: Playlist = None):
+""" def downloadVideo(video: Video, album: Album = None, playlist: Playlist = None):
     try:
         stream = TIDAL_API.getVideoStreamUrl(video.id, SETTINGS.videoQuality)
         path = getVideoPath(video, album, playlist)
@@ -138,7 +138,7 @@ def downloadVideo(video: Video, album: Album = None, playlist: Playlist = None):
     except Exception as e:
         Printf.err(f"DL Video[{video.title}] failed.{str(e)}")
         return False, str(e)
-
+ """
 
 def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, partSize=1048576):
     try:
@@ -218,6 +218,6 @@ def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
         thread_pool.shutdown(wait=True)
 
 
-def downloadVideos(videos, album: Album, playlist=None):
+""" def downloadVideos(videos, album: Album, playlist=None):
     for item in videos:
-        downloadVideo(item, album, playlist)
+        downloadVideo(item, album, playlist) """

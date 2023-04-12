@@ -20,14 +20,14 @@ class StreamUrl(aigpy.model.ModelBase):
         self.soundQuality = None
 
 
-class VideoStreamUrl(aigpy.model.ModelBase):
+""" class VideoStreamUrl(aigpy.model.ModelBase):
     def __init__(self) -> None:
         super().__init__()
         self.codec = None
         self.resolution = None
         self.resolutions = None
         self.m3u8Url = None
-
+ """
 
 class Artist(aigpy.model.ModelBase):
     def __init__(self) -> None:
@@ -45,7 +45,7 @@ class Album(aigpy.model.ModelBase):
         self.title = None
         self.duration = 0
         self.numberOfTracks = 0
-        self.numberOfVideos = 0
+        #self.numberOfVideos = 0
         self.numberOfVolumes = 0
         self.releaseDate = None
         self.type = None
@@ -64,7 +64,7 @@ class Playlist(aigpy.model.ModelBase):
         self.uuid = None
         self.title = None
         self.numberOfTracks = 0
-        self.numberOfVideos = 0
+        #self.numberOfVideos = 0
         self.description = None
         self.duration = 0
         self.image = None
@@ -92,7 +92,7 @@ class Track(aigpy.model.ModelBase):
         self.playlist = None
 
 
-class Video(aigpy.model.ModelBase):
+""" class Video(aigpy.model.ModelBase):
     def __init__(self) -> None:
         super().__init__()
         self.id = None
@@ -108,7 +108,7 @@ class Video(aigpy.model.ModelBase):
         self.artists = Artist()
         self.album = Album()
         self.allowStreaming = False
-        self.playlist = None
+        self.playlist = None """
 
 
 class Mix(aigpy.model.ModelBase):
@@ -116,7 +116,7 @@ class Mix(aigpy.model.ModelBase):
         super().__init__()
         self.id = None
         self.tracks = Track()
-        self.videos = Video()
+        #self.videos = Video()
 
 
 class Lyrics(aigpy.model.ModelBase):
@@ -156,10 +156,10 @@ class SearchTracks(SearchDataBase):
         self.items = Track()
 
 
-class SearchVideos(SearchDataBase):
+""" class SearchVideos(SearchDataBase):
     def __init__(self) -> None:
         super().__init__()
-        self.items = Video()
+        self.items = Video() """
 
 
 class SearchPlaylists(SearchDataBase):
@@ -174,7 +174,7 @@ class SearchResult(aigpy.model.ModelBase):
         self.artists = SearchArtists()
         self.albums = SearchAlbums()
         self.tracks = SearchTracks()
-        self.videos = SearchVideos()
+        #self.videos = SearchVideos()
         self.playlists = SearchPlaylists()
 
 
@@ -197,11 +197,11 @@ class StreamRespond(aigpy.model.ModelBase):
     def __init__(self) -> None:
         super().__init__()
         self.trackid = None
-        self.videoid = None
+        #self.videoid = None
         self.streamType = None
         self.assetPresentation = None
         self.audioMode = None
         self.audioQuality = None
-        self.videoQuality = None
+        #self.videoQuality = None
         self.manifestMimeType = None
         self.manifest = None

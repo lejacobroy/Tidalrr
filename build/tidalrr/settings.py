@@ -26,18 +26,18 @@ class Settings(aigpy.model.ModelBase):
     showProgress = True
     showTrackInfo = True
     saveAlbumInfo = False
-    downloadVideos = True
+    #downloadVideos = True
     multiThread = False
     downloadDelay = True
 
     downloadPath = "./download/"
     audioQuality = AudioQuality.Normal
-    videoQuality = VideoQuality.P360
+    #videoQuality = VideoQuality.P360
     usePlaylistFolder = True
     albumFolderFormat = R"{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]"
     playlistFolderFormat = R"Playlist/{PlaylistName} [{PlaylistUUID}]"
     trackFileFormat = R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
-    videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
+    #videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
 
     def getDefaultPathFormat(self, type: Type):
         if type == Type.Album:
@@ -46,8 +46,8 @@ class Settings(aigpy.model.ModelBase):
             return R"Playlist/{PlaylistName} [{PlaylistUUID}]"
         elif type == Type.Track:
             return R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
-        elif type == Type.Video:
-            return R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
+        """ elif type == Type.Video:
+            return R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}" """
         return ""
 
     def getAudioQuality(self, value):
@@ -56,11 +56,11 @@ class Settings(aigpy.model.ModelBase):
                 return item
         return AudioQuality.Normal
 
-    def getVideoQuality(self, value):
+    """ def getVideoQuality(self, value):
         for item in VideoQuality:
             if item.name == value:
                 return item
-        return VideoQuality.P360
+        return VideoQuality.P360 """
     
     def read(self, path):
         self._path_ = path
@@ -71,7 +71,7 @@ class Settings(aigpy.model.ModelBase):
                 return
 
         self.audioQuality = self.getAudioQuality(self.audioQuality)
-        self.videoQuality = self.getVideoQuality(self.videoQuality)
+        #self.videoQuality = self.getVideoQuality(self.videoQuality)
 
         if self.albumFolderFormat is None:
             self.albumFolderFormat = self.getDefaultPathFormat(Type.Album)
@@ -79,8 +79,8 @@ class Settings(aigpy.model.ModelBase):
             self.trackFileFormat = self.getDefaultPathFormat(Type.Track)
         if self.playlistFolderFormat is None:
             self.playlistFolderFormat = self.getDefaultPathFormat(Type.Playlist)
-        if self.videoFileFormat is None:
-            self.videoFileFormat = self.getDefaultPathFormat(Type.Video)
+        """ if self.videoFileFormat is None:
+            self.videoFileFormat = self.getDefaultPathFormat(Type.Video) """
         if self.apiKeyIndex is None:
             self.apiKeyIndex = 0
         
@@ -89,7 +89,7 @@ class Settings(aigpy.model.ModelBase):
     def save(self):
         data = aigpy.model.modelToDict(self)
         data['audioQuality'] = self.audioQuality.name
-        data['videoQuality'] = self.videoQuality.name
+        #data['videoQuality'] = self.videoQuality.name
         txt = json.dumps(data)
         aigpy.file.write(self._path_, txt, 'w+')
 

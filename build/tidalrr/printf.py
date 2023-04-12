@@ -63,11 +63,9 @@ class Printf(object):
         tb = Printf.__gettable__(["OPTION", "DESC"], [
             ["-h or --help",        "show help-message"],
             ["-v or --version",     "show version"],
-            ["-g or --gui",         "show simple-gui"],
             ["-o or --output",      "download path"],
             ["-l or --link",        "url/id/filePath"],
-            ["-q or --quality",     "track quality('Normal','High,'HiFi','Master')"],
-            ["-r or --resolution",  "video resolution('P1080', 'P720', 'P480', 'P360')"]
+            ["-q or --quality",     "track quality('Normal','High,'HiFi','Master')"]
         ])
         print(tb)
         
@@ -89,11 +87,11 @@ class Printf(object):
             [LANG.select.SETTING_ALBUM_FOLDER_FORMAT, data.albumFolderFormat],
             [LANG.select.SETTING_PLAYLIST_FOLDER_FORMAT, data.playlistFolderFormat],
             [LANG.select.SETTING_TRACK_FILE_FORMAT, data.trackFileFormat],
-            [LANG.select.SETTING_VIDEO_FILE_FORMAT, data.videoFileFormat],
+            #[LANG.select.SETTING_VIDEO_FILE_FORMAT, data.videoFileFormat],
             
             #settings - quality
             [LANG.select.SETTING_AUDIO_QUALITY, data.audioQuality],
-            [LANG.select.SETTING_VIDEO_QUALITY, data.videoQuality],
+            #[LANG.select.SETTING_VIDEO_QUALITY, data.videoQuality],
             
             #settings - else
             [LANG.select.SETTING_USE_PLAYLIST_FOLDER, data.usePlaylistFolder],
@@ -101,7 +99,7 @@ class Printf(object):
             [LANG.select.SETTING_SHOW_PROGRESS, data.showProgress],
             [LANG.select.SETTING_SHOW_TRACKINFO, data.showTrackInfo],
             [LANG.select.SETTING_SAVE_ALBUMINFO, data.saveAlbumInfo],
-            [LANG.select.SETTING_DOWNLOAD_VIDEOS, data.downloadVideos],
+            #[LANG.select.SETTING_DOWNLOAD_VIDEOS, data.downloadVideos],
             [LANG.select.SETTING_SAVE_COVERS, data.saveCovers],
             [LANG.select.SETTING_INCLUDE_EP, data.includeEP],
             [LANG.select.SETTING_LANGUAGE, LANG.getLangName(data.language)],
@@ -201,7 +199,7 @@ class Printf(object):
             [LANG.select.MODEL_TITLE, data.title],
             ["ID", data.id],
             [LANG.select.MODEL_TRACK_NUMBER, data.numberOfTracks],
-            [LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
+            #[LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
             [LANG.select.MODEL_RELEASE_DATE, data.releaseDate],
             [LANG.select.MODEL_VERSION, data.version],
             [LANG.select.MODEL_EXPLICIT, data.explicit],
@@ -210,7 +208,6 @@ class Printf(object):
         logging.info("====album " + str(data.id) + "====\n" +
                      "title:" + data.title + "\n" +
                      "track num:" + str(data.numberOfTracks) + "\n" +
-                     "video num:" + str(data.numberOfVideos) + "\n" +
                      "==================================")
 
     @staticmethod
@@ -232,7 +229,7 @@ class Printf(object):
                      "version:" + str(data.version) + "\n" + \
                      "==================================")
 
-    @staticmethod
+    """ @staticmethod
     def video(data: Video, stream: VideoStreamUrl = None):
         tb = Printf.__gettable__([LANG.select.MODEL_VIDEO_PROPERTY, LANG.select.VALUE], [
             [LANG.select.MODEL_TITLE, data.title],
@@ -248,7 +245,7 @@ class Printf(object):
         logging.info("====video " + str(data.id) + "====\n" +
                      "title:" + data.title + "\n" +
                      "version:" + str(data.version) + "\n" +
-                     "==================================")
+                     "==================================") """
 
     @staticmethod
     def artist(data: Artist, num):
@@ -269,7 +266,7 @@ class Printf(object):
         tb = Printf.__gettable__([LANG.select.MODEL_PLAYLIST_PROPERTY, LANG.select.VALUE], [
             [LANG.select.MODEL_TITLE, data.title],
             [LANG.select.MODEL_TRACK_NUMBER, data.numberOfTracks],
-            [LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
+            #[LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
         ])
         print(tb)
         logging.info("====playlist " + str(data.uuid) + "====\n" +
@@ -283,12 +280,11 @@ class Printf(object):
         tb = Printf.__gettable__([LANG.select.MODEL_PLAYLIST_PROPERTY, LANG.select.VALUE], [
             [LANG.select.MODEL_ID, data.id],
             [LANG.select.MODEL_TRACK_NUMBER, len(data.tracks)],
-            [LANG.select.MODEL_VIDEO_NUMBER, len(data.videos)],
+            #[LANG.select.MODEL_VIDEO_NUMBER, len(data.videos)],
         ])
         print(tb)
         logging.info("====Mix " + str(data.id) + "====\n" +
                      "track num:" + str(len(data.tracks)) + "\n" +
-                     "video num:" + str(len(data.videos)) + "\n" +
                      "==================================")
 
     @staticmethod

@@ -72,7 +72,7 @@ def getAlbumPath(album):
     retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
     retpath = retpath.replace(R"{Duration}", __getDurationStr__(album.duration))
     retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
-    retpath = retpath.replace(R"{NumberOfVideos}", str(album.numberOfVideos))
+    #retpath = retpath.replace(R"{NumberOfVideos}", str(album.numberOfVideos))
     retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
     retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
     retpath = retpath.replace(R"{RecordType}", album.type)
@@ -141,7 +141,7 @@ def getTrackPath(track, stream, album=None, playlist=None):
     return f"{base}/{retpath}{extension}"
 
 
-def getVideoPath(video, album=None, playlist=None):
+""" def getVideoPath(video, album=None, playlist=None):
     base = SETTINGS.downloadPath + '/Video/'
     if album is not None and album.title is not None:
         base = getAlbumPath(album)
@@ -174,7 +174,7 @@ def getVideoPath(video, album=None, playlist=None):
     retpath = retpath.replace(R"{VideoYear}", year)
     retpath = retpath.replace(R"{VideoID}", str(video.id))
     retpath = retpath.strip()
-    return f"{base}/{retpath}{extension}"
+    return f"{base}/{retpath}{extension}" """
 
 
 def __getHomePath__():
