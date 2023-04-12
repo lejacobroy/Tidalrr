@@ -6,15 +6,16 @@
   Tidalrr can also re-create your Tidal Playlists in Plex & Plexamp.
 </p>
 
-Todo:
-    - refactor and cleanup code
-    - remove video support
-    - configureable highest quality
-    - migrate interactive settings to a json config file and CLI arguments
-    - generate .pls and .m3u8 playlist files
-    - create and sync Plex Playlist from Tidal Playlists
-    - create an api webserver that can be used with Lidarr
-    - package it in a docker container
+## Todo:
+- ✅ refactor and cleanup code
+- ✅ remove video support
+- configureable highest quality
+- ✅ migrate interactive settings to a json config file
+- migrate interactive settings to CLI arguments
+- generate .pls and .m3u8 playlist files
+- create and sync Plex Playlist from Tidal Playlists
+- create an api webserver that can be used with Lidarr
+- package it in a docker container
 
 ## 🎨 Libraries and reference
 

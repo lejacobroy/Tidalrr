@@ -14,12 +14,12 @@ import aigpy
 import logging
 import prettytable
 
-import tidalrr.apiKey as apiKey
+import apiKey as apiKey
 
-from tidalrr.model import *
-from tidalrr.paths import *
-from tidalrr.settings import *
-from tidalrr.lang.language import *
+from model import *
+from paths import *
+from settings import *
+from lang.language import *
 
 
 VERSION = '2022.10.31.1'

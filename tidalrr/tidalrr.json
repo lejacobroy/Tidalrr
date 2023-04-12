@@ -1,0 +1,19 @@
+{
+    "albumFolderFormat": "{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]",
+    "apiKeyIndex": 4,
+    "audioQuality": "Normal",
+    "checkExist": true,
+    "downloadDelay": true,
+    "downloadPath": "./download/",
+    "includeEP": true,
+    "language": 0,
+    "lyricFile": false,
+    "multiThread": false,
+    "playlistFolderFormat": "Playlist/{PlaylistName} [{PlaylistUUID}]",
+    "saveAlbumInfo": false,
+    "saveCovers": true,
+    "showProgress": true,
+    "showTrackInfo": true,
+    "trackFileFormat": "{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}",
+    "usePlaylistFolder": true
+}

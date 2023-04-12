@@ -178,3 +178,7 @@ TIDALDL-PY/tidal-gui.spec
 /TIDALDL-PY/tidal_dl_old
 /TIDALDL-PY/tidal_gui_old
 /TIDALDL-PY/tidal_gui
+/build/build
+/build
+/dist
+/*.egg-info

@@ -15,9 +15,9 @@ import aigpy
 import base64
 import requests
 
-from tidalrr.model import *
-from tidalrr.enums import *
-from tidalrr.settings import *
+from model import *
+from enums import *
+from settings import *
 
 # SSL Warnings | retry number
 requests.packages.urllib3.disable_warnings()

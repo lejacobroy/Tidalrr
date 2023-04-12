@@ -12,11 +12,11 @@
 import aigpy
 import time
 
-from tidalrr.model import *
-from tidalrr.enums import *
-from tidalrr.tidal import *
-from tidalrr.printf import *
-from tidalrr.download import *
+from model import *
+from enums import *
+from tidal import *
+from printf import *
+from download import *
 
 '''
 =================================

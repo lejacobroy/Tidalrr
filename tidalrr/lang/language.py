@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 
-from tidal_dl.lang.english import LangEnglish
+from lang.english import LangEnglish
 
 _ALL_LANGUAGE_ = [
     ['English', LangEnglish()]

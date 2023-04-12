@@ -12,8 +12,8 @@ import os
 import aigpy
 import datetime
 
-from tidalrr.tidal import *
-from tidalrr.settings import *
+from tidal import *
+from settings import *
 
 
 def __fixPath__(name: str):
@@ -178,20 +178,13 @@ def getTrackPath(track, stream, album=None, playlist=None):
 
 
 def __getHomePath__():
-    if "XDG_CONFIG_HOME" in os.environ:
-        return os.environ['XDG_CONFIG_HOME']
-    elif "HOME" in os.environ:
-        return os.environ['HOME']
-    elif "HOMEDRIVE" in os.environ and "HOMEPATH" in os.environ:
-        return os.environ['HOMEDRIVE'] + os.environ['HOMEPATH']
-    else:
-        return os.path.abspath("./")
+    return os.path.join(os.path.dirname(__file__))+"/"
 
 def getLogPath():
-    return __getHomePath__() + '/.tidalrr.log'
+    return __getHomePath__() + '/tidalrr.log'
 
 def getTokenPath():
-    return __getHomePath__() + '/.tidalrr.token.json'
+    return __getHomePath__() + '/tidalrr.token.json'
 
 def getProfilePath():
-    return __getHomePath__() + '/.tidalrr.json'
+    return __getHomePath__() + '/tidalrr.json'

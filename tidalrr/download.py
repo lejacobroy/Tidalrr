@@ -11,10 +11,10 @@
 import aigpy
 import logging
 
-from tidalrr.paths import *
-from tidalrr.printf import *
-from tidalrr.decryption import *
-from tidalrr.tidal import *
+from paths import *
+from printf import *
+from decryption import *
+from tidal import *
 
 from concurrent.futures import ThreadPoolExecutor
 

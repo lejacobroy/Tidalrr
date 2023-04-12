@@ -12,8 +12,8 @@ import json
 import aigpy
 import base64
 
-from tidalrr.lang.language import *
-from tidalrr.enums import *
+from lang.language import *
+from enums import *
 
 
 class Settings(aigpy.model.ModelBase):

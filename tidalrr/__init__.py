@@ -11,8 +11,8 @@
 import sys
 import getopt
 
-from tidalrr.events import *
-from tidalrr.settings import *
+from events import *
+from settings import *
 
 
 def mainCommand():
@@ -67,7 +67,7 @@ def main():
         mainCommand()
         return
     
-    Printf.logo()
+    #Printf.logo()
     Printf.settings()
     
     if not apiKey.isItemValid(SETTINGS.apiKeyIndex):
