@@ -64,7 +64,7 @@ class Playlist(aigpy.model.ModelBase):
         self.uuid = None
         self.title = None
         self.numberOfTracks = 0
-        #self.numberOfVideos = 0
+        self.numberOfVideos = 0
         self.description = None
         self.duration = 0
         self.image = None

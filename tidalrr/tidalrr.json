@@ -8,7 +8,7 @@
     "includeEP": true,
     "language": 0,
     "lyricFile": true,
-    "multiThread": true,
+    "multiThread": false,
     "playlistFolderFormat": "Playlist/{PlaylistName} [{PlaylistUUID}]",
     "saveAlbumInfo": true,
     "saveCovers": true,

@@ -57,6 +57,18 @@ def start_artist(obj: Artist):
 
 def start_playlist(obj: Playlist):
     Printf.playlist(obj)
+    # here we have the playlist object, we can export it to json
+    print(aigpy.model.modelToDict(obj))
+    # save this to playlist.json
+    data = aigpy.model.modelToDict(obj)
+    txt = json.dumps(data)
+
+    path = getPlaylistPath(obj)
+
+    aigpy.file.write(path+'/playlist.json', txt, 'w+')
+
+    Printf.success('Saved playlist to : '+path+'/playlist.json')
+
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     downloadTracks(tracks, None, obj)
 """     if SETTINGS.downloadVideos:

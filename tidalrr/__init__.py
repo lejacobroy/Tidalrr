@@ -18,7 +18,7 @@ from settings import *
 def mainCommand():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 
-                                   "hoq:uf:", 
+                                   "hoq:u:f:", 
                                    ["help", "url", "file", "output", "quality"])
     except getopt.GetoptError as errmsg:
         Printf.err(vars(errmsg)['msg'] + ". Use 'tidalrr -h' for usage.")
@@ -35,7 +35,7 @@ def mainCommand():
             use_url(val)
             continue
         if opt in ('-f', '--file'):
-            Printf.info('Using file list: ',val)
+            Printf.info('Using file list: '+val)
             file1 = open(val, 'r')
             Lines = file1.readlines()
             count = 0
