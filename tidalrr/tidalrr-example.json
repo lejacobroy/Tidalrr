@@ -16,6 +16,6 @@
     "showTrackInfo": true,
     "trackFileFormat": "{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}",
     "usePlaylistFolder": true,
-    "lidarrURL": "http://pomelo:8686",
-    "lidarrAPI": "6c852b7528ad4529b91541e6bbaf0f13"
+    "lidarrURL": "http://lidarr:8686",
+    "lidarrAPI": "APIKEY"
 }

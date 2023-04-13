@@ -13,12 +13,12 @@ import getopt
 
 from events import *
 from settings import *
-
+from lidarr import *
 
 def mainCommand():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 
-                                   "hoq:u:f:", 
+                                   "holq:u:f:a:", 
                                    ["help", "url", "file", "output", "quality"])
     except getopt.GetoptError as errmsg:
         Printf.err(vars(errmsg)['msg'] + ". Use 'tidalrr -h' for usage.")
@@ -33,6 +33,12 @@ def mainCommand():
             return
         if opt in ('-u', '--url'):
             use_url(val)
+            continue
+        if opt in ('-a', '--album'):
+            use_text(val)
+            continue
+        if opt in ('-l', '--lidarr'):
+            syncLidarr()
             continue
         if opt in ('-f', '--file'):
             Printf.info('Using file list: '+val)
@@ -65,18 +71,51 @@ def use_url(url):
         Printf.info(LANG.select.SETTING_DOWNLOAD_PATH + ':' + SETTINGS.downloadPath)
         start(url)
 
+def use_text(txt):
+    if not aigpy.path.mkdirs(SETTINGS.downloadPath):
+        Printf.err(LANG.select.MSG_PATH_ERR + SETTINGS.downloadPath)
+        return
+
+    if txt is not None:
+        if not loginByConfig():
+            loginByWeb()
+        Printf.info(LANG.select.SETTING_DOWNLOAD_PATH + ':' + SETTINGS.downloadPath)
+        alb = Album()
+        alb.title = txt
+        start_album_search(alb)
+
+def syncLidarr():
+    if not aigpy.path.mkdirs(SETTINGS.downloadPath):
+        Printf.err(LANG.select.MSG_PATH_ERR + SETTINGS.downloadPath)
+        return
+
+    if not loginByConfig():
+        loginByWeb()
+    Printf.info(LANG.select.SETTING_DOWNLOAD_PATH + ':' + SETTINGS.downloadPath)
+    albums = [Album()]
+    albums = getMissingAlbums(SETTINGS.lidarrURL, SETTINGS.lidarrAPI)
+
+    for a in albums :
+        if a.title is not None:    
+            # set download path
+            SETTINGS.downloadPath = str(a.path)
+            start_album_search(a)
+    
+    Printf.info('Lidarr wanted list synced, go update it.')
+
+
 def main():
     SETTINGS.read(getProfilePath())
     TOKEN.read(getTokenPath())
     TIDAL_API.apiKey = apiKey.getItem(SETTINGS.apiKeyIndex)
     
-    if len(sys.argv) > 1:
-        mainCommand()
-        return
-    
     #Printf.logo()
     #Printf.settings()
     
+    if len(sys.argv) > 1:
+        mainCommand()
+        return
+
     if not apiKey.isItemValid(SETTINGS.apiKeyIndex):
         changeApiKey()
         loginByWeb()
@@ -84,7 +123,6 @@ def main():
         loginByWeb()
     
     Printf.checkVersion()
-
 
 if __name__ == '__main__':
     # test()

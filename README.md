@@ -13,7 +13,9 @@
 - ✅ configureable highest quality
 - ✅ migrate interactive settings to a json config file
 - ✅ migrate interactive settings to CLI arguments
-- ✅ download content from a file list of links
+- ✅ download content from a file list of links (great for playlists)
+- ✅ query Lidarr wanted list of albums and downloads them
+- Sync all user's playlists
 - generate .pls and .m3u8 playlist files
 - create and sync Plex Playlist from Tidal Playlists
 - create an api webserver that can be used with Lidarr
@@ -26,6 +28,7 @@
 - [redsea](https://github.com/redsudo/RedSea)
 - [tidal-wiki](https://github.com/Fokka-Engineering/TIDAL/wiki)
 - [tidal-dl](https://github.com/yaronzz/Tidal-Media-Downloader)
+- [lidarr API](https://lidarr.audio/docs/api/#/)
 
 ## 📜 Disclaimer
 - Private use only.

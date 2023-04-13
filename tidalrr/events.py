@@ -36,6 +36,13 @@ def start_album(obj: Album):
 """     if SETTINGS.downloadVideos:
         downloadVideos(videos, obj) """
 
+def start_album_search(obj: Album):
+    print(obj.title)
+    #print(aigpy.model.modelToDict(obj))
+    album = TIDAL_API.searchAlbum(obj)
+    if album is not None:
+        start_album(album)
+    #print(aigpy.model.modelToDict(album))
 
 def start_track(obj: Track):
     album = TIDAL_API.getAlbum(obj.album.id)

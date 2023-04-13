@@ -29,6 +29,8 @@ class Settings(aigpy.model.ModelBase):
     #downloadVideos = True
     multiThread = True
     downloadDelay = True
+    lidarrURL = ''
+    lidarrAPI = ''
 
     downloadPath = "./download/"
     audioQuality = AudioQuality.Master

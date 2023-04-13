@@ -45,7 +45,7 @@ class Album(aigpy.model.ModelBase):
         self.title = None
         self.duration = 0
         self.numberOfTracks = 0
-        #self.numberOfVideos = 0
+        self.numberOfVideos = 0
         self.numberOfVolumes = 0
         self.releaseDate = None
         self.type = None
@@ -54,6 +54,7 @@ class Album(aigpy.model.ModelBase):
         self.explicit = False
         self.audioQuality = None
         self.audioModes = None
+        self.path = None
         self.artist = Artist()
         self.artists = Artist()
 

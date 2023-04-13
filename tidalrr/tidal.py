@@ -37,7 +37,9 @@ class TidalAPI(object):
         errmsg = "Get operation err!"
         for index in range(0, 3):
             try:
+                #print(urlpre + path, header, params)
                 respond = requests.get(urlpre + path, headers=header, params=params)
+                #print(respond)
                 if respond.url.find("playbackinfopostpaywall") != -1 and SETTINGS.downloadDelay is not False:
                     # random sleep between 0.5 and 5 seconds and print it
                     sleep_time = random.randint(500, 5000) / 1000
@@ -55,6 +57,11 @@ class TidalAPI(object):
 
                 result = json.loads(respond.text)
                 if 'status' not in result:
+                    #print(result)
+                    """ if result["totalNumberOfItems"] > 0:
+                        print('TEST')
+                        print('TEST',result["items"][0])
+                        return result.items[0] """
                     return result
 
                 if 'userMessage' in result and result['userMessage'] is not None:
@@ -195,6 +202,22 @@ class TidalAPI(object):
 
     def getAlbum(self, id) -> Album:
         return aigpy.model.dictToModel(self.__get__('albums/' + str(id)), Album())
+    
+    def searchAlbum(self, obj) -> Album:
+        #print(aigpy.model.modelToDict(obj))
+        name = str(obj.artist.name +' - '+ obj.title)
+
+        # Transform json input to python objects
+        input_dict = self.__get__('albums?query='+str(name), {}, 'https://api.tidalhifi.com/v1/search/')["items"]
+
+        # Filter python objects with list comprehensions
+        # x["numberOfTracks"] == obj.numberOfTracks and
+        output_dict = [x for x in input_dict if  x["title"] == obj.title and x["artist"]["name"] == obj.artist.name]
+        # filter by artist and album title
+        if len(output_dict) == 0:
+            print('no album matched')
+            return
+        return aigpy.model.dictToModel(output_dict[0] , Album())
 
     def getPlaylist(self, id) -> Playlist:
         return aigpy.model.dictToModel(self.__get__('playlists/' + str(id)), Playlist())

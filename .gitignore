@@ -185,3 +185,5 @@ TIDALDL-PY/tidal-gui.spec
 tidalrr/tidalrr.token.json
 tidalrr/.DS_Store
 .DS_Store
+tidalrr/tidalrr.json
+tidalrr/download/*
