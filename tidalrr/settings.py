@@ -21,17 +21,17 @@ class Settings(aigpy.model.ModelBase):
     includeEP = True
     saveCovers = True
     language = 0
-    lyricFile = False
-    apiKeyIndex = 0
+    lyricFile = True
+    apiKeyIndex = 4
     showProgress = True
     showTrackInfo = True
-    saveAlbumInfo = False
+    saveAlbumInfo = True
     #downloadVideos = True
-    multiThread = False
+    multiThread = True
     downloadDelay = True
 
     downloadPath = "./download/"
-    audioQuality = AudioQuality.Normal
+    audioQuality = AudioQuality.Master
     #videoQuality = VideoQuality.P360
     usePlaylistFolder = True
     albumFolderFormat = R"{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]"
@@ -41,11 +41,11 @@ class Settings(aigpy.model.ModelBase):
 
     def getDefaultPathFormat(self, type: Type):
         if type == Type.Album:
-            return R"{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]"
+            return self.albumFolderFormat
         elif type == Type.Playlist:
-            return R"Playlist/{PlaylistName} [{PlaylistUUID}]"
+            return self.playlistFolderFormat
         elif type == Type.Track:
-            return R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
+            return self.trackFileFormat
         """ elif type == Type.Video:
             return R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}" """
         return ""
@@ -54,7 +54,7 @@ class Settings(aigpy.model.ModelBase):
         for item in AudioQuality:
             if item.name == value:
                 return item
-        return AudioQuality.Normal
+        return self.audioQuality
 
     """ def getVideoQuality(self, value):
         for item in VideoQuality:

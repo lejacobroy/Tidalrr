@@ -70,7 +70,7 @@ def __setMetaData__(track: Track, album: Album, filepath, contributors, lyrics):
     obj.lyrics = lyrics
     if obj.totaldisc <= 1:
         obj.totaltrack = album.numberOfTracks
-    coverpath = TIDAL_API.getCoverUrl(album.cover, "1280", "1280")
+    coverpath = TIDAL_API.getCoverUrl(album.cover)
     obj.save(coverpath)
 
 
@@ -78,7 +78,7 @@ def downloadCover(album):
     if album is None:
         return
     path = getAlbumPath(album) + '/cover.jpg'
-    url = TIDAL_API.getCoverUrl(album.cover, "1280", "1280")
+    url = TIDAL_API.getCoverUrl(album.cover)
     aigpy.net.downloadFile(url, path)
 
 
@@ -217,6 +217,29 @@ def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
             thread_pool.submit(downloadTrack, item, itemAlbum, playlist)
         thread_pool.shutdown(wait=True)
 
+def downloadPlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
+    def __getAlbum__(item: Track):
+        album = TIDAL_API.getAlbum(item.album.id)
+        if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
+            downloadCover(album)
+        return album
+    
+    if not SETTINGS.multiThread:
+        for index, item in enumerate(tracks):
+            itemAlbum = album
+            if itemAlbum is None:
+                itemAlbum = __getAlbum__(item)
+                item.trackNumberOnPlaylist = index + 1
+            downloadTrack(item, itemAlbum, playlist)
+    else:
+        thread_pool = ThreadPoolExecutor(max_workers=5)
+        for index, item in enumerate(tracks):
+            itemAlbum = album
+            if itemAlbum is None:
+                itemAlbum = __getAlbum__(item)
+                item.trackNumberOnPlaylist = index + 1
+            thread_pool.submit(downloadTrack, item, itemAlbum, playlist)
+        thread_pool.shutdown(wait=True)
 
 """ def downloadVideos(videos, album: Album, playlist=None):
     for item in videos:

@@ -334,13 +334,13 @@ class TidalAPI(object):
     def getTrackContributors(self, id):
         return self.__get__(f'tracks/{str(id)}/contributors')
 
-    def getCoverUrl(self, sid, width="320", height="320"):
+    def getCoverUrl(self, sid):
         if sid is None:
             return ""
-        return f"https://resources.tidal.com/images/{sid.replace('-', '/')}/{width}x{height}.jpg"
+        return f"https://resources.tidal.com/images/{sid.replace('-', '/')}/origin.jpg"
 
-    def getCoverData(self, sid, width="320", height="320"):
-        url = self.getCoverUrl(sid, width, height)
+    def getCoverData(self, sid):
+        url = self.getCoverUrl(sid)
         try:
             return requests.get(url).content
         except:

@@ -22,22 +22,7 @@ from settings import *
 from lang.language import *
 
 
-VERSION = '2022.10.31.1'
-__LOGO__ = f'''
- /$$$$$$$$ /$$       /$$           /$$               /$$ /$$
-|__  $$__/|__/      | $$          | $$              | $$| $$
-   | $$    /$$  /$$$$$$$  /$$$$$$ | $$          /$$$$$$$| $$
-   | $$   | $$ /$$__  $$ |____  $$| $$ /$$$$$$ /$$__  $$| $$
-   | $$   | $$| $$  | $$  /$$$$$$$| $$|______/| $$  | $$| $$
-   | $$   | $$| $$  | $$ /$$__  $$| $$        | $$  | $$| $$
-   | $$   | $$|  $$$$$$$|  $$$$$$$| $$        |  $$$$$$$| $$
-   |__/   |__/ \_______/ \_______/|__/         \_______/|__/
-   
-       https://github.com/yaronzz/Tidal-Media-Downloader 
-       
-                        {VERSION}
-'''
-
+VERSION = 'Tidalrr : 2023.04.12.1'
 print_mutex = threading.Lock()
 
 
@@ -45,8 +30,8 @@ class Printf(object):
 
     @staticmethod
     def logo():
-        print(__LOGO__)
-        logging.info(__LOGO__)
+        print(VERSION)
+        logging.info(VERSION)
 
     @staticmethod
     def __gettable__(columns, rows):

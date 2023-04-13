@@ -182,3 +182,6 @@ TIDALDL-PY/tidal-gui.spec
 /build
 /dist
 /*.egg-info
+tidalrr/tidalrr.token.json
+tidalrr/.DS_Store
+.DS_Store
