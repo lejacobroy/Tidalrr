@@ -65,7 +65,7 @@ class Settings(aigpy.model.ModelBase):
         return VideoQuality.P360 """
     
     def read(self, path):
-        self._path_ = path
+        self._path_ = path + '/config/'
         txt = aigpy.file.getContent(self._path_)
         if len(txt) > 0:
             data = json.loads(txt)
@@ -117,7 +117,7 @@ class TokenSettings(aigpy.model.ModelBase):
             return string
 
     def read(self, path):
-        self._path_ = path
+        self._path_ = path + '/config/'
         txt = aigpy.file.getContent(self._path_)
         if len(txt) > 0:
             data = json.loads(self.__decode__(txt))

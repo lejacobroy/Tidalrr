@@ -19,7 +19,8 @@
 - generate .pls and .m3u8 playlist files
 - create and sync Plex Playlist from Tidal Playlists
 - create an api webserver that can be used with Lidarr
-- package it in a docker container
+- ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
+- ✅ documentation
 
 ## 🎨 Libraries and reference
 
@@ -36,11 +37,17 @@
 - Do not use this method to distribute or pirate music.
 - It may be illegal to use this in your country, so be informed.
 
+## Usage
+I recommend that you run it using docker or docker-compose.
+The image is available on [dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
+but I also provide an example of a docker-compose file.
+Modify it and run `docker-compose up -d`
+
+To use, watch the docker logs to capture the login URL and authenticate your tidalrr instance to Tidal.
+
 ## Developing
 
 ```shell
-pip3 uninstall tidal-dl
-pip3 install -r requirements.txt --user
-python3 setup.py install
+./build.sh
 ```
 

@@ -22,7 +22,7 @@ from settings import *
 from lang.language import *
 
 
-VERSION = 'Tidalrr : 2023.04.12.1'
+VERSION = '2023.04.12.1'
 print_mutex = threading.Lock()
 
 

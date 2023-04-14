@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from tidalrr.printf import VERSION
+from printf import VERSION
 
 setup(
     name='tidalrr',
