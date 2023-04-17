@@ -178,13 +178,13 @@ def getTrackPath(track, stream, album=None, playlist=None):
 
 
 def __getHomePath__():
-    return os.path.join(os.path.dirname(__file__))+"/"
+    return os.path.join(os.path.dirname(__file__))+"/config/"
 
 def getLogPath():
-    return __getHomePath__() + '/tidalrr.log'
+    return __getHomePath__() + 'tidalrr.log'
 
 def getTokenPath():
-    return __getHomePath__() + '/tidalrr.token.json'
+    return __getHomePath__() + 'tidalrr.token.json'
 
 def getProfilePath():
-    return __getHomePath__() + '/tidalrr.json'
+    return __getHomePath__() + 'tidalrr.json'

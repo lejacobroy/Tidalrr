@@ -15,12 +15,12 @@
 - ✅ migrate interactive settings to CLI arguments
 - ✅ download content from a file list of links (great for playlists)
 - ✅ query Lidarr wanted list of albums and downloads them
-- Sync all user's playlists
-- generate .pls and .m3u8 playlist files
-- create and sync Plex Playlist from Tidal Playlists
-- create an api webserver that can be used with Lidarr
+- ✅ Sync all user's playlists
 - ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
-- ✅ documentation
+- generate .pls and .m3u8 playlist files
+- create and sync Plex Playlist from Tidal Playlists (using PPP)
+- create an api webserver and control center
+- Inject Tidal playlist into Spark by Devialet
 
 ## 🎨 Libraries and reference
 
@@ -30,6 +30,7 @@
 - [tidal-wiki](https://github.com/Fokka-Engineering/TIDAL/wiki)
 - [tidal-dl](https://github.com/yaronzz/Tidal-Media-Downloader)
 - [lidarr API](https://lidarr.audio/docs/api/#/)
+- [PPP](https://github.com/XDGFX/PPP)
 
 ## 📜 Disclaimer
 - Private use only.

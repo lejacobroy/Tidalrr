@@ -44,6 +44,12 @@ def start_album_search(obj: Album):
         start_album(album)
     #print(aigpy.model.modelToDict(album))
 
+def start_playlist_sync(UserId=None):
+    playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
+    for playlist in playlists:
+        if playlist.title is not None:
+            start_playlist(playlist)
+
 def start_track(obj: Track):
     album = TIDAL_API.getAlbum(obj.album.id)
     if SETTINGS.saveCovers:

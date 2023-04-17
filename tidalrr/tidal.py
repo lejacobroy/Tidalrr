@@ -218,6 +218,18 @@ class TidalAPI(object):
             print('no album matched')
             return
         return aigpy.model.dictToModel(output_dict[0] , Album())
+    
+    def getPlaylistsAndFavorites(self, userId=None) -> Playlist():
+        # Transform json input to python objects
+        input_dict = self.__get__(str(self.key.userId)+'/playlistsAndFavoritePlaylists', {}, 'https://api.tidalhifi.com/v1/users/')["items"]
+        playlists = [Playlist()]
+        if len(input_dict) == 0:
+            print('no playlists')
+            return
+        for item in input_dict:
+            playlists.append(aigpy.model.dictToModel(item["playlist"], Playlist()))
+        return playlists
+
 
     def getPlaylist(self, id) -> Playlist:
         return aigpy.model.dictToModel(self.__get__('playlists/' + str(id)), Playlist())
