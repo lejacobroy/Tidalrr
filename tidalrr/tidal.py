@@ -42,17 +42,17 @@ class TidalAPI(object):
                 #print(respond)
                 if respond.url.find("playbackinfopostpaywall") != -1 and SETTINGS.downloadDelay is not False:
                     # random sleep between 0.5 and 5 seconds and print it
-                    sleep_time = random.randint(500, 5000) / 1000
-                    print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+                    sleep_time = random.randint(500, 2000) / 1000
+                    #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
                     time.sleep(sleep_time)
-
+    
                 if respond.status_code == 429:
                     print('Too many requests, waiting for 20 seconds...')
                     # Loop countdown 20 seconds and print the remaining time
                     for i in range(20, 0, -1):
                         time.sleep(1)
-                        print(i, end=' ')
-                    print('')
+                        #print(i, end=' ')
+                    #print('')
                     continue
 
                 result = json.loads(respond.text)
@@ -309,7 +309,7 @@ class TidalAPI(object):
                 tracks.append(aigpy.model.dictToModel(item['item'], Track()))
             """ else:
                 videos.append(aigpy.model.dictToModel(item['item'], Video())) """
-        return tracks#, videos
+        return tracks
 
     def getArtistAlbums(self, id, includeEP=False):
         data = self.__getItems__(f'artists/{str(id)}/albums')

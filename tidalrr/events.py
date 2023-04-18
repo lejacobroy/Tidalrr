@@ -17,6 +17,7 @@ from enums import *
 from tidal import *
 from printf import *
 from download import *
+from paths import *
 
 '''
 =================================
@@ -71,22 +72,32 @@ def start_artist(obj: Artist):
 def start_playlist(obj: Playlist):
     Printf.playlist(obj)
     # here we have the playlist object, we can export it to json
-    print(aigpy.model.modelToDict(obj))
+    #print(aigpy.model.modelToDict(obj))
     # save this to playlist.json
     data = aigpy.model.modelToDict(obj)
     txt = json.dumps(data)
 
     path = getPlaylistPath(obj)
 
-    aigpy.file.write(path+'/playlist.json', txt, 'w+')
+    aigpy.file.write(path+'/'+obj.title+'.json', txt, 'w+')
 
-    Printf.success('Saved playlist to : '+path+'/playlist.json')
+    Printf.info('Saved playlist info to : '+path+'/'+obj.title+'.json')
 
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     downloadTracks(tracks, None, obj)
-"""     if SETTINGS.downloadVideos:
-        downloadVideos(videos, None, obj) """
 
+    Printf.info('Generating m3u8 playlist file, this can take a while...')
+    # Generate the playlist file
+    with open(path+'/'+obj.title+'.m3u8', 'w') as f:
+        f.write('#EXTM3U\n')
+        for i,item in enumerate(aigpy.model.modelListToDictList(tracks), start=1):
+            track = aigpy.model.dictToModel(item, Track())
+            track.trackNumberOnPlaylist = i
+            filename = getDownloadTrackFilename(track, obj)
+
+            f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
+            f.write(str(getTrueHomePath())+'/'+filename+'\n')
+    Printf.success('Done generating m3u8 playlist file: '+path+'/'+obj.title+'.m3u8')
 
 def start_mix(obj: Mix):
     Printf.mix(obj)

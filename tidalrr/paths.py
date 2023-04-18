@@ -92,7 +92,7 @@ def getPlaylistPath(playlist):
     return f"{SETTINGS.downloadPath}/{retpath}"
 
 
-def getTrackPath(track, stream, album=None, playlist=None):
+def getTrackPath(track, stream, album=None, playlist=None, filename=None):
     base = './'
     number = str(track.trackNumber).rjust(2, '0')
     if album is not None:
@@ -105,8 +105,13 @@ def getTrackPath(track, stream, album=None, playlist=None):
         number = str(track.trackNumberOnPlaylist).rjust(2, '0')
 
     # artist
-    artists = __fixPath__(TIDAL_API.getArtistsName(track.artists))
-    artist = __fixPath__(track.artist.name) if track.artist is not None else ""
+    artists = ""
+    if track.artists is not None:
+        artists = __fixPath__(TIDAL_API.getArtistsName(track.artists)) 
+
+    artist = ""
+    if track.artist is not None:
+        artist = __fixPath__(track.artist.name) 
 
     # title
     title = __fixPath__(track.title)
@@ -138,7 +143,10 @@ def getTrackPath(track, stream, album=None, playlist=None):
     retpath = retpath.replace(R"{Duration}", __getDurationStr__(track.duration))
     retpath = retpath.replace(R"{TrackID}", str(track.id))
     retpath = retpath.strip()
-    return f"{base}/{retpath}{extension}"
+    if filename is not None:
+        return f"{retpath}{extension}"
+    else:
+        return f"{base}/{retpath}{extension}"
 
 
 """ def getVideoPath(video, album=None, playlist=None):
@@ -176,6 +184,8 @@ def getTrackPath(track, stream, album=None, playlist=None):
     retpath = retpath.strip()
     return f"{base}/{retpath}{extension}" """
 
+def getTrueHomePath():
+    return os.path.join(os.path.dirname(__file__))
 
 def __getHomePath__():
     return os.path.join(os.path.dirname(__file__))+"/config/"

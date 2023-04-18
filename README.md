@@ -7,6 +7,21 @@
   Tidalrr can also sync your Tidal Playlists to Plex & Plexamp.
 </p>
 
+## how to use:
+- Download content from a Tidal URL
+` tidalrr --url URL` 
+- Download album by a title
+`` tidalrr --album 'Artist Name - Album Title'` 
+- Download content from a file containing Tidal links (songs, albums, playlists, etc)
+` tidalrr --file urls.txt` , where each link is on a new line in the urls.txt file.
+- Query Lidarr's wanted list of albums and downloads them from Tidall
+`` tidalrr --lidarr` . Note that for now, the matching algorithm is pretty strict and needs a perfect match for both the artist's name and the album's title.
+- Downloads all of the Tidal user's playlists
+` tidalrr --syncplaylists` 
+- Inject downloaded Tidal playlists (.m3u8 files) into the Spark app
+` tidalrr --sparksync`  WARNING: you should not use this, as it can corrupt your Spark database.
+While it's available in a docker image, there's currently no way to execute the different options except by connecting directly to the container.
+
 ## Todo:
 - ✅ refactor and cleanup code
 - ✅ remove video support
@@ -17,7 +32,7 @@
 - ✅ query Lidarr wanted list of albums and downloads them
 - ✅ Sync all user's playlists
 - ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
-- generate .pls and .m3u8 playlist files
+- ✅ generate .m3u8 playlist files
 - create and sync Plex Playlist from Tidal Playlists (using PPP)
 - create an api webserver and control center
 - Inject Tidal playlist into Spark by Devialet
@@ -31,6 +46,7 @@
 - [tidal-dl](https://github.com/yaronzz/Tidal-Media-Downloader)
 - [lidarr API](https://lidarr.audio/docs/api/#/)
 - [PPP](https://github.com/XDGFX/PPP)
+- [tidal-m3u](https://github.com/jocap/tidal-m3u/blob/master/m3u.py)
 
 ## 📜 Disclaimer
 - Private use only.

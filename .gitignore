@@ -196,3 +196,4 @@ tidalrr.spec
 tidalrr/dist/*
 tidalrr/config/tidalrr.json
 tidalrr/config/tidalrr.token.json
+tidalrr/urls.txt

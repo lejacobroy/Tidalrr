@@ -140,6 +140,12 @@ def downloadAlbumInfo(album, tracks):
         return False, str(e)
  """
 
+def getDownloadTrackFilename(track: Track, playlist: Playlist):
+    stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
+    path = getTrackPath(track, stream, None, playlist, 'filename')
+    return path
+
+
 def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, partSize=1048576):
     try:
         stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
@@ -158,7 +164,10 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         # download
         logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.url)
-
+        if SETTINGS.downloadDelay:
+            sleep_time = random.randint(500, 5000) / 1000
+            print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+            time.sleep(sleep_time)
         tool = aigpy.download.DownloadTool(path + '.part', [stream.url])
         tool.setUserProgress(userProgress)
         tool.setPartSize(partSize)
