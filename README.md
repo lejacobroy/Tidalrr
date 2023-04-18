@@ -7,19 +7,25 @@
   Tidalrr can also sync your Tidal Playlists to Plex & Plexamp.
 </p>
 
-## how to use:
-- Download content from a Tidal URL
+## How to use:
+### Download content from a Tidal URL
 ` tidalrr --url URL` 
-- Download album by a title
+
+### Download album by a title
 `` tidalrr --album 'Artist Name - Album Title'` 
-- Download content from a file containing Tidal links (songs, albums, playlists, etc)
+
+### Download content from a file containing Tidal links (songs, albums, playlists, etc)
 ` tidalrr --file urls.txt` , where each link is on a new line in the urls.txt file.
-- Query Lidarr's wanted list of albums and downloads them from Tidall
+
+### Query Lidarr's wanted list of albums and downloads them from Tidall
 `` tidalrr --lidarr` . Note that for now, the matching algorithm is pretty strict and needs a perfect match for both the artist's name and the album's title.
-- Downloads all of the Tidal user's playlists
+
+### Downloads all of the Tidal user's playlists
 ` tidalrr --syncplaylists` 
-- Inject downloaded Tidal playlists (.m3u8 files) into the Spark app
+
+### Inject downloaded Tidal playlists (.m3u8 files) into the Spark app
 ` tidalrr --sparksync`  WARNING: you should not use this, as it can corrupt your Spark database.
+
 While it's available in a docker image, there's currently no way to execute the different options except by connecting directly to the container.
 
 ## Todo:
