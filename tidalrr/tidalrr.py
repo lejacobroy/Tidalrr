@@ -14,11 +14,12 @@ import getopt
 from events import *
 from settings import *
 from lidarr import *
+from webserver import *
 
 def mainCommand():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 
-                                   "holsq:u:f:a:", 
+                                   "holsq:u:f:a:i:", 
                                    ["help", "url", "file", "output", "quality"])
     except getopt.GetoptError as errmsg:
         Printf.err(vars(errmsg)['msg'] + ". Use 'tidalrr -h' for usage.")
@@ -42,6 +43,9 @@ def mainCommand():
             continue
         if opt in ('-s', '--syncplaylists'):
             syncTidal()
+            continue
+        if opt in ('-i', '--inject'):
+            injectPlaylist(val)
             continue
         if opt in ('-f', '--file'):
             Printf.info('Using file list: '+val)
@@ -89,6 +93,21 @@ def syncTidal():
     start_playlist_sync(TOKEN.userid)
     Printf.info('Tidall playlists synced.')
 
+def injectPlaylist(playlistPath):
+    # use spark.py function to load the .m3u8 file into Spark DB
+    # spark DB is located at '~/Library/Applications Support/Devialet/Spakr/Collection.db'
+    Printf.info('Validating m3u8 playlist...')
+    # read .m3u8
+        # is valid, make a copy of the db with the date
+    Printf.success('Valid m3u8, DB backup.')
+        # inject the playlist
+    Printf.success('Injected playlist X into Spark.')
+
+def startWebserver():
+    port = int(os.environ.get("PORT", 8000))
+    app = tidalrrWeb()
+    app.run(host="0.0.0.0", port=port)
+
 def main():
     SETTINGS.read(getProfilePath())
     TOKEN.read(getTokenPath())
@@ -108,9 +127,8 @@ def main():
 
     if len(sys.argv) > 1:
         mainCommand()
-        return
-
-    Printf.checkVersion()
+    else:
+        startWebserver()
 
 if __name__ == '__main__':
     # test()

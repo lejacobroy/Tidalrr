@@ -9,22 +9,22 @@
 
 ## How to use:
 ### Download content from a Tidal URL
-` tidalrr --url URL` 
+`tidalrr --url URL` 
 
 ### Download album by a title
-`` tidalrr --album 'Artist Name - Album Title'` 
+``tidalrr --album 'Artist Name - Album Title'` 
 
 ### Download content from a file containing Tidal links (songs, albums, playlists, etc)
-` tidalrr --file urls.txt` , where each link is on a new line in the urls.txt file.
+`tidalrr --file urls.txt` , where each link is on a new line in the urls.txt file.
 
 ### Query Lidarr's wanted list of albums and downloads them from Tidall
-`` tidalrr --lidarr` . Note that for now, the matching algorithm is pretty strict and needs a perfect match for both the artist's name and the album's title.
+``tidalrr --lidarr` . Note that for now, the matching algorithm is pretty strict and needs a perfect match for both the artist's name and the album's title.
 
 ### Downloads all of the Tidal user's playlists
-` tidalrr --syncplaylists` 
+`tidalrr --syncplaylists` 
 
 ### Inject downloaded Tidal playlists (.m3u8 files) into the Spark app
-` tidalrr --sparksync`  WARNING: you should not use this, as it can corrupt your Spark database.
+`tidalrr --inject`  WARNING: you should not use this, as it can corrupt your Spark database.
 
 While it's available in a docker image, there's currently no way to execute the different options except by connecting directly to the container.
 
@@ -53,6 +53,7 @@ While it's available in a docker image, there's currently no way to execute the 
 - [lidarr API](https://lidarr.audio/docs/api/#/)
 - [PPP](https://github.com/XDGFX/PPP)
 - [tidal-m3u](https://github.com/jocap/tidal-m3u/blob/master/m3u.py)
+- [bootstrap-flask](https://github.com/helloflask/bootstrap-flask)
 
 ## 📜 Disclaimer
 - Private use only.

@@ -49,7 +49,12 @@ class Printf(object):
             ["-h or --help",        "show help-message"],
             ["-v or --version",     "show version"],
             ["-o or --output",      "download path"],
-            ["-l or --link",        "url/id/filePath"],
+            ["-u or --url",         "download the content from url"],
+            ["-a or --album",       "search album by 'Artist - Album'"],
+            ["-l or --lidarr",      "download albums from Lidarr's wanted list"],
+            ["-s or --syncplaylist","download all the user's playlists"],
+            ["-f or --file",        "download the content from a file containing one URL per line"],
+            ["-i or --inject",      "inject downloaded playlists into Spark database"],
             ["-q or --quality",     "track quality('Normal','High,'HiFi','Master')"]
         ])
         print(tb)
