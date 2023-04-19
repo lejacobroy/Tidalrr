@@ -39,9 +39,9 @@ While it's available in a docker image, there's currently no way to execute the 
 - ✅ Sync all user's playlists
 - ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
 - ✅ generate .m3u8 playlist files
-- create and sync Plex Playlist from Tidal Playlists (using PPP)
+- create and sync Plex Playlist from Tidal Playlists (using PPP, needs simple .m3u playlist and a playlist folder)
 - create an api webserver and control center
-- Inject Tidal playlist into Spark by Devialet
+- Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it)
 
 ## 🎨 Libraries and reference
 

@@ -196,7 +196,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         __setMetaData__(track, album, path, contributors, lyrics)
         Printf.success(track.title)
-        return True, ''
+        return True, path
     except Exception as e:
         Printf.err(f"DL Track[{track.title}] failed.{str(e)}")
         return False, str(e)
@@ -208,14 +208,14 @@ def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
         if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
             downloadCover(album)
         return album
-    
+    paths = []
     if not SETTINGS.multiThread:
         for index, item in enumerate(tracks):
             itemAlbum = album
             if itemAlbum is None:
                 itemAlbum = __getAlbum__(item)
                 item.trackNumberOnPlaylist = index + 1
-            downloadTrack(item, itemAlbum, playlist)
+            paths.append(downloadTrack(item, itemAlbum, playlist)[1])
     else:
         thread_pool = ThreadPoolExecutor(max_workers=5)
         for index, item in enumerate(tracks):
@@ -225,6 +225,7 @@ def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
                 item.trackNumberOnPlaylist = index + 1
             thread_pool.submit(downloadTrack, item, itemAlbum, playlist)
         thread_pool.shutdown(wait=True)
+    return paths
 
 def downloadPlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
     def __getAlbum__(item: Track):

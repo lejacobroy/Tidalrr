@@ -84,7 +84,8 @@ def start_playlist(obj: Playlist):
     Printf.info('Saved playlist info to : '+path+'/'+obj.title+'.json')
 
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
-    downloadTracks(tracks, None, obj)
+    paths = downloadTracks(tracks, None, obj)
+    print(paths)
 
     Printf.info('Generating m3u8 playlist file, this can take a while...')
     # Generate the playlist file

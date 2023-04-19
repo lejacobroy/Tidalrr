@@ -1,0 +1,13 @@
+{
+    "server_url": "http://10.0.1.20:32400",
+    "check_ssl": "False",
+    "plex_token": "WHWejx8CA6BY9TTm3pYH",
+    "local_playlists": "../download/Playlist/Ale’s jam [10e5f903-bdba-4671-93fe-a748ba11da8e]",
+    "working_directory": "PPP",
+    "working_directory_plex": "/dataPod3/Medias/Music/PPP",
+    "section_id": "4",
+    "local_prepend": "/Users/jacobroy/GitLab/Tidalrr/tidalrr/",
+    "plex_prepend": "/dataPod3/Medias/Music",
+    "local_convert": "None",
+    "plex_convert": false
+}

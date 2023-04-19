@@ -8,8 +8,8 @@ import sqlite3
     2. Insert all rows
 """
 
-connection = sqlite3.connect("collection.db")
-playlist_file = 'test.m3u8'
+connection = sqlite3.connect("spark/collection.db")
+playlist_file = 'spark/test.m3u8'
 playlist_name = 'My Playlist'
 playlist_items = []
 
@@ -25,30 +25,26 @@ with open(playlist_file, 'r') as f:
         else:
             playlist_items[-1]['url'] = line.strip()
 
-# Print playlist_items for debugging
-print(playlist_items)
-
-# SQL query to insert into playlist table
-playlist_query = f"INSERT INTO playlist (name) VALUES ('{playlist_name}');"
-
 cursor = connection.cursor()
-cursor.execute(playlist_query)
+# verify that the playlist exists
+playlists = cursor.execute(f"Select id from playlist where name = '{playlist_name}'").fetchall()
+
+if len(playlists) == 0:
+    # SQL query to insert into playlist table
+    playlist_query = f"INSERT INTO playlist (id, engine_type, hash, last_update, name, is_favorite, is_podcast) VALUES (1,1,'{playlist_name}', DATE(), '{playlist_name}',0,0);"
+    print(playlist_query)
+    cursor.execute(playlist_query)
+    playlists = cursor.execute(f"Select id from playlist where name = '{playlist_name}'").fetchall()
+
 
 for i, item in enumerate(playlist_items):
     # SQL query to get the track_id from a path file
-    track_query = f"(SELECT id FROM track WHERE url = '{item['url']}')"
-    print(track_query)
-    playlist_items[i]['track_id'] = track_query
+    track = cursor.execute(f"SELECT id FROM track WHERE url = '{item['url']}'").fetchall()
+    track_query = f"INSERT INTO playlist_link (id, playlist_id, track_id) VALUES ({i}, {playlists[0][0]}, {track[0][0]});"
+    cursor.execute(track_query)
 
-# SQL query to insert into playlist_items table
-playlist_items_query = "INSERT INTO playlist_items (playlist_id, title, duration, track_id) VALUES "
-values = []
-for i, item in enumerate(playlist_items):
-    values.append(f"(1, '{item['title']}', '{item['duration']}', {item['track_id']})")
-playlist_items_query += ','.join(values) + ';'
-
-cursor.execute(playlist_items_query)
-
+#cursor.execute(playlist_items_query)
+connection.commit()
 # Print SQL queries for debugging
-print(playlist_query)
-print(playlist_items_query)
+#print(playlist_query)
+#print(playlist_items_query)
