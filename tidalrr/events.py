@@ -75,30 +75,32 @@ def start_playlist(obj: Playlist):
     #print(aigpy.model.modelToDict(obj))
     # save this to playlist.json
     data = aigpy.model.modelToDict(obj)
-    txt = json.dumps(data)
 
     path = getPlaylistPath(obj)
 
-    aigpy.file.write(path+'/'+obj.title+'.json', txt, 'w+')
+    aigpy.file.write(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.json', json.dumps(data), 'w+')
 
-    Printf.info('Saved playlist info to : '+path+'/'+obj.title+'.json')
+    Printf.info('Saved playlist json info to : '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.json')
 
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     paths = downloadTracks(tracks, None, obj)
-    print(paths)
 
-    Printf.info('Generating m3u8 playlist file, this can take a while...')
+    with open(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u', 'w') as f:
+        #f.write('#EXTM3U\n')
+        for i,item in enumerate(paths, start=1):
+            f.write(str(getTrueHomePath())+'/'+item+'\n')
+    Printf.success('Done generating m3u playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u')
+
     # Generate the playlist file
-    with open(path+'/'+obj.title+'.m3u8', 'w') as f:
+    with open(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8', 'w') as f:
         f.write('#EXTM3U\n')
         for i,item in enumerate(aigpy.model.modelListToDictList(tracks), start=1):
             track = aigpy.model.dictToModel(item, Track())
             track.trackNumberOnPlaylist = i
-            filename = getDownloadTrackFilename(track, obj)
-
+            filename = path[i-1]
             f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
-            f.write(str(getTrueHomePath())+'/'+filename+'\n')
-    Printf.success('Done generating m3u8 playlist file: '+path+'/'+obj.title+'.m3u8')
+            f.write(str(getTrueHomePath())+'/'+filename+'\n') 
+    Printf.success('Done generating m3u8 playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8')
 
 def start_mix(obj: Mix):
     Printf.mix(obj)

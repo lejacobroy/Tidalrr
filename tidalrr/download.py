@@ -160,7 +160,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
         # check exist
         if __isSkip__(path, stream.url):
             Printf.info(aigpy.path.getFileName(path) + " (skip:already exists!)")
-            return True, ''
+            return True, path
 
         # download
         logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.url)

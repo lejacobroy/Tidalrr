@@ -1,3 +1,5 @@
+pip uninstall -y tidalrr
+
 rm -rf __init__.spec 
 rm -rf dist
 rm -rf build
@@ -15,5 +17,3 @@ pyinstaller -F tidalrr/tidalrr.py
 
 cd tidalrr
 python3 setup.py install
-
-pip uninstall -y tidalrr

@@ -29,9 +29,6 @@ def mainCommand():
         if opt in ('-h', '--help'):
             Printf.usage()
             return
-        if opt in ('-v', '--version'):
-            Printf.logo()
-            return
         if opt in ('-u', '--url'):
             use_url(val)
             continue

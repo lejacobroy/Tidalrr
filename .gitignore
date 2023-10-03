@@ -198,3 +198,7 @@ tidalrr/config/tidalrr.json
 tidalrr/config/tidalrr.token.json
 tidalrr/urls.txt
 tidalrr/config/PPP.py
+tidalrr/config/local_backups
+tidalrr/config/Playlists
+tidalrr/config/PPP
+tidalrr/urls.txt
