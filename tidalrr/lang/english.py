@@ -115,7 +115,9 @@ class LangEnglish(object):
     MODEL_PLAYLIST_PROPERTY = "PLAYLIST-PROPERTY"
 
     MODEL_TITLE = 'Title'
+    MODEL_ARTIST = 'Artist'
     MODEL_TRACK_NUMBER = 'Track Number'
+    MODEL_PLAYLIST_TRACK_NUMBER = 'Playlist Track Number'
     #MODEL_VIDEO_NUMBER = 'Video Number'
     MODEL_RELEASE_DATE = 'Release Date'
     MODEL_VERSION = 'Version'
