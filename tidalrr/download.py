@@ -165,7 +165,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         # check exist
         if __isSkip__(path, stream.url):
-            Printf.info(number+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
+            Printf.info(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
             return True, path
 
         # download
@@ -202,7 +202,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         __setMetaData__(track, album, path, contributors, lyrics)
         
-        Printf.success(number+ " : " +track.title)
+        Printf.success(str(number)+ " : " +track.title)
         return True, path
     except Exception as e:
         Printf.err(f"DL Track[{track.title}] failed.{str(e)}")
