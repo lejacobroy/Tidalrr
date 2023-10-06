@@ -157,9 +157,15 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
         if userProgress is not None:
             userProgress.updateStream(stream)
 
+        number = 0
+        if track.trackNumberOnPlaylist:
+            number = track.trackNumberOnPlaylist
+        else:
+            number = track.trackNumber
+
         # check exist
         if __isSkip__(path, stream.url):
-            Printf.info(aigpy.path.getFileName(path) + " (skip:already exists!)")
+            Printf.info(number+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
             return True, path
 
         # download
@@ -195,7 +201,8 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
             lyrics = ''
 
         __setMetaData__(track, album, path, contributors, lyrics)
-        Printf.success(track.title)
+        
+        Printf.success(number+ " : " +track.title)
         return True, path
     except Exception as e:
         Printf.err(f"DL Track[{track.title}] failed.{str(e)}")
@@ -222,7 +229,7 @@ def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
             itemAlbum = album
             if itemAlbum is None:
                 itemAlbum = __getAlbum__(item)
-                item.trackNumberOnPlaylist = index + 1
+            item.trackNumberOnPlaylist = index + 1
             thread_pool.submit(downloadTrack, item, itemAlbum, playlist)
         thread_pool.shutdown(wait=True)
     return paths
