@@ -33,10 +33,10 @@ class Settings(aigpy.model.ModelBase):
     lidarrAPI = ''
 
     downloadPath = "./download/"
-    audioQuality = AudioQuality.Master
+    audioQuality = AudioQuality.Max
     #videoQuality = VideoQuality.P360
     usePlaylistFolder = True
-    albumFolderFormat = R"{ArtistName}/{Flag} {AlbumTitle} [{AlbumID}] [{AlbumYear}]"
+    albumFolderFormat = R"{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}"
     playlistFolderFormat = R"Playlist/{PlaylistName} [{PlaylistUUID}]"
     trackFileFormat = R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
     #videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"

@@ -169,7 +169,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
             return True, path
 
         # download
-        logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.url)
+        logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.urls)
         if SETTINGS.downloadDelay:
             sleep_time = random.randint(500, 5000) / 1000
             print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
