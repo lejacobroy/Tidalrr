@@ -399,6 +399,7 @@ class TidalAPI(object):
             ret.codec = manifest['codecs']
             ret.encryptionKey = manifest['keyId'] if 'keyId' in manifest else ""
             ret.url = manifest['urls'][0]
+            ret.urls = [ret.url]
             return ret
         elif "dash+xml" in resp.manifestMimeType:
             xmldata = base64.b64decode(resp.manifest).decode('utf-8')
