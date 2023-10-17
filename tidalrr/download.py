@@ -25,13 +25,22 @@ def __isSkip__(finalpath, url):
     curSize = aigpy.file.getSize(finalpath)
     if curSize <= 0:
         # check if masters version exists
+        #Printf.info("File dosen't exists.")
+        #Printf.info("normpath "+os.path.normpath(finalpath))
+        #Printf.info("splitted "+os.path.normpath(finalpath).split(os.path.sep))
         newPath = os.path.normpath(finalpath).split(os.path.sep)
+        #Printf.info("second-last "+newPath[-2])
         newPath[-2] = newPath[-2]+" [M]"
-        curSize = aigpy.file.getSize(Path(*"/".join(map(str, newPath))))
-        Printf.info("File dosen't exists, but there's a Master version available, skipping")
-        Printf.info(finalpath+"\n"+Path(*"/".join(map(str, newPath))))
+        #Printf.info(newPath[-2])
+        newPath = os.path.join(*newPath)
+        #Printf.info("/"+os.path.normpath(newPath))
+        curSize = aigpy.file.getSize("/"+newPath)
+        #Printf.info(finalpath+"\n"+Path(*"/".join(map(str, newPath))))
         if curSize <= 0:
             return False
+        else:
+            Printf.info("File dosen't exists, but there's a Master version available, skipping")
+            return True
     netSize = aigpy.net.getSize(url)
     return curSize >= netSize
 
