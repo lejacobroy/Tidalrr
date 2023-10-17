@@ -28,6 +28,7 @@ def __isSkip__(finalpath, url):
         newPath = os.path.normpath(finalpath).split(os.path.sep)
         newPath[-2] = newPath[-2]+" [M]"
         curSize = aigpy.file.getSize(Path(*"/".join(map(str, newPath))))
+        Printf.info("File dosen't exists, but there's a Master version available, skipping")
         Printf.info(finalpath+"\n"+Path(*"/".join(map(str, newPath))))
         if curSize <= 0:
             return False
@@ -172,7 +173,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         # check exist
         if __isSkip__(path, stream.url):
-            Printf.info(str(number)+ " : " + track.artists.name + " - " + track.album.title + " - " + track.title + " (skip:already exists!)")
+            Printf.info(str(number)+ " : " + track.artist.name + " - " + track.album.title + " - " + track.title + " (skip:already exists!)")
             return True, path
 
         # download
@@ -209,7 +210,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         __setMetaData__(track, album, path, contributors, lyrics)
         
-        Printf.success(str(number)+ " : " + track.artists.name + " - " + track.album.title + " - " + track.title)
+        Printf.success(str(number)+ " : " + track.artist.name + " - " + track.album.title + " - " + track.title)
         #Printf.info(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
         return True, path
     except Exception as e:
