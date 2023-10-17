@@ -15,6 +15,7 @@ from paths import *
 from printf import *
 from decryption import *
 from tidal import *
+from pathlib import Path
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -23,7 +24,13 @@ def __isSkip__(finalpath, url):
         return False
     curSize = aigpy.file.getSize(finalpath)
     if curSize <= 0:
-        return False
+        # check if masters version exists
+        newPath = os.path.normpath(finalpath).split(os.path.sep)
+        newPath[-2] = newPath[-2]+" [M]"
+        curSize = aigpy.file.getSize(Path(*"/".join(map(str, newPath))))
+        Printf.info(finalpath+"\n"+Path(*"/".join(map(str, newPath))))
+        if curSize <= 0:
+            return False
     netSize = aigpy.net.getSize(url)
     return curSize >= netSize
 
@@ -202,7 +209,7 @@ def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, pa
 
         __setMetaData__(track, album, path, contributors, lyrics)
         
-        Printf.success(str(number)+ " : " + track.artists.name + " - " + track.album.title + " - " + track.title
+        Printf.success(str(number)+ " : " + track.artists.name + " - " + track.album.title + " - " + track.title)
         #Printf.info(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
         return True, path
     except Exception as e:
