@@ -39,7 +39,7 @@ def __isSkip__(finalpath, url):
         if curSize <= 0:
             return False
         else:
-            Printf.info("File dosen't exists, but there's a Master version available, skipping")
+            #Printf.info("File dosen't exists, but there's a Master version available, skipping")
             return True
     netSize = aigpy.net.getSize(url)
     return curSize >= netSize
