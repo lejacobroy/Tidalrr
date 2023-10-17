@@ -186,6 +186,7 @@ class Printf(object):
     @staticmethod
     def album(data: Album):
         tb = Printf.__gettable__([LANG.select.MODEL_ALBUM_PROPERTY, LANG.select.VALUE], [
+            [LANG.select.MODEL_ARTIST, data.artist.name],
             [LANG.select.MODEL_TITLE, data.title],
             ["ID", data.id],
             [LANG.select.MODEL_TRACK_NUMBER, data.numberOfTracks],
@@ -203,10 +204,11 @@ class Printf(object):
     @staticmethod
     def track(data: Track, stream: StreamUrl = None):
         tb = Printf.__gettable__([LANG.select.MODEL_TRACK_PROPERTY, LANG.select.VALUE], [
-            [LANG.select.MODEL_TITLE, data.title],
-            ["ID", data.id],
             [LANG.select.MODEL_ARTIST, data.artist.name],
             [LANG.select.MODEL_ALBUM, data.album.title],
+            [LANG.select.MODEL_TITLE, data.title],
+            [LANG.select.MODEL_TRACK_NUMBER, data.trackNumber],
+            ["ID", data.id],
             [LANG.select.MODEL_VERSION, data.version],
             [LANG.select.MODEL_EXPLICIT, data.explicit],
             ["Max-Q", data.audioQuality],
