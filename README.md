@@ -39,9 +39,17 @@ While it's available in a docker image, there's currently no way to execute the 
 - ✅ Sync all user's playlists
 - ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
 - ✅ generate .m3u and .m3u8 playlist files
+- ✅ migrate json config file to sqlite db
+- replace classes with functions as it's not needed and makes the code less readable
+    - language.py
+    - tidal.py
+    - settings.py
+    - model.py
+- more efficient scanning and resumable download (permanent db to store stream url of missing files)
 - create and sync Plex Playlist from Tidal Playlists (using PPP)
 - create an api webserver and control center
-- Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it)
+- split monolith into workers with cron jobs
+- Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
 
 ## 🎨 Libraries and reference
 

@@ -77,11 +77,9 @@ class Printf(object):
             [LANG.select.SETTING_ALBUM_FOLDER_FORMAT, data.albumFolderFormat],
             [LANG.select.SETTING_PLAYLIST_FOLDER_FORMAT, data.playlistFolderFormat],
             [LANG.select.SETTING_TRACK_FILE_FORMAT, data.trackFileFormat],
-            #[LANG.select.SETTING_VIDEO_FILE_FORMAT, data.videoFileFormat],
             
             #settings - quality
             [LANG.select.SETTING_AUDIO_QUALITY, data.audioQuality],
-            #[LANG.select.SETTING_VIDEO_QUALITY, data.videoQuality],
             
             #settings - else
             [LANG.select.SETTING_USE_PLAYLIST_FOLDER, data.usePlaylistFolder],
@@ -89,7 +87,6 @@ class Printf(object):
             [LANG.select.SETTING_SHOW_PROGRESS, data.showProgress],
             [LANG.select.SETTING_SHOW_TRACKINFO, data.showTrackInfo],
             [LANG.select.SETTING_SAVE_ALBUMINFO, data.saveAlbumInfo],
-            #[LANG.select.SETTING_DOWNLOAD_VIDEOS, data.downloadVideos],
             [LANG.select.SETTING_SAVE_COVERS, data.saveCovers],
             [LANG.select.SETTING_INCLUDE_EP, data.includeEP],
             [LANG.select.SETTING_LANGUAGE, LANG.getLangName(data.language)],
@@ -190,9 +187,11 @@ class Printf(object):
             [LANG.select.MODEL_TITLE, data.title],
             ["ID", data.id],
             [LANG.select.MODEL_TRACK_NUMBER, data.numberOfTracks],
-            #[LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
             [LANG.select.MODEL_RELEASE_DATE, data.releaseDate],
             [LANG.select.MODEL_VERSION, data.version],
+            [LANG.select.MODEL_TYPE, data.type],
+            ["Max-Q", data.audioQuality],
+            ["Modes", data.audioModes],
             [LANG.select.MODEL_EXPLICIT, data.explicit],
         ])
         print(tb)
@@ -222,24 +221,6 @@ class Printf(object):
                      "version:" + str(data.version) + "\n" + \
                      "==================================")
 
-    """ @staticmethod
-    def video(data: Video, stream: VideoStreamUrl = None):
-        tb = Printf.__gettable__([LANG.select.MODEL_VIDEO_PROPERTY, LANG.select.VALUE], [
-            [LANG.select.MODEL_TITLE, data.title],
-            [LANG.select.MODEL_ALBUM, data.album.title if data.album != None else None],
-            [LANG.select.MODEL_VERSION, data.version],
-            [LANG.select.MODEL_EXPLICIT, data.explicit],
-            ["Max-Q", data.quality],
-        ])
-        if stream is not None:
-            tb.add_row(["Get-Q", str(stream.resolution)])
-            tb.add_row(["Get-Codec", str(stream.codec)])
-        print(tb)
-        logging.info("====video " + str(data.id) + "====\n" +
-                     "title:" + data.title + "\n" +
-                     "version:" + str(data.version) + "\n" +
-                     "==================================") """
-
     @staticmethod
     def artist(data: Artist, num):
         tb = Printf.__gettable__([LANG.select.MODEL_ARTIST_PROPERTY, LANG.select.VALUE], [
@@ -259,13 +240,11 @@ class Printf(object):
         tb = Printf.__gettable__([LANG.select.MODEL_PLAYLIST_PROPERTY, LANG.select.VALUE], [
             [LANG.select.MODEL_TITLE, data.title],
             [LANG.select.MODEL_TRACK_NUMBER, data.numberOfTracks],
-            #[LANG.select.MODEL_VIDEO_NUMBER, data.numberOfVideos],
         ])
         print(tb)
         logging.info("====playlist " + str(data.uuid) + "====\n" +
                      "title:" + data.title + "\n" +
                      "track num:" + str(data.numberOfTracks) + "\n" +
-                     "video num:" + str(data.numberOfVideos) + "\n" +
                      "==================================")
 
     @staticmethod
@@ -273,7 +252,6 @@ class Printf(object):
         tb = Printf.__gettable__([LANG.select.MODEL_PLAYLIST_PROPERTY, LANG.select.VALUE], [
             [LANG.select.MODEL_ID, data.id],
             [LANG.select.MODEL_TRACK_NUMBER, len(data.tracks)],
-            #[LANG.select.MODEL_VIDEO_NUMBER, len(data.videos)],
         ])
         print(tb)
         logging.info("====Mix " + str(data.id) + "====\n" +

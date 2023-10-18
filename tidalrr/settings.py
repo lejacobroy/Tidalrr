@@ -14,6 +14,8 @@ import base64
 
 from lang.language import *
 from enums import *
+from database.database import *
+from os.path import exists
 
 
 class Settings(aigpy.model.ModelBase):
@@ -26,7 +28,6 @@ class Settings(aigpy.model.ModelBase):
     showProgress = True
     showTrackInfo = True
     saveAlbumInfo = True
-    #downloadVideos = True
     multiThread = True
     downloadDelay = True
     lidarrURL = ''
@@ -34,12 +35,10 @@ class Settings(aigpy.model.ModelBase):
 
     downloadPath = "./download/"
     audioQuality = AudioQuality.Max
-    #videoQuality = VideoQuality.P360
     usePlaylistFolder = True
     albumFolderFormat = R"{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}"
     playlistFolderFormat = R"Playlist/{PlaylistName} [{PlaylistUUID}]"
     trackFileFormat = R"{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}"
-    #videoFileFormat = R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}"
 
     def getDefaultPathFormat(self, type: Type):
         if type == Type.Album:
@@ -48,8 +47,6 @@ class Settings(aigpy.model.ModelBase):
             return self.playlistFolderFormat
         elif type == Type.Track:
             return self.trackFileFormat
-        """ elif type == Type.Video:
-            return R"{VideoNumber} - {ArtistName} - {VideoTitle}{ExplicitFlag}" """
         return ""
 
     def getAudioQuality(self, value):
@@ -57,23 +54,26 @@ class Settings(aigpy.model.ModelBase):
             if item.name == value:
                 return item
         return self.audioQuality
-
-    """ def getVideoQuality(self, value):
-        for item in VideoQuality:
-            if item.name == value:
-                return item
-        return VideoQuality.P360 """
     
-    def read(self, path):
-        self._path_ = path
-        txt = aigpy.file.getContent(self._path_)
-        if len(txt) > 0:
-            data = json.loads(txt)
-            if aigpy.model.dictToModel(data, self) is None:
-                return
+    def read(self):
+        settings = getSettings()
+        #self._path_ = path
+        #txt = aigpy.file.getContent(self._path_)
+        #if len(txt) > 0:
+        #    data = json.loads(txt)
+        if aigpy.model.dictToModel(settings, self) is None:
+            # migrate old settings
+            path = os.path.join(os.path.dirname(__file__))+'/config/tidalrr.json'
+            if exists(path):
+                txt = aigpy.file.getContent(path)
+                if len(txt) > 0:
+                    data = json.loads(txt)
+                    if aigpy.model.dictToModel(data, self) is None:
+                        return
+                    else:
+                        self.save()
 
         self.audioQuality = self.getAudioQuality(self.audioQuality)
-        #self.videoQuality = self.getVideoQuality(self.videoQuality)
 
         if self.albumFolderFormat is None:
             self.albumFolderFormat = self.getDefaultPathFormat(Type.Album)
@@ -81,8 +81,6 @@ class Settings(aigpy.model.ModelBase):
             self.trackFileFormat = self.getDefaultPathFormat(Type.Track)
         if self.playlistFolderFormat is None:
             self.playlistFolderFormat = self.getDefaultPathFormat(Type.Playlist)
-        """ if self.videoFileFormat is None:
-            self.videoFileFormat = self.getDefaultPathFormat(Type.Video) """
         if self.apiKeyIndex is None:
             self.apiKeyIndex = 0
         
@@ -91,9 +89,9 @@ class Settings(aigpy.model.ModelBase):
     def save(self):
         data = aigpy.model.modelToDict(self)
         data['audioQuality'] = self.audioQuality.name
-        #data['videoQuality'] = self.videoQuality.name
-        txt = json.dumps(data)
-        aigpy.file.write(self._path_, txt, 'w+')
+        #txt = json.dumps(data)
+        #aigpy.file.write(self._path_, txt, 'w+')
+        setSettings(data)
 
 
 class TokenSettings(aigpy.model.ModelBase):
@@ -116,17 +114,28 @@ class TokenSettings(aigpy.model.ModelBase):
         except:
             return string
 
-    def read(self, path):
-        self._path_ = path
-        txt = aigpy.file.getContent(self._path_)
-        if len(txt) > 0:
+    def read(self):
+        settings = getSettings()
+        #self._path_ = path
+        #txt = aigpy.file.getContent(self._path_)
+        path = os.path.join(os.path.dirname(__file__))+'/config/tidalrr.token.json'
+        if len(settings['tidalToken']) > 0:
+            data = json.loads(self.__decode__(settings['tidalToken']))
+            aigpy.model.dictToModel(data, self)
+        elif exists(path):
+            # migrate old token file
+            txt = aigpy.file.getContent(self._path_)
             data = json.loads(self.__decode__(txt))
             aigpy.model.dictToModel(data, self)
+            self.save()
 
     def save(self):
         data = aigpy.model.modelToDict(self)
-        txt = json.dumps(data)
-        aigpy.file.write(self._path_, self.__encode__(txt), 'wb')
+        #txt = json.dumps(data)
+        #aigpy.file.write(self._path_, self.__encode__(txt), 'wb')
+        settings = getSettings()
+        settings['tidalToken'] = self.__encode__(json.dumps(data))
+        setSettings(settings)
 
 
 # Singleton

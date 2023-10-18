@@ -34,8 +34,6 @@ def start_album(obj: Album):
     if SETTINGS.saveCovers and obj.cover is not None:
         downloadCover(obj)
     downloadTracks(tracks, obj)
-"""     if SETTINGS.downloadVideos:
-        downloadVideos(videos, obj) """
 
 def start_album_search(obj: Album):
     print(obj.title)
@@ -56,11 +54,6 @@ def start_track(obj: Track):
     if SETTINGS.saveCovers:
         downloadCover(album)
     downloadTrack(obj, album)
-
-
-""" def start_video(obj: Video):
-    downloadVideo(obj, obj.album) """
-
 
 def start_artist(obj: Artist):
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
@@ -105,7 +98,6 @@ def start_playlist(obj: Playlist):
 def start_mix(obj: Mix):
     Printf.mix(obj)
     downloadTracks(obj.tracks, None, None)
-"""     downloadVideos(obj.videos, None, None) """
 
 
 def start_file(string):
@@ -188,10 +180,6 @@ def changePathSettings():
         LANG.select.CHANGE_TRACK_FILE_FORMAT,
         SETTINGS.trackFileFormat,
         SETTINGS.getDefaultPathFormat(Type.Track))
-    """ SETTINGS.videoFileFormat = Printf.enterFormat(
-        LANG.select.CHANGE_VIDEO_FILE_FORMAT,
-        SETTINGS.videoFileFormat,
-        SETTINGS.getDefaultPathFormat(Type.Video)) """
     SETTINGS.save()
 
 
@@ -201,10 +189,6 @@ def changeQualitySettings():
         int(Printf.enterLimit(LANG.select.CHANGE_AUDIO_QUALITY,
                               LANG.select.MSG_INPUT_ERR,
                               ['0', '1', '2', '3', '4'])))
-    """ SETTINGS.videoQuality = VideoQuality(
-        int(Printf.enterLimit(LANG.select.CHANGE_VIDEO_QUALITY,
-                              LANG.select.MSG_INPUT_ERR,
-                              ['1080', '720', '480', '360']))) """
     SETTINGS.save()
 
 
@@ -216,7 +200,6 @@ def changeSettings():
     SETTINGS.includeEP = Printf.enterBool(LANG.select.CHANGE_INCLUDE_EP)
     SETTINGS.saveCovers = Printf.enterBool(LANG.select.CHANGE_SAVE_COVERS)
     SETTINGS.saveAlbumInfo = Printf.enterBool(LANG.select.CHANGE_SAVE_ALBUM_INFO)
-    #SETTINGS.downloadVideos = Printf.enterBool(LANG.select.CHANGE_DOWNLOAD_VIDEOS)
     SETTINGS.lyricFile = Printf.enterBool(LANG.select.CHANGE_ADD_LRC_FILE)
     SETTINGS.multiThread = Printf.enterBool(LANG.select.CHANGE_MULITHREAD_DOWNLOAD)
     SETTINGS.usePlaylistFolder = Printf.enterBool(LANG.select.SETTING_USE_PLAYLIST_FOLDER + "('0'-No,'1'-Yes):")

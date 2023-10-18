@@ -16,6 +16,7 @@ import aigpy
 import base64
 import requests
 from xml.etree import ElementTree
+import pandas as pd
 
 from model import *
 from enums import *
@@ -93,25 +94,6 @@ class TidalAPI(object):
                 break
             params['offset'] += num
         return ret
-
-    """ def __getResolutionList__(self, url):
-        ret = []
-        txt = requests.get(url).content.decode('utf-8')
-        # array = txt.split("#EXT-X-STREAM-INF")
-        array = txt.split("#")
-        for item in array:
-            if "RESOLUTION=" not in item:
-                continue
-            if "EXT-X-STREAM-INF:" not in item:
-                continue
-            stream = VideoStreamUrl()
-            stream.codec = aigpy.string.getSub(item, "CODECS=\"", "\"")
-            stream.m3u8Url = "http" + aigpy.string.getSubOnlyStart(item, "http").strip()
-            stream.resolution = aigpy.string.getSub(item, "RESOLUTION=", "http").strip()
-            stream.resolution = stream.resolution.split(',')[0]
-            stream.resolutions = stream.resolution.split("x")
-            ret.append(stream)
-        return ret """
 
     def __post__(self, path, data, auth=None, urlpre='https://auth.tidal.com/v1/oauth2'):
         for index in range(3):
@@ -242,9 +224,6 @@ class TidalAPI(object):
     def getTrack(self, id) -> Track:
         return aigpy.model.dictToModel(self.__get__('tracks/' + str(id)), Track())
 
-    """ def getVideo(self, id) -> Video:
-        return aigpy.model.dictToModel(self.__get__('videos/' + str(id)), Video()) """
-
     def getMix(self, id) -> Mix:
         mix = Mix()
         mix.id = id
@@ -258,8 +237,6 @@ class TidalAPI(object):
             return self.getArtist(id)
         if type == Type.Track:
             return self.getTrack(id)
-        """ if type == Type.Video:
-            return self.getVideo(id) """
         if type == Type.Playlist:
             return self.getPlaylist(id)
         if type == Type.Mix:
@@ -280,8 +257,6 @@ class TidalAPI(object):
     def getSearchResultItems(self, result: SearchResult, type: Type):
         if type == Type.Track:
             return result.tracks.items
-        """ if type == Type.Video:
-            return result.videos.items """
         if type == Type.Album:
             return result.albums.items
         if type == Type.Artist:
@@ -305,23 +280,49 @@ class TidalAPI(object):
             raise Exception("invalid Type!")
 
         tracks = []
-        #videos = []
         for item in data:
             if item['type'] == 'track' and item['item']['streamReady']:
                 tracks.append(aigpy.model.dictToModel(item['item'], Track()))
-            """ else:
-                videos.append(aigpy.model.dictToModel(item['item'], Video())) """
         return tracks
+
+    def orderHighQAlbums(self, data=[]) -> [Album()]:
+        print('data')
+        for item in data:
+            print(item['title'], item['audioQuality'])
+        for i, item in enumerate(data):
+            data[i]['nquality'] = 0
+            if item['audioQuality'] == "HIGH":
+                data[i]['nquality'] = 1
+            elif item['audioQuality'] == "HI_RES":
+                data[i]['nquality'] = 2
+            elif item['audioQuality'] == "LOSSLESS":
+                data[i]['nquality'] = 3
+            elif item['audioQuality'] == "HI_RES_LOSSLESS":
+                data[i]['nquality'] = 4
+
+        # get a list of duplicated album.name
+        df = pd.DataFrame(data)
+        df.sort_values(by=['title', 'nquality'], inplace=True)
+        df.drop_duplicates(subset=['title'], keep='last', inplace=True)
+        new_albums = df.to_dict("records")
+        print('new_albums')
+        for item in new_albums:
+                print(item['title'], item['audioQuality'])
+        albums = list(aigpy.model.dictToModel(item, Album()) for item in new_albums)
+        return albums
 
     def getArtistAlbums(self, id, includeEP=False):
         data = self.__getItems__(f'artists/{str(id)}/albums')
-        albums = list(aigpy.model.dictToModel(item, Album()) for item in data)
+        albums = self.orderHighQAlbums(data)
+
         if not includeEP:
             return albums
 
         data = self.__getItems__(f'artists/{str(id)}/albums', {"filter": "EPSANDSINGLES"})
-        albums += list(aigpy.model.dictToModel(item, Album()) for item in data)
+        albums += self.orderHighQAlbums(data)
+
         return albums
+    
     # from https://github.com/Dniel97/orpheusdl-tidal/blob/master/interface.py#L582
     def parse_mpd(self, xml: bytes) -> list:
         # Removes default namespace definition, don't do that!
@@ -416,25 +417,6 @@ class TidalAPI(object):
         #     manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
         raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType)
 
-    """ def getVideoStreamUrl(self, id, quality: VideoQuality):
-        paras = {"videoquality": "HIGH", "playbackmode": "STREAM", "assetpresentation": "FULL"}
-        data = self.__get__(f'videos/{str(id)}/playbackinfopostpaywall', paras)
-        resp = aigpy.model.dictToModel(data, StreamRespond())
-
-        if "vnd.tidal.emu" in resp.manifestMimeType:
-            manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
-            array = self.__getResolutionList__(manifest['urls'][0])
-            icmp = int(quality.value)
-            index = 0
-            for item in array:
-                if icmp <= int(item.resolutions[1]):
-                    break
-                index += 1
-            if index >= len(array):
-                index = len(array) - 1
-            return array[index]
-        raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType) """
-
     def getTrackContributors(self, id):
         return self.__get__(f'tracks/{str(id)}/contributors')
 
@@ -465,9 +447,6 @@ class TidalAPI(object):
                 atmos = True
             if data.explicit is True:
                 explicit = True
-        """ if type == Type.Video:
-            if data.explicit is True:
-                explicit = True """
         if not master and not atmos and not explicit:
             return ""
         array = []

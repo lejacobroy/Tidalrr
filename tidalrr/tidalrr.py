@@ -15,6 +15,7 @@ from events import *
 from settings import *
 from lidarr import *
 from webserver import *
+from tidal import *
 
 def mainCommand():
     try:
@@ -101,13 +102,13 @@ def injectPlaylist(playlistPath):
     Printf.success('Injected playlist X into Spark.')
 
 def startWebserver():
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 3000))
     app = tidalrrWeb()
     app.run(host="0.0.0.0", port=port)
 
 def main():
-    SETTINGS.read(getProfilePath())
-    TOKEN.read(getTokenPath())
+    SETTINGS.read()
+    TOKEN.read()
     TIDAL_API.apiKey = apiKey.getItem(SETTINGS.apiKeyIndex)
     
     #Printf.logo()

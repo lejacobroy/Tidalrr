@@ -202,3 +202,4 @@ tidalrr/config/local_backups
 tidalrr/config/Playlists
 tidalrr/config/PPP
 tidalrr/urls.txt
+tidalrr/database/database.db
