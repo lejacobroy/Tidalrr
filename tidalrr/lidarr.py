@@ -33,7 +33,7 @@ def getMissingAlbums(URL: str, API: str):
         #print(result)
         
         for record in result["records"]:
-            art = Artist()
+            art = Artist
             art.name = record['artist']['artistName']
 
             alb = Album()

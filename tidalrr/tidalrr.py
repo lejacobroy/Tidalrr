@@ -31,7 +31,7 @@ def mainCommand():
             Printf.usage()
             return
         if opt in ('-u', '--url'):
-            use_url(val)
+            start(val)
             continue
         if opt in ('-a', '--album'):
             use_text(val)
@@ -54,7 +54,7 @@ def mainCommand():
             for line in Lines:
                 count += 1
                 Printf.info("Url #{}: {}".format(count, line.strip()))
-                use_url(line.strip())
+                start(line.strip())
             continue
         if opt in ('-o', '--output'):
             SETTINGS.downloadPath = val
@@ -65,10 +65,6 @@ def mainCommand():
             SETTINGS.save()
             continue
 
-
-def use_url(url):
-    start(url)
-
 def use_text(txt):
     Printf.info(LANG.select.SETTING_DOWNLOAD_PATH + ':' + SETTINGS.downloadPath)
     alb = Album()
@@ -77,7 +73,7 @@ def use_text(txt):
 
 def syncLidarr():
     Printf.info(LANG.select.SETTING_DOWNLOAD_PATH + ':' + SETTINGS.downloadPath)
-    albums = [Album()]
+    albums = [Album]
     albums = getMissingAlbums(SETTINGS.lidarrURL, SETTINGS.lidarrAPI)
     for a in albums :
         if a.title is not None:    
@@ -107,6 +103,7 @@ def startWebserver():
     app.run(host="0.0.0.0", port=port)
 
 def main():
+    #createTables()
     SETTINGS.read()
     TOKEN.read()
     TIDAL_API.apiKey = apiKey.getItem(SETTINGS.apiKeyIndex)

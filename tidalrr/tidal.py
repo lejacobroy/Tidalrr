@@ -13,6 +13,7 @@ import random
 import re
 import time
 import aigpy
+import datetime
 import base64
 import requests
 from xml.etree import ElementTree
@@ -22,10 +23,66 @@ from model import *
 from enums import *
 from settings import *
 
+
 # SSL Warnings | retry number
 requests.packages.urllib3.disable_warnings()
 requests.adapters.DEFAULT_RETRIES = 5
 
+def __fixPath__(name: str):
+    return aigpy.path.replaceLimitChar(name, '-').strip()
+
+def __getYear__(releaseDate: str):
+    if releaseDate is None or releaseDate == '':
+        return ''
+    return aigpy.string.getSubOnlyEnd(releaseDate, '-')
+
+def __getDurationStr__(seconds):
+    time_string = str(datetime.timedelta(seconds=seconds))
+    if time_string.startswith('0:'):
+        time_string = time_string[2:]
+    return time_string
+
+def getArtistsName(artists=[]):
+        array = []
+        for item in artists:
+            #print(item['name'])
+            array.append(item['name'])
+        return ", ".join(array)
+
+def getAlbumPath(album=Album):
+    artistName = __fixPath__(getArtistsName(album.artists))
+    albumArtistName = __fixPath__(getTidalArtist(album.artist).name) if album.artist is not None else ""
+    # album folder pre: [ME]
+    flag = TIDAL_API.getFlag(album, Type.Album, True, "")
+    if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
+        flag = flag.replace("M", "")
+    if flag != "":
+        flag = "[" + flag + "] "
+    # album and addyear
+    albumName = __fixPath__(album.title)
+    year = __getYear__(album.releaseDate)
+
+    # retpath
+    retpath = SETTINGS.albumFolderFormat
+    if retpath is None or len(retpath) <= 0:
+        retpath = SETTINGS.getDefaultAlbumFolderFormat()
+    retpath = retpath.replace(R"{ArtistName}", artistName)
+    retpath = retpath.replace(R"{AlbumArtistName}", albumArtistName)
+    retpath = retpath.replace(R"{Flag}", flag)
+    retpath = retpath.replace(R"{AlbumID}", str(album.id))
+    retpath = retpath.replace(R"{AlbumYear}", year)
+    retpath = retpath.replace(R"{AlbumTitle}", albumName)
+    retpath = retpath.replace(R"{AudioQuality}", album.audioQuality)
+    retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
+    retpath = retpath.replace(R"{Duration}", __getDurationStr__(album.duration))
+    retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
+    retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
+    retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
+    retpath = retpath.replace(R"{RecordType}", album.type)
+    retpath = retpath.replace(R"{None}", "")
+    retpath = retpath.strip()
+
+    return f"{SETTINGS.downloadPath}/{retpath}"
 
 class TidalAPI(object):
     def __init__(self):
@@ -38,43 +95,37 @@ class TidalAPI(object):
         header = {'authorization': f'Bearer {self.key.accessToken}'}
         params['countryCode'] = self.key.countryCode
         errmsg = "Get operation err!"
-        for index in range(0, 3):
-            try:
-                #print(urlpre + path, header, params)
-                respond = requests.get(urlpre + path, headers=header, params=params)
-                #print(respond)
-                if respond.url.find("playbackinfopostpaywall") != -1 and SETTINGS.downloadDelay is not False:
-                    # random sleep between 0.5 and 5 seconds and print it
-                    sleep_time = random.randint(500, 2000) / 1000
-                    #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
-                    time.sleep(sleep_time)
-    
-                if respond.status_code == 429:
-                    print('Too many requests, waiting for 20 seconds...')
-                    # Loop countdown 20 seconds and print the remaining time
-                    for i in range(20, 0, -1):
-                        time.sleep(1)
-                        #print(i, end=' ')
-                    #print('')
-                    continue
 
-                result = json.loads(respond.text)
-                if 'status' not in result:
-                    #print(result)
-                    """ if result["totalNumberOfItems"] > 0:
-                        print('TEST')
-                        print('TEST',result["items"][0])
-                        return result.items[0] """
-                    return result
+        #print(urlpre + path, header, params)
+        respond = requests.get(urlpre + path, headers=header, params=params)
+        #print(respond)
+        if respond.url.find("playbackinfopostpaywall") != -1 and SETTINGS.downloadDelay is not False:
+            # random sleep between 0.5 and 5 seconds and print it
+            sleep_time = random.randint(500, 2000) / 1000
+            #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+            time.sleep(sleep_time)
 
-                if 'userMessage' in result and result['userMessage'] is not None:
-                    errmsg += result['userMessage']
-                break
-            except Exception as e:
-                if index >= 3:
-                    errmsg += respond.text
+        if respond.status_code == 429:
+            print('Too many requests, waiting for 20 seconds...')
+            # Loop countdown 20 seconds and print the remaining time
+            for i in range(20, 0, -1):
+                time.sleep(1)
+                #print(i, end=' ')
+            #print('')
+            
 
-        raise Exception(errmsg)
+        result = json.loads(respond.text)
+        if 'status' not in result:
+            #print(result)
+            """ if result["totalNumberOfItems"] > 0:
+                print('TEST')
+                print('TEST',result["items"][0])
+                return result.items[0] """
+            return result
+
+        if 'userMessage' in result and result['userMessage'] is not None:
+            errmsg += result['userMessage']
+        
 
     def __getItems__(self, path, params={}):
         params['limit'] = 50
@@ -97,12 +148,12 @@ class TidalAPI(object):
 
     def __post__(self, path, data, auth=None, urlpre='https://auth.tidal.com/v1/oauth2'):
         for index in range(3):
-            try:
-                result = requests.post(urlpre+path, data=data, auth=auth, verify=False).json()
-                return result
-            except Exception as e:
-                if index == 2:
-                    raise e
+            #try:
+            result = requests.post(urlpre+path, data=data, auth=auth, verify=False).json()
+            return result
+            #except Exception as e:
+            #    if index == 2:
+            #        raise e
 
     def getDeviceCode(self) -> str:
         data = {
@@ -184,8 +235,32 @@ class TidalAPI(object):
         self.key.accessToken = accessToken
         return
 
+    def convertToAlbum(self, album) -> Album:
+        albumType = Album(
+           id= album['id'],
+           title= album['title'],
+           releaseDate= album['releaseDate'],
+           type= album['type'],
+           cover= album['cover'],
+           explicit= album['explicit'],
+           audioQuality= album['audioQuality'],
+           audioModes= album['audioModes'],
+           path= '',
+           artist= album['artist']['id'],
+           artists= album['artists'],
+           url= album['url'],
+           duration= album['duration'],
+           numberOfTracks=  album['numberOfTracks'],
+           numberOfVolumes= album['numberOfVolumes'],
+           version= album['version']
+        )
+        albumType.path = getAlbumPath(albumType)
+
+        return albumType
+
     def getAlbum(self, id) -> Album:
-        return aigpy.model.dictToModel(self.__get__('albums/' + str(id)), Album())
+        album = self.__get__('albums/' + str(id))
+        return self.convertToAlbum(album)
     
     def searchAlbum(self, obj) -> Album:
         #print(aigpy.model.modelToDict(obj))
@@ -201,9 +276,9 @@ class TidalAPI(object):
         if len(output_dict) == 0:
             print('no album matched')
             return
-        return aigpy.model.dictToModel(output_dict[0] , Album())
+        return self.convertToAlbum(output_dict[0])
     
-    def getPlaylistsAndFavorites(self, userId=None) -> Playlist():
+    def getPlaylistsAndFavorites(self, userId=None) -> Playlist:
         # Transform json input to python objects
         input_dict = self.__get__(str(self.key.userId)+'/playlistsAndFavoritePlaylists', {}, 'https://api.tidalhifi.com/v1/users/')["items"]
         playlists = [Playlist()]
@@ -211,18 +286,51 @@ class TidalAPI(object):
             print('no playlists')
             return
         for item in input_dict:
-            playlists.append(aigpy.model.dictToModel(item["playlist"], Playlist()))
+            playlists.append(Playlist(*item["playlist"]))
         return playlists
 
 
     def getPlaylist(self, id) -> Playlist:
-        return aigpy.model.dictToModel(self.__get__('playlists/' + str(id)), Playlist())
+        return Playlist(*self.__get__('playlists/' + str(id)))
 
+    def convertToArtist(self, artist) -> Artist:
+        artistType = Artist(
+            id= artist['id'],
+            name= artist['name'],
+            url= artist['url']
+        )
+        return artistType
+    
     def getArtist(self, id) -> Artist:
-        return aigpy.model.dictToModel(self.__get__('artists/' + str(id)), Artist())
+        artist = self.__get__('artists/' + str(id))
+        return self.convertToArtist(artist)
+
+    def convertToTrack(self, track) -> Track:
+        trackType = Track(
+            id= track['id'],
+            title= track['title'],
+            duration= track['duration'],
+            trackNumber= track['trackNumber'],
+            volumeNumber= track['volumeNumber'],
+            trackNumberOnPlaylist= '',
+            version= track['version'],
+            isrc= track['isrc'],
+            explicit= track['explicit'],
+            audioQuality= track['audioQuality'],
+            audioModes= track['audioModes'],
+            copyRight= track['copyright'],
+            artist= track['artist']['id'],
+            artists= track['artists'],
+            album= track['album']['id'],
+            allowStreaming='',
+            playlist='',
+            url= track['url'],
+        )
+        return trackType
 
     def getTrack(self, id) -> Track:
-        return aigpy.model.dictToModel(self.__get__('tracks/' + str(id)), Track())
+        track = self.__get__('tracks/' + str(id))
+        return self.convertToTrack(track)
 
     def getMix(self, id) -> Mix:
         mix = Mix()
@@ -232,6 +340,7 @@ class TidalAPI(object):
 
     def getTypeData(self, id, type: Type):
         if type == Type.Album:
+            print('getTypeData', id)
             return self.getAlbum(id)
         if type == Type.Artist:
             return self.getArtist(id)
@@ -278,17 +387,13 @@ class TidalAPI(object):
             data = self.__getItems__('mixes/' + str(id) + '/items')
         else:
             raise Exception("invalid Type!")
-
         tracks = []
         for item in data:
             if item['type'] == 'track' and item['item']['streamReady']:
-                tracks.append(aigpy.model.dictToModel(item['item'], Track()))
+                tracks.append(self.convertToTrack(item['item']))
         return tracks
 
-    def orderHighQAlbums(self, data=[]) -> [Album()]:
-        print('data')
-        for item in data:
-            print(item['title'], item['audioQuality'])
+    def orderHighQAlbums(self, data=[]) -> [Album]:
         for i, item in enumerate(data):
             data[i]['nquality'] = 0
             if item['audioQuality'] == "HIGH":
@@ -305,10 +410,8 @@ class TidalAPI(object):
         df.sort_values(by=['title', 'nquality'], inplace=True)
         df.drop_duplicates(subset=['title'], keep='last', inplace=True)
         new_albums = df.to_dict("records")
-        print('new_albums')
-        for item in new_albums:
-                print(item['title'], item['audioQuality'])
-        albums = list(aigpy.model.dictToModel(item, Album()) for item in new_albums)
+
+        albums = list(self.convertToAlbum(item) for item in new_albums)
         return albums
 
     def getArtistAlbums(self, id, includeEP=False):
@@ -427,14 +530,10 @@ class TidalAPI(object):
 
     def getCoverData(self, sid):
         url = self.getCoverUrl(sid)
-        try:
-            return requests.get(url).content
-        except:
-            return ''
-
-    def getArtistsName(self, artists=[]):
-        array = list(item.name for item in artists)
-        return ", ".join(array)
+        #try:
+        return requests.get(url).content
+        #except:
+        #    return ''
 
     def getFlag(self, data, type: Type, short=True, separator=" / "):
         master = False
@@ -475,16 +574,16 @@ class TidalAPI(object):
 
         obj = None
         etype, sid = self.parseUrl(string)
+        print(etype, sid)
         for index, item in enumerate(Type):
             if etype != Type.Null and etype != item:
                 continue
             if item == Type.Null:
                 continue
-            try:
-                obj = self.getTypeData(sid, item)
-                return item, obj
-            except:
-                continue
+            
+            obj = self.getTypeData(sid, item)
+            return item, obj
+        
 
         raise Exception("No result.")
 

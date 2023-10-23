@@ -9,6 +9,7 @@
 @Desc    :   
 '''
 import aigpy
+from dataclasses import dataclass
 
 class StreamUrl(aigpy.model.ModelBase):
     def __init__(self) -> None:
@@ -20,66 +21,78 @@ class StreamUrl(aigpy.model.ModelBase):
         self.encryptionKey = None
         self.soundQuality = None
 
-class Artist(aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.id = None
-        self.name = None
-        self.type = None
-        self.picture = None
+@dataclass
+class Queue:
+    url : str
+    type : str
+    login : bool
+    id : int
+    path : str
+    encryptionKey: str
 
+@dataclass
+class File:
+    description: str
+    type: str
+    id : int
+    path : str
 
-class Album(aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.id = None
-        self.title = None
-        self.duration = 0
-        self.numberOfTracks = 0
-        self.numberOfVolumes = 0
-        self.releaseDate = None
-        self.type = None
-        self.version = None
-        self.cover = None
-        self.explicit = False
-        self.audioQuality = None
-        self.audioModes = None
-        self.path = None
-        self.artist = Artist()
-        self.artists = Artist()
+@dataclass
+class Artist:
+    id: int
+    name : str
+    url : str
 
+@dataclass
+class Album:
+    id : int
+    title : str
+    releaseDate : str
+    type : str
+    cover : str
+    explicit : bool
+    audioQuality : str
+    audioModes : str
+    path : str
+    artist : Artist
+    artists : Artist
+    url : str
+    duration : int = 0
+    numberOfTracks : int = 0
+    numberOfVolumes : int = 0
+    version : int = 0
 
-class Playlist(aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.uuid = None
-        self.title = None
-        self.numberOfTracks = 0
-        self.description = None
-        self.duration = 0
-        self.image = None
-        self.squareImage = None
+@dataclass
+class Playlist:
+    uuid : str
+    title : str
+    description : str
+    image : str
+    squareImage : str
+    url : str
+    numberOfTracks : int = 0
+    duration : int = 0
 
-
-class Track(aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.id = None
-        self.title = None
-        self.duration = 0
-        self.trackNumber = 0
-        self.volumeNumber = 0
-        self.trackNumberOnPlaylist = 0
-        self.version = None
-        self.isrc = None
-        self.explicit = False
-        self.audioQuality = None
-        self.copyRight = None
-        self.artist = Artist()
-        self.artists = Artist()
-        self.album = Album()
-        self.allowStreaming = False
-        self.playlist = None
+@dataclass
+class Track:
+    id : int
+    title : str
+    duration : int
+    trackNumber : int
+    volumeNumber : int
+    trackNumberOnPlaylist : int
+    version : str
+    isrc : str
+    explicit : bool
+    audioQuality : str
+    audioModes: None
+    copyRight: str
+    artist : Artist
+    artists : Artist
+    album : Album
+    allowStreaming : None
+    playlist : None
+    url : str
 
 class Mix(aigpy.model.ModelBase):
     def __init__(self) -> None:

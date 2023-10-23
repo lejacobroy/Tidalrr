@@ -21,12 +21,14 @@
 import sqlite3
 import os
 from model import *
+import json
 
 database_path = os.path.abspath(os.path.dirname(__file__))+'/database.db'
+schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
 def createTables():
     connection = sqlite3.connect(database_path)
-    with open('schema.sql') as f:
+    with open(schema_path) as f:
         connection.executescript(f.read())
     cur = connection.cursor()
     cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -116,3 +118,272 @@ def setSettings(settings=Settings()):
                     ))
     connection.commit()
     connection.close()
+
+def setToken(token=str):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("UPDATE settings SET tidalToken = ?",( token, ))
+    connection.commit()
+    connection.close()
+
+def addTidalArtist(artist=Artist):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_artists VALUES (?, ?, ?)",
+                (artist.id, artist.name, artist.url))
+    connection.commit()
+    connection.close()
+
+def convertToArtist(artist) -> Artist:
+        artistType = Artist(
+            id= artist['id'],
+            name= artist['name'],
+            url= artist['url']
+        )
+        return artistType
+
+def getTidalArtists() -> [Artist]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_artists').fetchall()
+    conn.close()
+    new_rows = [Artist]
+    for i, item in enumerate(rows):
+        new_rows.append(convertToArtist(item))
+    return rows
+
+def getTidalArtist(id=int) -> Artist:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT * FROM tidal_artists WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    return convertToArtist(row)
+
+def getArtistsName(artists):
+        print(artists)
+        print(json.loads(artists))
+        array = []
+        for item in json.loads(artists):
+            print(item["name"])
+            array.append(item["name"])
+        print(array)
+        return ", ".join(array)
+
+def addTidalAlbum(album=Album):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_albums VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    album.id,
+                    album.title,
+                    album.duration,
+                    album.numberOfTracks,
+                    album.numberOfVolumes,
+                    album.releaseDate,
+                    album.type,
+                    album.version,
+                    album.cover,
+                    album.explicit,
+                    album.audioQuality,
+                    json.dumps(album.audioModes),
+                    album.artist,
+                    json.dumps(album.artists),
+                    album.url
+                ))
+    connection.commit()
+    connection.close()
+
+def convertToAlbum(album) -> Album:
+    albumType = Album(
+           id= album['id'],
+           title= album['title'],
+           releaseDate= album['releaseDate'],
+           type= album['type'],
+           cover= album['cover'],
+           explicit= album['explicit'],
+           audioQuality= album['audioQuality'],
+           audioModes= album['audioModes'],
+           path= '',
+           artist= album['artist'],
+           artists= album['artists'],
+           url= album['url'],
+           duration= album['duration'],
+           numberOfTracks=  album['numberOfTracks'],
+           numberOfVolumes= album['numberOfVolumes'],
+           version= album['version']
+        )
+    return albumType
+
+def getTidalAlbums() -> [Album]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_albums').fetchall()
+    new_rows = [Album]
+    for i, album in enumerate(rows):
+        new_rows.append(convertToAlbum(album))
+    conn.close()
+    return new_rows
+
+def getTidalAlbum(id=int) -> Album:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT * FROM tidal_albums WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    return convertToAlbum(row)
+
+def addTidalPlaylist(playlist=Playlist):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_playlists VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    playlist.id,
+                    playlist.title,
+                    playlist.duration,
+                    playlist.numberOfTracks,
+                    playlist.description,
+                    playlist.image,
+                    playlist.squareImage,
+                    playlist.url
+                ))
+    connection.commit()
+    connection.close()
+
+def getTidalPlaylists() -> [Playlist]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_playlists').fetchall()
+    conn.close()
+    return rows
+
+def convertToTrack(track) -> Track:
+    trackType = Track(
+        id= track['id'],
+        title= track['title'],
+        duration= track['duration'],
+        trackNumber= track['trackNumber'],
+        volumeNumber= track['volumeNumber'],
+        trackNumberOnPlaylist= '',
+        version= track['version'],
+        isrc= track['isrc'],
+        explicit= track['explicit'],
+        audioQuality= track['audioQuality'],
+        audioModes= track['audioModes'],
+        copyRight= track['copyright'],
+        artist= track['artist'],
+        artists= track['artists'],
+        album= track['album'],
+        allowStreaming='',
+        playlist='',
+        url= track['url'],
+    )
+    return trackType
+
+def addTidalTrack(track=Track):
+    print(track.title)
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_tracks VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    track.id,
+                    track.title,
+                    track.duration,
+                    track.trackNumber,
+                    track.volumeNumber,
+                    track.trackNumberOnPlaylist,
+                    track.version,
+                    track.isrc,
+                    track.explicit,
+                    track.audioQuality,
+                    json.dumps(track.audioModes),
+                    track.copyRight,
+                    track.artist,
+                    json.dumps(track.artists),
+                    track.album,
+                    track.url
+                ))
+    connection.commit()
+    connection.close()
+    print('done')
+
+def getTidalTracks() -> [Track]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_tracks').fetchall()
+    conn.close()
+    new_rows = []
+    for track in rows:
+        new_rows.append(convertToTrack(track))
+    return new_rows
+
+def getTidalTrack(id=int) -> Track:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT * FROM tidal_tracks WHERE id = ?',(id,)).fetchone()
+    conn.close()
+    return convertToTrack(row)
+
+def addTidalQueue(queue=Queue):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_queue VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    queue.url,
+                    queue.type,
+                    queue.login,
+                    queue.id,
+                    queue.path,
+                    queue.encryptionKey
+                ))
+    connection.commit()
+    connection.close()
+
+def convertToQueue(queue) -> Queue:
+    queueType = Queue(
+        id= queue['id'],
+        login= queue['login'],
+        type= queue['type'],
+        path= queue['path'],
+        url= queue['url'],
+        encryptionKey= queue['encryptionKey']
+    )
+    return queueType
+
+def getTidalQueues(type=str) -> [Queue]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    if type == '':
+        rows = conn.execute('SELECT * FROM tidal_queue').fetchall()
+    else:
+        rows = conn.execute('SELECT * FROM tidal_queue WHERE type = ?', (type,)).fetchall()
+    conn.close()
+    queues = []
+    for i, q in enumerate(rows):
+        queues.append(convertToQueue(q))
+    return queues
+
+def delTidalQueue(path=str):
+    conn = sqlite3.connect(database_path)
+    cur = conn.cursor()
+    cur.execute('DELETE FROM tidal_queue WHERE path = ?', (path,))
+    conn.commit()
+    conn.close()
+
+def addFiles(file=File):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO files VALUES (?, ?, ?, ?)",
+                (
+                    file.description,
+                    file.type,
+                    file.id,
+                    file.path
+                ))
+    connection.commit()
+    connection.close()
+
+def getFiles() -> [File]:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM files').fetchall()
+    conn.close()
+    return rows

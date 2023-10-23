@@ -124,7 +124,7 @@ class TokenSettings(aigpy.model.ModelBase):
             aigpy.model.dictToModel(data, self)
         elif exists(path):
             # migrate old token file
-            txt = aigpy.file.getContent(self._path_)
+            txt = aigpy.file.getContent(path)
             data = json.loads(self.__decode__(txt))
             aigpy.model.dictToModel(data, self)
             self.save()
@@ -133,9 +133,9 @@ class TokenSettings(aigpy.model.ModelBase):
         data = aigpy.model.modelToDict(self)
         #txt = json.dumps(data)
         #aigpy.file.write(self._path_, self.__encode__(txt), 'wb')
-        settings = getSettings()
-        settings['tidalToken'] = self.__encode__(json.dumps(data))
-        setSettings(settings)
+        #settings = getSettings()
+        #settings['tidalToken'] = self.__encode__(json.dumps(data))
+        setToken(self.__encode__(json.dumps(data)))
 
 
 # Singleton

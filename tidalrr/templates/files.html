@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Files</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Description</th>
+        <th scope="col">type</th>
+        <th scope="col">id</th>
+        <th scope="col">path</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+            <td>{{ row['description'] }}</td>
+            <td>{{ row['type'] }}</td>
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['path'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

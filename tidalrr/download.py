@@ -68,20 +68,21 @@ def __parseContributors__(roleType, Contributors):
 
 
 def __setMetaData__(track: Track, album: Album, filepath, contributors, lyrics):
+    artist = getTidalArtist(album.artist)
     obj = aigpy.tag.TagTool(filepath)
-    obj.album = track.album.title
+    obj.album = album.title
     obj.title = track.title
     if not aigpy.string.isNull(track.version):
         obj.title += ' (' + track.version + ')'
 
-    obj.artist = list(map(lambda artist: artist.name, track.artists))
+    obj.artist = artist.name
     obj.copyright = track.copyRight
     obj.tracknumber = track.trackNumber
     obj.discnumber = track.volumeNumber
     obj.composer = __parseContributors__('Composer', contributors)
     obj.isrc = track.isrc
 
-    obj.albumartist = list(map(lambda artist: artist.name, album.artists))
+    obj.albumartist = artist.name
     obj.date = album.releaseDate
     obj.totaldisc = album.numberOfVolumes
     obj.lyrics = lyrics
@@ -96,10 +97,21 @@ def downloadCover(album):
         return
     path = getAlbumPath(album) + '/cover.jpg'
     url = TIDAL_API.getCoverUrl(album.cover)
-    aigpy.net.downloadFile(url, path)
+
+    queue = Queue(
+        type='Cover',
+        login=False,
+        id=album.id,
+        path=path,
+        url=url,
+        encryptionKey=''
+    )
+
+    addTidalQueue(queue)
+    #aigpy.net.downloadFile(url, path)
 
 
-def downloadAlbumInfo(album, tracks):
+def downloadAlbumInfo(album:Album, tracks: [Track]):
     if album is None:
         return
 
@@ -110,7 +122,7 @@ def downloadAlbumInfo(album, tracks):
     infos = ""
     infos += "[ID]          %s\n" % (str(album.id))
     infos += "[Title]       %s\n" % (str(album.title))
-    infos += "[Artists]     %s\n" % (TIDAL_API.getArtistsName(album.artists))
+    infos += "[Artists]     %s\n" % (getArtistsName(album.artists))
     infos += "[ReleaseDate] %s\n" % (str(album.releaseDate))
     infos += "[SongNum]     %s\n" % (str(album.numberOfTracks))
     infos += "[Duration]    %s\n" % (str(album.duration))
@@ -133,74 +145,92 @@ def getDownloadTrackFilename(track: Track, playlist: Playlist):
 
 
 def downloadTrack(track: Track, album=None, playlist=None, userProgress=None, partSize=1048576):
-    try:
-        stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
-        path = getTrackPath(track, stream, album, playlist)
+    #try:
+    print('downloadTrack')
+    stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
+    artist = getTidalArtist(track.artist)
+    album = getTidalAlbum(track.album)
 
-        if SETTINGS.showTrackInfo and not SETTINGS.multiThread:
-            Printf.track(track, stream)
+    path = getTrackPath(track, stream, artist, album, playlist)
+    print(path)
+    #if SETTINGS.showTrackInfo and not SETTINGS.multiThread:
+    #    Printf.track(track, stream)
+    print(track.title)
+    #if userProgress is not None:
+    #    userProgress.updateStream(stream)
 
-        if userProgress is not None:
-            userProgress.updateStream(stream)
-
-        number = 0
-        if track.trackNumberOnPlaylist:
-            number = track.trackNumberOnPlaylist
-        else:
-            number = track.trackNumber
-
-        # check exist
-        if __isSkip__(path, stream.url):
-            Printf.info(str(number)+ " : " + track.artist.name + " - " + track.album.title + " - " + track.title + " (skip:already exists!)")
-            return True, path
-
-        # download
-        logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.url)
-        if SETTINGS.downloadDelay:
-            sleep_time = random.randint(500, 5000) / 1000
-            #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
-            time.sleep(sleep_time)
-        tool = aigpy.download.DownloadTool(path + '.part', stream.urls)
-        tool.setUserProgress(userProgress)
-        tool.setPartSize(partSize)
-        check, err = tool.start(SETTINGS.showProgress and not SETTINGS.multiThread)
-        if not check:
-            Printf.err(f"DL Track[{track.title}] failed.{str(err)}")
-            return False, str(err)
-
-        # encrypted -> decrypt and remove encrypted file
-        __encrypted__(stream, path + '.part', path)
-
-        # contributors
-        try:
-            contributors = TIDAL_API.getTrackContributors(track.id)
-        except:
-            contributors = None
-
-        # lyrics
-        try:
-            lyrics = TIDAL_API.getLyrics(track.id).subtitles
-            if SETTINGS.lyricFile:
-                lrcPath = path.rsplit(".", 1)[0] + '.lrc'
-                aigpy.file.write(lrcPath, lyrics, 'w')
-        except:
-            lyrics = ''
-
-        __setMetaData__(track, album, path, contributors, lyrics)
-        
-        Printf.success(str(number)+ " : " + track.artist.name + " - " + track.album.title + " - " + track.title)
-        #Printf.info(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
+    number = 0
+    if track.trackNumberOnPlaylist:
+        number = track.trackNumberOnPlaylist
+    else:
+        number = track.trackNumber
+    print(number)
+    # check exist
+    if __isSkip__(path, stream.url):
+        Printf.info(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title + " (skip:already exists!)")
         return True, path
-    except Exception as e:
-        Printf.err(f"DL Track[{track.title}] failed.{str(e)}")
-        return False, str(e)
+
+    # download
+    logging.info("[DL Track] name=" + aigpy.path.getFileName(path) + "\nurl=" + stream.url)
+    if SETTINGS.downloadDelay:
+        sleep_time = random.randint(500, 5000) / 1000
+        #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+        #time.sleep(sleep_time)
+
+    queue = Queue(
+        type='Track',
+        login=True,
+        id=track.id,
+        path=path,
+        url=stream.url,
+        encryptionKey=stream.encryptionKey
+    )
+
+    addTidalQueue(queue)
+    print('queue')
+    #tool = aigpy.download.DownloadTool(path + '.part', stream.urls)
+    #tool.setUserProgress(userProgress)
+    #tool.setPartSize(partSize)
+    #check, err = tool.start(SETTINGS.showProgress and not SETTINGS.multiThread)
+    #if not check:
+    #    Printf.err(f"DL Track[{track.title}] failed.{str(err)}")
+    #    return False, str(err)
+
+    # encrypted -> decrypt and remove encrypted file
+    #__encrypted__(stream, path + '.part', path)
+
+    # contributors
+    try:
+        contributors = TIDAL_API.getTrackContributors(track.id)
+    except:
+        contributors = None
+    print('testcontrib')
+    # lyrics
+    try:
+        lyrics = TIDAL_API.getLyrics(track.id).subtitles
+        if SETTINGS.lyricFile:
+            lrcPath = path.rsplit(".", 1)[0] + '.lrc'
+            aigpy.file.write(lrcPath, lyrics, 'w')
+    except:
+        lyrics = ''
+
+    __setMetaData__(track, album, path, contributors, lyrics)
+    
+    Printf.success(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
+    #Printf.info(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
+    return True, path
+    #except Exception as e:
+    #    Printf.err(f"DL Track[{track.title}] failed.{str(e)}")
+    #    return False, str(e)
 
 
 def downloadTracks(tracks, album: Album = None, playlist : Playlist=None):
+    print('downloadTracks')
     def __getAlbum__(item: Track):
         album = TIDAL_API.getAlbum(item.album.id)
         if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
             downloadCover(album)
+            print('downloadCover')
         return album
     paths = []
     if not SETTINGS.multiThread:

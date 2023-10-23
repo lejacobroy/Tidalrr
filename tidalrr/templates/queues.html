@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Queues</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">URL</th>
+        <th scope="col">type</th>
+        <th scope="col">login</th>
+        <th scope="col">id</th>
+        <th scope="col">path</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+            <td>{{ row['url'] }}</td>
+            <td>{{ row['type'] }}</td>
+            <td>{{ row['login'] }}</td>
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['path'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

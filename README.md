@@ -40,16 +40,29 @@ While it's available in a docker image, there's currently no way to execute the 
 - ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
 - ✅ generate .m3u and .m3u8 playlist files
 - ✅ migrate json config file to sqlite db
+- ✅ add files to a queue and download them using a separate worker thread
+- remove duplicated functions and refactor files
+- more work on the Queues
+    - add artists
+    - add albums
+    - add lyrics
+    - download covers
+- how to know what is missing/downloaded compared to tidal?
+- replace and select Masters albums/track
+    - store matching information in db for future use
 - replace classes with functions as it's not needed and makes the code less readable
     - language.py
     - tidal.py
     - settings.py
     - model.py
-- more efficient scanning and resumable download (permanent db to store stream url of missing files)
 - create and sync Plex Playlist from Tidal Playlists (using PPP)
 - create an api webserver and control center
+    - Read-only mode for now
+    - start jobs
+    - add urls to the queue from tidal search, urls or files (replace cli)
 - split monolith into workers with cron jobs
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
+- local ai matching pattern
 
 ## 🎨 Libraries and reference
 

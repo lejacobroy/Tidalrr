@@ -45,9 +45,11 @@ def __getExtension__(stream: StreamUrl):
 
 
 def getAlbumPath(album):
-    artistName = __fixPath__(TIDAL_API.getArtistsName(album.artists))
-    albumArtistName = __fixPath__(album.artist.name) if album.artist is not None else ""
-
+    print('album', album)
+    artistName = __fixPath__(getArtistsName(album.artists))
+    print('artistName',artistName)
+    albumArtistName = __fixPath__(getTidalArtist(album.artist).name) if album.artist is not None else ""
+    print('albumArtistName',albumArtistName)
     # album folder pre: [ME]
     flag = TIDAL_API.getFlag(album, Type.Album, True, "")
     if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
@@ -92,27 +94,30 @@ def getPlaylistPath(playlist):
     return f"{SETTINGS.downloadPath}/{retpath}"
 
 
-def getTrackPath(track, stream, album=None, playlist=None, filename=None):
+def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename=None):
+    print('getTrackPath')
     base = './'
     number = str(track.trackNumber).rjust(2, '0')
     if album is not None:
         base = getAlbumPath(album)
+        print(base)
         if album.numberOfVolumes > 1:
             base += f'/CD{str(track.volumeNumber)}'
 
     if playlist is not None and SETTINGS.usePlaylistFolder:
         base = getPlaylistPath(playlist)
         number = str(track.trackNumberOnPlaylist).rjust(2, '0')
-
+    print('album', album.id)
     # artist
     artists = ""
     if track.artists is not None:
-        artists = __fixPath__(TIDAL_API.getArtistsName(track.artists)) 
+        artists = __fixPath__(getArtistsName(json.dumps(track.artists))) 
+    print('artists')
 
-    artist = ""
-    if track.artist is not None:
-        artist = __fixPath__(track.artist.name) 
-
+    artist = getTidalArtist(track.artist)
+    if artist is not None:
+        artist = __fixPath__(artist.name) 
+    print('artist')
     # title
     title = __fixPath__(track.title)
     if not aigpy.string.isNull(track.version):

@@ -27,8 +27,10 @@ START DOWNLOAD
 
 
 def start_album(obj: Album):
-    Printf.album(obj)
+    print('start_album')
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
+    for i in tracks:
+        addTidalTrack(i)
     if SETTINGS.saveAlbumInfo:
         downloadAlbumInfo(obj, tracks)
     if SETTINGS.saveCovers and obj.cover is not None:
@@ -36,30 +38,31 @@ def start_album(obj: Album):
     downloadTracks(tracks, obj)
 
 def start_album_search(obj: Album):
-    print(obj.title)
     #print(aigpy.model.modelToDict(obj))
     album = TIDAL_API.searchAlbum(obj)
     if album is not None:
-        start_album(album)
-    #print(aigpy.model.modelToDict(album))
+        addTidalAlbum(obj)
+        start_type(Type.Album, album)
 
 def start_playlist_sync(UserId=None):
     playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
     for playlist in playlists:
         if playlist.title is not None:
-            start_playlist(playlist)
+            start_type(Type.Playlist, playlist)
 
 def start_track(obj: Track):
-    album = TIDAL_API.getAlbum(obj.album.id)
+    print('start_track', obj)
+    album = TIDAL_API.getAlbum(obj.album)
     if SETTINGS.saveCovers:
         downloadCover(album)
     downloadTrack(obj, album)
 
 def start_artist(obj: Artist):
+    print('start_artist')
+    addTidalArtist(obj)
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
-    Printf.artist(obj, len(albums))
-    for item in albums:
-        start_album(item)
+    for album in albums:
+        start_type(Type.Album, album)
 
 
 def start_playlist(obj: Playlist):
@@ -88,7 +91,7 @@ def start_playlist(obj: Playlist):
     with open(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8', 'w') as f:
         f.write('#EXTM3U\n')
         for i,item in enumerate(aigpy.model.modelListToDictList(tracks), start=1):
-            track = aigpy.model.dictToModel(item, Track())
+            track = Track(*item)
             track.trackNumberOnPlaylist = i
             filename = path[i-1]
             f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
@@ -117,19 +120,25 @@ def start_file(string):
 
 
 def start_type(etype: Type, obj):
-    if etype == Type.Album:
-        start_album(obj)
-    elif etype == Type.Track:
-        start_track(obj)
-    elif etype == Type.Artist:
+    print('start_type', etype)
+    if etype == Type.Artist:
+        addTidalArtist(obj)
         start_artist(obj)
+    elif etype == Type.Track:
+        addTidalTrack(Track(*obj))
+        start_track(Track(*obj))
+    elif etype == Type.Album:
+        addTidalAlbum(obj)
+        start_album(obj)
     elif etype == Type.Playlist:
+        addTidalPlaylist(obj)
         start_playlist(obj)
     elif etype == Type.Mix:
         start_mix(obj)
 
 
 def start(string):
+    print('start')
     if aigpy.string.isNull(string):
         Printf.err('Please enter something.')
         return
@@ -141,7 +150,6 @@ def start(string):
         if os.path.exists(item):
             start_file(item)
             return
-
         try:
             etype, obj = TIDAL_API.getByString(item)
         except Exception as e:
