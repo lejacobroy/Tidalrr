@@ -19,28 +19,13 @@ import requests
 from xml.etree import ElementTree
 import pandas as pd
 
-from model import *
-from enums import *
-from settings import *
-
+from tidalrr.model import *
+from tidalrr.settings import *
+from tidalrr.paths import *
 
 # SSL Warnings | retry number
 requests.packages.urllib3.disable_warnings()
 requests.adapters.DEFAULT_RETRIES = 5
-
-def __fixPath__(name: str):
-    return aigpy.path.replaceLimitChar(name, '-').strip()
-
-def __getYear__(releaseDate: str):
-    if releaseDate is None or releaseDate == '':
-        return ''
-    return aigpy.string.getSubOnlyEnd(releaseDate, '-')
-
-def __getDurationStr__(seconds):
-    time_string = str(datetime.timedelta(seconds=seconds))
-    if time_string.startswith('0:'):
-        time_string = time_string[2:]
-    return time_string
 
 def getArtistsName(artists=[]):
         array = []
@@ -48,41 +33,6 @@ def getArtistsName(artists=[]):
             #print(item['name'])
             array.append(item['name'])
         return ", ".join(array)
-
-def getAlbumPath(album=Album):
-    artistName = __fixPath__(getArtistsName(album.artists))
-    albumArtistName = __fixPath__(getTidalArtist(album.artist).name) if album.artist is not None else ""
-    # album folder pre: [ME]
-    flag = TIDAL_API.getFlag(album, Type.Album, True, "")
-    if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
-        flag = flag.replace("M", "")
-    if flag != "":
-        flag = "[" + flag + "] "
-    # album and addyear
-    albumName = __fixPath__(album.title)
-    year = __getYear__(album.releaseDate)
-
-    # retpath
-    retpath = SETTINGS.albumFolderFormat
-    if retpath is None or len(retpath) <= 0:
-        retpath = SETTINGS.getDefaultAlbumFolderFormat()
-    retpath = retpath.replace(R"{ArtistName}", artistName)
-    retpath = retpath.replace(R"{AlbumArtistName}", albumArtistName)
-    retpath = retpath.replace(R"{Flag}", flag)
-    retpath = retpath.replace(R"{AlbumID}", str(album.id))
-    retpath = retpath.replace(R"{AlbumYear}", year)
-    retpath = retpath.replace(R"{AlbumTitle}", albumName)
-    retpath = retpath.replace(R"{AudioQuality}", album.audioQuality)
-    retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
-    retpath = retpath.replace(R"{Duration}", __getDurationStr__(album.duration))
-    retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
-    retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
-    retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
-    retpath = retpath.replace(R"{RecordType}", album.type)
-    retpath = retpath.replace(R"{None}", "")
-    retpath = retpath.strip()
-
-    return f"{SETTINGS.downloadPath}/{retpath}"
 
 class TidalAPI(object):
     def __init__(self):
@@ -534,28 +484,6 @@ class TidalAPI(object):
         return requests.get(url).content
         #except:
         #    return ''
-
-    def getFlag(self, data, type: Type, short=True, separator=" / "):
-        master = False
-        atmos = False
-        explicit = False
-        if type == Type.Album or type == Type.Track:
-            if data.audioQuality == "HI_RES":
-                master = True
-            if type == Type.Album and "DOLBY_ATMOS" in data.audioModes:
-                atmos = True
-            if data.explicit is True:
-                explicit = True
-        if not master and not atmos and not explicit:
-            return ""
-        array = []
-        if master:
-            array.append("M" if short else "Master")
-        if atmos:
-            array.append("A" if short else "Dolby Atmos")
-        if explicit:
-            array.append("E" if short else "Explicit")
-        return separator.join(array)
 
     def parseUrl(self, url):
         if "tidal.com" not in url:

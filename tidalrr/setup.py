@@ -1,9 +1,8 @@
 from setuptools import setup, find_packages
-from printf import VERSION
 
 setup(
     name='tidalrr',
-    version=VERSION,
+    version='2023.10.23.1',
     license="Apache2",
     description="Tidalrr",
 

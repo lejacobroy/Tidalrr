@@ -94,8 +94,8 @@ CREATE TABLE tidal_queue (
 
 DROP TABLE IF EXISTS files;
 CREATE TABLE files (
-    description TEXT NOT NULL PRIMARY KEY,
+    path TEXT NOT NULL PRIMARY KEY,
     type TEXT,
     id INTEGER,
-    path TEXT
+    description TEXT
 );

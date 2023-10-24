@@ -12,20 +12,19 @@ import os
 import aigpy
 import datetime
 
-from tidal import *
-from settings import *
+from tidalrr.settings import *
 
-def __fixPath__(name: str):
+def fixPath(name: str):
     return aigpy.path.replaceLimitChar(name, '-').strip()
 
 
-def __getYear__(releaseDate: str):
+def getYear(releaseDate: str):
     if releaseDate is None or releaseDate == '':
         return ''
     return aigpy.string.getSubOnlyEnd(releaseDate, '-')
 
 
-def __getDurationStr__(seconds):
+def getDurationStr(seconds):
     time_string = str(datetime.timedelta(seconds=seconds))
     if time_string.startswith('0:'):
         time_string = time_string[2:]
@@ -43,23 +42,44 @@ def __getExtension__(stream: StreamUrl):
         return '.m4a'
     return '.m4a'
 
+def getFlag(data, type: Type, short=True, separator=" / "):
+        master = False
+        atmos = False
+        explicit = False
+        if type == Type.Album or type == Type.Track:
+            if data.audioQuality == "HI_RES":
+                master = True
+            if type == Type.Album and "DOLBY_ATMOS" in data.audioModes:
+                atmos = True
+            if data.explicit is True:
+                explicit = True
+        if not master and not atmos and not explicit:
+            return ""
+        array = []
+        if master:
+            array.append("M" if short else "Master")
+        if atmos:
+            array.append("A" if short else "Dolby Atmos")
+        if explicit:
+            array.append("E" if short else "Explicit")
+        return separator.join(array)
 
 def getAlbumPath(album):
     print('album', album)
-    artistName = __fixPath__(getArtistsName(album.artists))
+    artistName = fixPath(getArtistsNameJSON(json.dumps(album.artists)))
     print('artistName',artistName)
-    albumArtistName = __fixPath__(getTidalArtist(album.artist).name) if album.artist is not None else ""
+    albumArtistName = fixPath(getTidalArtist(album.artist).name) if album.artist is not None else ""
     print('albumArtistName',albumArtistName)
     # album folder pre: [ME]
-    flag = TIDAL_API.getFlag(album, Type.Album, True, "")
+    flag = getFlag(album, Type.Album, True, "")
     if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
         flag = flag.replace("M", "")
     if flag != "":
         flag = "[" + flag + "] "
 
     # album and addyear
-    albumName = __fixPath__(album.title)
-    year = __getYear__(album.releaseDate)
+    albumName = fixPath(album.title)
+    year = getYear(album.releaseDate)
 
     # retpath
     retpath = SETTINGS.albumFolderFormat
@@ -73,7 +93,7 @@ def getAlbumPath(album):
     retpath = retpath.replace(R"{AlbumTitle}", albumName)
     retpath = retpath.replace(R"{AudioQuality}", album.audioQuality)
     retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
-    retpath = retpath.replace(R"{Duration}", __getDurationStr__(album.duration))
+    retpath = retpath.replace(R"{Duration}", getDurationStr(album.duration))
     retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
     retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
     retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
@@ -83,7 +103,7 @@ def getAlbumPath(album):
     return f"{SETTINGS.downloadPath}/{retpath}"
 
 def getPlaylistPath(playlist):
-    playlistName = __fixPath__(playlist.title)
+    playlistName = fixPath(playlist.title)
 
     # retpath
     retpath = SETTINGS.playlistFolderFormat
@@ -111,24 +131,24 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
     # artist
     artists = ""
     if track.artists is not None:
-        artists = __fixPath__(getArtistsName(json.dumps(track.artists))) 
+        artists = fixPath(getArtistsNameJSON(json.dumps(track.artists))) 
     print('artists')
 
     artist = getTidalArtist(track.artist)
     if artist is not None:
-        artist = __fixPath__(artist.name) 
+        artist = fixPath(artist.name) 
     print('artist')
     # title
-    title = __fixPath__(track.title)
+    title = fixPath(track.title)
     if not aigpy.string.isNull(track.version):
-        title += f' ({__fixPath__(track.version)})'
+        title += f' ({fixPath(track.version)})'
 
     # explicit
     explicit = "(Explicit)" if track.explicit else ''
 
     # album and addyear
-    albumName = __fixPath__(album.title) if album is not None else ''
-    year = __getYear__(album.releaseDate) if album is not None else ''
+    albumName = fixPath(album.title) if album is not None else ''
+    year = getYear(album.releaseDate) if album is not None else ''
 
     # extension
     extension = __getExtension__(stream)
@@ -145,7 +165,7 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
     retpath = retpath.replace(R"{AlbumTitle}", albumName)
     retpath = retpath.replace(R"{AudioQuality}", track.audioQuality)
     retpath = retpath.replace(R"{DurationSeconds}", str(track.duration))
-    retpath = retpath.replace(R"{Duration}", __getDurationStr__(track.duration))
+    retpath = retpath.replace(R"{Duration}", getDurationStr(track.duration))
     retpath = retpath.replace(R"{TrackID}", str(track.id))
     retpath = retpath.strip()
     if filename is not None:

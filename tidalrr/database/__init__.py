@@ -20,7 +20,7 @@
 
 import sqlite3
 import os
-from model import *
+from tidalrr.model import *
 import json
 
 database_path = os.path.abspath(os.path.dirname(__file__))+'/database.db'
@@ -145,7 +145,7 @@ def convertToArtist(artist) -> Artist:
 def getTidalArtists() -> [Artist]:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_artists').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL').fetchall()
     conn.close()
     new_rows = [Artist]
     for i, item in enumerate(rows):
@@ -159,14 +159,10 @@ def getTidalArtist(id=int) -> Artist:
     conn.close()
     return convertToArtist(row)
 
-def getArtistsName(artists):
-        print(artists)
-        print(json.loads(artists))
+def getArtistsNameJSON(artists):
         array = []
         for item in json.loads(artists):
-            print(item["name"])
             array.append(item["name"])
-        print(array)
         return ", ".join(array)
 
 def addTidalAlbum(album=Album):
@@ -217,7 +213,7 @@ def convertToAlbum(album) -> Album:
 def getTidalAlbums() -> [Album]:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_albums').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_albums WHERE title IS NOT ""').fetchall()
     new_rows = [Album]
     for i, album in enumerate(rows):
         new_rows.append(convertToAlbum(album))
@@ -251,7 +247,7 @@ def addTidalPlaylist(playlist=Playlist):
 def getTidalPlaylists() -> [Playlist]:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_playlists').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_playlists WHERE id IS NOT NULL').fetchall()
     conn.close()
     return rows
 
@@ -308,7 +304,7 @@ def addTidalTrack(track=Track):
 def getTidalTracks() -> [Track]:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_tracks').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_tracks WHERE id IS NOT NULL').fetchall()
     conn.close()
     new_rows = []
     for track in rows:

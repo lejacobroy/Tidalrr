@@ -9,7 +9,7 @@
 @Desc    :   HIGH Quality Track Decryption;File From Project 'RedSea'
 '''
 import base64
-
+import os
 from Crypto.Cipher import AES
 from Crypto.Util import Counter
 
@@ -61,3 +61,11 @@ def decrypt_file(efile, dfile, key, nonce):
         # Replace with decrypted file
         with open(dfile, 'wb') as dflac:
             dflac.write(flac)
+
+def encrypted(encryptionKey, srcPath, descPath):
+    if encryptionKey == '':
+        os.replace(srcPath, descPath)
+    else:
+        key, nonce = decrypt_security_token(encryptionKey)
+        decrypt_file(srcPath, descPath, key, nonce)
+        os.remove(srcPath)

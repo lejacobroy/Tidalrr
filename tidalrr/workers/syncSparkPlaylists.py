@@ -48,3 +48,13 @@ connection.commit()
 # Print SQL queries for debugging
 #print(playlist_query)
 #print(playlist_items_query)
+
+def injectPlaylist(playlistPath):
+    # use spark.py function to load the .m3u8 file into Spark DB
+    # spark DB is located at '~/Library/Applications Support/Devialet/Spakr/Collection.db'
+    print('Validating m3u8 playlist...')
+    # read .m3u8
+        # is valid, make a copy of the db with the date
+    print('Valid m3u8, DB backup.')
+        # inject the playlist
+    print('Injected playlist X into Spark.')

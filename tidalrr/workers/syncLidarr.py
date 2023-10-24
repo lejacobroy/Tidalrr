@@ -8,14 +8,12 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-import sys
-import getopt
-import aigpy
 
 from events import *
 from settings import *
-#from model import *
-
+from model import *
+from tidalrr.workers import *
+from tidalrr.download import *
 
 def getMissingAlbums(URL: str, API: str):
     # http://pomelo:8686/api/v1/wanted/missing?apikey=LIDARR_APIKEY
@@ -55,3 +53,18 @@ def getMissingAlbums(URL: str, API: str):
     # https://github.com/Fokka-Engineering/TIDAL/wiki/search-artists -> get artist ID
     #    -> https://api.tidalhifi.com/v1/search/artists?query='Coldplay'&limit=1&countryCode=CA
     # https://github.com/Fokka-Engineering/TIDAL/wiki/search-albums -> get album ID and filter by artist ID
+
+def start_album_search(obj: Album):
+    #print(aigpy.model.modelToDict(obj))
+    album = TIDAL_API.searchAlbum(obj)
+    if album is not None:
+        addTidalAlbum(obj)
+        
+tidalrrStart()
+albums = [Album]
+albums = getMissingAlbums(SETTINGS.lidarrURL, SETTINGS.lidarrAPI)
+for a in albums :
+    if a.title is not None:    
+        # set download path
+        SETTINGS.downloadPath = str(a.path)
+        start_album_search(a)

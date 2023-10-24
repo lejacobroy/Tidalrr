@@ -4,8 +4,8 @@ import os
 from flask import Flask, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 from flask_bootstrap import Bootstrap5
-import sqlite3
-from database.database import *
+from tidalrr.database import *
+from tidalrr.workers import *
 
 def tidalrrWeb(config=None):
     app = Flask(__name__)
@@ -20,11 +20,6 @@ def tidalrrWeb(config=None):
 
     # Definition of the routes. Put them into their own file. See also
     # Flask Blueprints: http://flask.pocoo.org/docs/latest/blueprints
-    def get_db_connection():
-        conn = sqlite3.connect('database/database.db')
-        conn.row_factory = sqlite3.Row
-        return conn
-
     """ 
         Usefull routes:
         homepage
@@ -97,3 +92,9 @@ def tidalrrWeb(config=None):
             return jsonify({"echo": someId}) """
 
     return app
+
+def webServer():
+    tidalrrStart()
+    port = int(os.environ.get("PORT", 3000))
+    app = tidalrrWeb()
+    app.run(host="0.0.0.0", port=port)

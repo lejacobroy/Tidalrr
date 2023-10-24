@@ -12,12 +12,10 @@
 import aigpy
 import time
 
-from model import *
-from enums import *
-from tidal import *
-from printf import *
-from download import *
-from paths import *
+from tidalrr.model import *
+from tidalrr.tidal import *
+from tidalrr.apiKey import *
+from tidalrr.paths import *
 
 '''
 =================================
@@ -26,47 +24,16 @@ START DOWNLOAD
 '''
 
 
-def start_album(obj: Album):
-    print('start_album')
-    tracks = TIDAL_API.getItems(obj.id, Type.Album)
-    for i in tracks:
-        addTidalTrack(i)
-    if SETTINGS.saveAlbumInfo:
-        downloadAlbumInfo(obj, tracks)
-    if SETTINGS.saveCovers and obj.cover is not None:
-        downloadCover(obj)
-    downloadTracks(tracks, obj)
 
-def start_album_search(obj: Album):
-    #print(aigpy.model.modelToDict(obj))
-    album = TIDAL_API.searchAlbum(obj)
-    if album is not None:
-        addTidalAlbum(obj)
-        start_type(Type.Album, album)
-
-def start_playlist_sync(UserId=None):
+""" def start_playlist_sync(UserId=None):
     playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
     for playlist in playlists:
         if playlist.title is not None:
-            start_type(Type.Playlist, playlist)
-
-def start_track(obj: Track):
-    print('start_track', obj)
-    album = TIDAL_API.getAlbum(obj.album)
-    if SETTINGS.saveCovers:
-        downloadCover(album)
-    downloadTrack(obj, album)
-
-def start_artist(obj: Artist):
-    print('start_artist')
-    addTidalArtist(obj)
-    albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
-    for album in albums:
-        start_type(Type.Album, album)
+            start_type(Type.Playlist, playlist) """
 
 
-def start_playlist(obj: Playlist):
-    Printf.playlist(obj)
+""" def start_playlist(obj: Playlist):
+    print(obj)
     # here we have the playlist object, we can export it to json
     #print(aigpy.model.modelToDict(obj))
     # save this to playlist.json
@@ -76,7 +43,7 @@ def start_playlist(obj: Playlist):
 
     aigpy.file.write(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.json', json.dumps(data), 'w+')
 
-    Printf.info('Saved playlist json info to : '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.json')
+    print('Saved playlist json info to : '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.json')
 
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     paths = downloadTracks(tracks, None, obj)
@@ -85,7 +52,7 @@ def start_playlist(obj: Playlist):
         #f.write('#EXTM3U\n')
         for i,item in enumerate(paths, start=1):
             f.write(str(getTrueHomePath())+'/'+item+'\n')
-    Printf.success('Done generating m3u playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u')
+    print('Done generating m3u playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u')
 
     # Generate the playlist file
     with open(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8', 'w') as f:
@@ -96,17 +63,17 @@ def start_playlist(obj: Playlist):
             filename = path[i-1]
             f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
             f.write(str(getTrueHomePath())+'/'+filename+'\n') 
-    Printf.success('Done generating m3u8 playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8')
+    print('Done generating m3u8 playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8')
 
 def start_mix(obj: Mix):
-    Printf.mix(obj)
-    downloadTracks(obj.tracks, None, None)
+    print(obj)
+    downloadTracks(obj.tracks, None, None) """
 
-
+""" 
 def start_file(string):
     txt = aigpy.file.getContent(string)
     if aigpy.string.isNull(txt):
-        Printf.err("Nothing can read!")
+        print("Nothing can read!")
         return
     array = txt.split('\n')
     for item in array:
@@ -140,7 +107,7 @@ def start_type(etype: Type, obj):
 def start(string):
     print('start')
     if aigpy.string.isNull(string):
-        Printf.err('Please enter something.')
+        print('Please enter something.')
         return
 
     strings = string.split(" ")
@@ -153,14 +120,14 @@ def start(string):
         try:
             etype, obj = TIDAL_API.getByString(item)
         except Exception as e:
-            Printf.err(str(e) + " [" + item + "]")
+            print(str(e) + " [" + item + "]")
             return
 
         try:
             start_type(etype, obj)
         except Exception as e:
-            Printf.err(str(e))
-
+            print(str(e))
+ """
 
 '''
 =================================
@@ -169,67 +136,19 @@ CHANGE SETTINGS
 '''
 
 
-def changePathSettings():
-    Printf.settings()
-    SETTINGS.downloadPath = Printf.enterPath(
-        LANG.select.CHANGE_DOWNLOAD_PATH,
-        LANG.select.MSG_PATH_ERR,
-        '0',
-        SETTINGS.downloadPath)
-    SETTINGS.albumFolderFormat = Printf.enterFormat(
-        LANG.select.CHANGE_ALBUM_FOLDER_FORMAT,
-        SETTINGS.albumFolderFormat,
-        SETTINGS.getDefaultPathFormat(Type.Album))
-    SETTINGS.playlistFolderFormat = Printf.enterFormat(
-        LANG.select.CHANGE_PLAYLIST_FOLDER_FORMAT,
-        SETTINGS.playlistFolderFormat,
-        SETTINGS.getDefaultPathFormat(Type.Playlist))
-    SETTINGS.trackFileFormat = Printf.enterFormat(
-        LANG.select.CHANGE_TRACK_FILE_FORMAT,
-        SETTINGS.trackFileFormat,
-        SETTINGS.getDefaultPathFormat(Type.Track))
-    SETTINGS.save()
-
-
-def changeQualitySettings():
-    Printf.settings()
-    SETTINGS.audioQuality = AudioQuality(
-        int(Printf.enterLimit(LANG.select.CHANGE_AUDIO_QUALITY,
-                              LANG.select.MSG_INPUT_ERR,
-                              ['0', '1', '2', '3', '4'])))
-    SETTINGS.save()
-
-
-def changeSettings():
-    Printf.settings()
-    SETTINGS.showProgress = Printf.enterBool(LANG.select.CHANGE_SHOW_PROGRESS)
-    SETTINGS.showTrackInfo = Printf.enterBool(LANG.select.CHANGE_SHOW_TRACKINFO)
-    SETTINGS.checkExist = Printf.enterBool(LANG.select.CHANGE_CHECK_EXIST)
-    SETTINGS.includeEP = Printf.enterBool(LANG.select.CHANGE_INCLUDE_EP)
-    SETTINGS.saveCovers = Printf.enterBool(LANG.select.CHANGE_SAVE_COVERS)
-    SETTINGS.saveAlbumInfo = Printf.enterBool(LANG.select.CHANGE_SAVE_ALBUM_INFO)
-    SETTINGS.lyricFile = Printf.enterBool(LANG.select.CHANGE_ADD_LRC_FILE)
-    SETTINGS.multiThread = Printf.enterBool(LANG.select.CHANGE_MULITHREAD_DOWNLOAD)
-    SETTINGS.usePlaylistFolder = Printf.enterBool(LANG.select.SETTING_USE_PLAYLIST_FOLDER + "('0'-No,'1'-Yes):")
-    SETTINGS.downloadDelay = Printf.enterBool(LANG.select.CHANGE_USE_DOWNLOAD_DELAY)
-    SETTINGS.language = Printf.enter(LANG.select.CHANGE_LANGUAGE + "(" + LANG.getLangChoicePrint() + "):")
-    LANG.setLang(SETTINGS.language)
-    SETTINGS.save()
-
-
 def changeApiKey():
-    item = apiKey.getItem(SETTINGS.apiKeyIndex)
-    ver = apiKey.getVersion()
+    item = getItem(SETTINGS.apiKeyIndex)
+    ver = getVersion()
 
-    Printf.info(f'Current APIKeys: {str(SETTINGS.apiKeyIndex)} {item["platform"]}-{item["formats"]}')
-    Printf.info(f'Current Version: {str(ver)}')
-    Printf.apikeys(apiKey.getItems())
-    index = int(Printf.enterLimit("APIKEY index:", LANG.select.MSG_INPUT_ERR, apiKey.getLimitIndexs()))
+    print(f'Current APIKeys: {str(SETTINGS.apiKeyIndex)} {item["platform"]}-{item["formats"]}')
+    print(f'Current Version: {str(ver)}')
+    print(getItems())
+    index = int(print("APIKEY index:",getLimitIndexs()))
 
     if index != SETTINGS.apiKeyIndex:
         SETTINGS.apiKeyIndex = index
         SETTINGS.save()
-        TIDAL_API.apiKey = apiKey.getItem(index)
+        TIDAL_API.apiKey = getItem(index)
         return True
     return False
 
@@ -266,14 +185,14 @@ def __displayTime__(seconds, granularity=2):
 
 def loginByWeb():
     try:
-        print(LANG.select.AUTH_START_LOGIN)
+        #print(LANG.select.AUTH_START_LOGIN)
         # get device code
         url = TIDAL_API.getDeviceCode()
 
-        print(LANG.select.AUTH_NEXT_STEP.format(
+        """ print(LANG.select.AUTH_NEXT_STEP.format(
             aigpy.cmd.green(url),
             aigpy.cmd.yellow(__displayTime__(TIDAL_API.key.authCheckTimeout))))
-        print(LANG.select.AUTH_WAITING)
+        print(LANG.select.AUTH_WAITING) """
 
         start = time.time()
         elapsed = 0
@@ -283,8 +202,8 @@ def loginByWeb():
                 time.sleep(TIDAL_API.key.authCheckInterval + 1)
                 continue
 
-            Printf.success(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TIDAL_API.key.expiresIn))))
+            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
+                __displayTime__(int(TIDAL_API.key.expiresIn)))) """
 
             TOKEN.userid = TIDAL_API.key.userId
             TOKEN.countryCode = TIDAL_API.key.countryCode
@@ -294,9 +213,9 @@ def loginByWeb():
             TOKEN.save()
             return True
 
-        raise Exception(LANG.select.AUTH_TIMEOUT)
+        raise Exception()
     except Exception as e:
-        Printf.err(f"Login failed.{str(e)}")
+        print(f"Login failed.{str(e)}")
         return False
 
 
@@ -306,18 +225,18 @@ def loginByConfig():
             return False
 
         if TIDAL_API.verifyAccessToken(TOKEN.accessToken):
-            Printf.info(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TOKEN.expiresAfter - time.time()))))
+            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
+                __displayTime__(int(TOKEN.expiresAfter - time.time())))) """
 
             TIDAL_API.key.countryCode = TOKEN.countryCode
             TIDAL_API.key.userId = TOKEN.userid
             TIDAL_API.key.accessToken = TOKEN.accessToken
             return True
 
-        Printf.info(LANG.select.MSG_INVALID_ACCESSTOKEN)
+        #print(LANG.select.MSG_INVALID_ACCESSTOKEN)
         if TIDAL_API.refreshAccessToken(TOKEN.refreshToken):
-            Printf.success(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TIDAL_API.key.expiresIn))))
+            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
+                __displayTime__(int(TIDAL_API.key.expiresIn)))) """
 
             TOKEN.userid = TIDAL_API.key.userId
             TOKEN.countryCode = TIDAL_API.key.countryCode
@@ -335,16 +254,16 @@ def loginByConfig():
 def loginByAccessToken():
     try:
         print("-------------AccessToken---------------")
-        token = Printf.enter("accessToken('0' go back):")
+        token = print("accessToken('0' go back):")
         if token == '0':
             return
         TIDAL_API.loginByAccessToken(token, TOKEN.userid)
     except Exception as e:
-        Printf.err(str(e))
+        print(str(e))
         return
 
     print("-------------RefreshToken---------------")
-    refreshToken = Printf.enter("refreshToken('0' to skip):")
+    refreshToken = print("refreshToken('0' to skip):")
     if refreshToken == '0':
         refreshToken = TOKEN.refreshToken
 

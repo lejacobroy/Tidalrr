@@ -10,7 +10,24 @@
 '''
 import aigpy
 from dataclasses import dataclass
+from enum import Enum
 
+
+class AudioQuality(Enum):
+    Normal = 0
+    High = 1
+    HiFi = 2
+    Master = 3
+    Max = 4
+
+class Type(Enum):
+    Album = 0
+    Track = 1
+    Playlist = 3
+    Artist = 4
+    Mix = 5
+    Null = 6
+    
 class StreamUrl(aigpy.model.ModelBase):
     def __init__(self) -> None:
         super().__init__()

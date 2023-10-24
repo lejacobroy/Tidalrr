@@ -12,9 +12,8 @@ import json
 import aigpy
 import base64
 
-from lang.language import *
-from enums import *
-from database.database import *
+from tidalrr.model import *
+from tidalrr.database import *
 from os.path import exists
 
 
@@ -83,8 +82,6 @@ class Settings(aigpy.model.ModelBase):
             self.playlistFolderFormat = self.getDefaultPathFormat(Type.Playlist)
         if self.apiKeyIndex is None:
             self.apiKeyIndex = 0
-        
-        LANG.setLang(self.language)
 
     def save(self):
         data = aigpy.model.modelToDict(self)
