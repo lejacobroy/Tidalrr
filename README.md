@@ -42,6 +42,7 @@ While it's available in a docker image, there's currently no way to execute the 
 - ✅ add files to a queue and download them using a separate worker thread
 - migrate to SQLAlchemy to remove complexity
 - ✅ remove duplicated functions and refactor files
+- completely remove events.py, download.py and downloadUtils.py
 - more work on the Queues
     - ✅ worker_scan to fetch urls from queue type 'Scan'
     - ✅ add artists
