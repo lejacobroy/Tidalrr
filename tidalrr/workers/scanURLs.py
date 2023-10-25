@@ -15,6 +15,7 @@ from tidalrr.workers import *
 from tidalrr.workers.scanQueuedArtists import *
 from tidalrr.workers.scanQueuedAlbums import *
 from tidalrr.workers.scanQueuedTracks import *
+from tidalrr.workers.scanQueuedPlaylists import *
 
 def readFile(val):
     print('Using file list: '+val)
@@ -50,7 +51,7 @@ def start(string):
                 scanQueuedAlbums()
             elif etype == Type.Playlist:
                 addTidalPlaylist(obj)
-                #start_playlist(obj)
+                scanQueuedPlaylists()
             #elif etype == Type.Mix:
                 #start_mix(obj)
         except Exception as e:
