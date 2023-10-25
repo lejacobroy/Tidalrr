@@ -65,42 +65,41 @@ def getFlag(data, type: Type, short=True, separator=" / "):
         return separator.join(array)
 
 def getAlbumPath(album):
-    print('album', album)
-    artistName = fixPath(getArtistsNameJSON(json.dumps(album.artists)))
-    print('artistName',artistName)
-    albumArtistName = fixPath(getTidalArtist(album.artist).name) if album.artist is not None else ""
-    print('albumArtistName',albumArtistName)
-    # album folder pre: [ME]
-    flag = getFlag(album, Type.Album, True, "")
-    if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
-        flag = flag.replace("M", "")
-    if flag != "":
-        flag = "[" + flag + "] "
+    artist = getTidalArtist(album.artist)
+    if artist is not None:
+        artistName = fixPath(str(album.artists))
+        albumArtistName = fixPath(artist.name) if album.artist is not None else ""
+        # album folder pre: [ME]
+        flag = getFlag(album, Type.Album, True, "")
+        if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
+            flag = flag.replace("M", "")
+        if flag != "":
+            flag = "[" + flag + "] "
 
-    # album and addyear
-    albumName = fixPath(album.title)
-    year = getYear(album.releaseDate)
+        # album and addyear
+        albumName = fixPath(album.title)
+        year = getYear(album.releaseDate)
 
-    # retpath
-    retpath = SETTINGS.albumFolderFormat
-    if retpath is None or len(retpath) <= 0:
-        retpath = SETTINGS.getDefaultAlbumFolderFormat()
-    retpath = retpath.replace(R"{ArtistName}", artistName)
-    retpath = retpath.replace(R"{AlbumArtistName}", albumArtistName)
-    retpath = retpath.replace(R"{Flag}", flag)
-    retpath = retpath.replace(R"{AlbumID}", str(album.id))
-    retpath = retpath.replace(R"{AlbumYear}", year)
-    retpath = retpath.replace(R"{AlbumTitle}", albumName)
-    retpath = retpath.replace(R"{AudioQuality}", album.audioQuality)
-    retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
-    retpath = retpath.replace(R"{Duration}", getDurationStr(album.duration))
-    retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
-    retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
-    retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
-    retpath = retpath.replace(R"{RecordType}", album.type)
-    retpath = retpath.replace(R"{None}", "")
-    retpath = retpath.strip()
-    return f"{SETTINGS.downloadPath}/{retpath}"
+        # retpath
+        retpath = SETTINGS.albumFolderFormat
+        if retpath is None or len(retpath) <= 0:
+            retpath = SETTINGS.getDefaultAlbumFolderFormat()
+        retpath = retpath.replace(R"{ArtistName}", artistName)
+        retpath = retpath.replace(R"{AlbumArtistName}", albumArtistName)
+        retpath = retpath.replace(R"{Flag}", flag)
+        retpath = retpath.replace(R"{AlbumID}", str(album.id))
+        retpath = retpath.replace(R"{AlbumYear}", year)
+        retpath = retpath.replace(R"{AlbumTitle}", albumName)
+        retpath = retpath.replace(R"{AudioQuality}", album.audioQuality)
+        retpath = retpath.replace(R"{DurationSeconds}", str(album.duration))
+        retpath = retpath.replace(R"{Duration}", getDurationStr(album.duration))
+        retpath = retpath.replace(R"{NumberOfTracks}", str(album.numberOfTracks))
+        retpath = retpath.replace(R"{NumberOfVolumes}", str(album.numberOfVolumes))
+        retpath = retpath.replace(R"{ReleaseDate}", str(album.releaseDate))
+        retpath = retpath.replace(R"{RecordType}", album.type)
+        retpath = retpath.replace(R"{None}", "")
+        retpath = retpath.strip()
+        return f"{SETTINGS.downloadPath}/{retpath}"
 
 def getPlaylistPath(playlist):
     playlistName = fixPath(playlist.title)
@@ -115,29 +114,24 @@ def getPlaylistPath(playlist):
 
 
 def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename=None):
-    print('getTrackPath')
     base = './'
     number = str(track.trackNumber).rjust(2, '0')
     if album is not None:
         base = getAlbumPath(album)
-        print(base)
         if album.numberOfVolumes > 1:
             base += f'/CD{str(track.volumeNumber)}'
 
     if playlist is not None and SETTINGS.usePlaylistFolder:
         base = getPlaylistPath(playlist)
         number = str(track.trackNumberOnPlaylist).rjust(2, '0')
-    print('album', album.id)
     # artist
     artists = ""
     if track.artists is not None:
-        artists = fixPath(getArtistsNameJSON(json.dumps(track.artists))) 
-    print('artists')
+        artists = fixPath(str(track.artists)) 
 
     artist = getTidalArtist(track.artist)
     if artist is not None:
         artist = fixPath(artist.name) 
-    print('artist')
     # title
     title = fixPath(track.title)
     if not aigpy.string.isNull(track.version):

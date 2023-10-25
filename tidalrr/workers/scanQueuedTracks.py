@@ -14,22 +14,23 @@ from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import *
-from tidalrr.downloadUtils import *
 
 def scanQueuedTracks():
-    tidalrrStart()
     tracks = getTidalTracks()
-    for i, track in enumerate(tracks):
-        start_track(Track(*track))
+    if len(tracks) > 0 :
+        for track in tracks:
+            start_track(track)
 
 def start_track(obj: Track):
     album = TIDAL_API.getAlbum(obj.album)
     if SETTINGS.saveCovers:
-        downloadCover(album)
+        scanCover(album)
     scanTrack(obj, album)
 
 def scanTrack(track: Track, album=None, playlist=None):
-    try:
+    file = getFileById(track.id)
+    if file is None:
+        #try:
         stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
         artist = getTidalArtist(track.artist)
         album = getTidalAlbum(track.album)
@@ -42,10 +43,10 @@ def scanTrack(track: Track, album=None, playlist=None):
         else:
             number = track.trackNumber
         # check exist
-        if isSkip(path, stream.url):
+        """ if isSkip(path, stream.url):
             # check if file is not already in db/linked to table file or queue
             print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title + " (skip:already exists!)")
-            return True, path
+            return True, path """
 
         queue = Queue(
             type='Track',
@@ -57,29 +58,11 @@ def scanTrack(track: Track, album=None, playlist=None):
         )
 
         addTidalQueue(queue)
-
-        # contributors
-        try:
-            contributors = TIDAL_API.getTrackContributors(track.id)
-        except:
-            contributors = None
-
-        # lyrics
-        try:
-            lyrics = TIDAL_API.getLyrics(track.id).subtitles
-            if SETTINGS.lyricFile:
-                lrcPath = path.rsplit(".", 1)[0] + '.lrc'
-                aigpy.file.write(lrcPath, lyrics, 'w')
-        except:
-            lyrics = ''
-        metadataArtist = getTidalArtist(album.artist)
-        metadataArtists = getArtistsName(json.loads(album.artists))
-        setMetaData(track, album, metadataArtist, metadataArtists, path, contributors, lyrics)
         
         print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
         return True, path
-    except Exception as e:
-        print(f"DL Track[{track.title}] failed.{str(e)}")
-        return False, str(e)
-
-scanQueuedTracks()
+        """ except Exception as e:
+            print(f"DL Track[{track.title}] failed.{str(e)}")
+            return False, str(e) """
+    else:
+        print('File Exists, skipping')

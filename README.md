@@ -42,17 +42,16 @@ While it's available in a docker image, there's currently no way to execute the 
 - ✅ add files to a queue and download them using a separate worker thread
 - migrate to SQLAlchemy to remove complexity
 - ✅ remove duplicated functions and refactor files
-- completely remove events.py, download.py and downloadUtils.py
+- ✅ completely remove events.py, download.py and downloadUtils.py
 - more work on the Queues
     - ✅ worker_scan to fetch urls from queue type 'Scan'
     - ✅ add artists
     - ✅ add albums
-    - add lyrics
-    - download covers
+    - ✅ download covers
     - scan files
-- how to know what is missing/downloaded compared to tidal?
 - replace and select Masters albums/track
     - store matching information in db for future use
+- split wanted artists/albums/tracks from the watched ones
 - replace classes with functions as it's not needed and makes the code less readable
     - ✅ language.py
     - tidal.py
@@ -65,7 +64,9 @@ While it's available in a docker image, there's currently no way to execute the 
     - start jobs
     - login into Tidal to catch token
     - add urls to the queue from tidal search, urls or files (replace cli)
-- split monolith into workers with cron jobs
+    - have better templates
+- ✅ split monolith into workers 
+    - ✅ with cron jobs
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
 - local ai matching pattern
 - clean up the README and package in docker

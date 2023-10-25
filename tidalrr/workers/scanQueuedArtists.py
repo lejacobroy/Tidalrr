@@ -15,14 +15,13 @@ from tidalrr.tidal import *
 from tidalrr.workers import *
 
 def scanQueuedArtists():
-    tidalrrStart()
     artists = getTidalArtists()
-    for i, artist in enumerate(artists):
-        start_artist(Artist(*artist))
+    if len(artists) > 0 :
+        for artist in artists:
+            start_artist(Artist(*artist))
 
 def start_artist(obj: Artist):
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
-    for album in albums:
-        addTidalAlbum(album)
-
-scanQueuedArtists()
+    if len(albums) > 0 :
+        for album in albums:
+            addTidalAlbum(album)

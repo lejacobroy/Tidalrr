@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Artists</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Url</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['name'] }}</td>
+            <td>{{ row['url'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

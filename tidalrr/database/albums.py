@@ -61,14 +61,23 @@ def convertToAlbum(album) -> Album:
         )
     return albumType
 
+def getArtistsNameJSON(artists):
+        array = []
+        for item in json.loads(artists):
+            array.append(item["name"])
+        return ", ".join(array)
+
 def getTidalAlbums() -> [Album]:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_albums WHERE title IS NOT ""').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_albums WHERE title <> ""').fetchall()
     new_rows = [Album]
-    for i, album in enumerate(rows):
-        new_rows.append(convertToAlbum(album))
     conn.close()
+    if len(rows) > 0 :
+        for album in rows:
+            a = convertToAlbum(album)
+            a.artists = getArtistsNameJSON(a.artists)
+            new_rows.append(a)
     return new_rows
 
 def getTidalAlbum(id=int) -> Album:
@@ -76,4 +85,8 @@ def getTidalAlbum(id=int) -> Album:
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM tidal_albums WHERE id = ?', (id,)).fetchone()
     conn.close()
-    return convertToAlbum(row)
+    album = None
+    if row is not None:
+        album = convertToAlbum(row)
+        album.artists = getArtistsNameJSON(album.artists)
+    return album

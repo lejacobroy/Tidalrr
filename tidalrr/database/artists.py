@@ -39,8 +39,9 @@ def getTidalArtists() -> [Artist]:
     rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL').fetchall()
     conn.close()
     new_rows = [Artist]
-    for i, item in enumerate(rows):
-        new_rows.append(convertToArtist(item))
+    if len(rows) > 0 :
+        for item in rows:
+            new_rows.append(convertToArtist(item))
     return rows
 
 def getTidalArtist(id=int) -> Artist:
@@ -48,10 +49,7 @@ def getTidalArtist(id=int) -> Artist:
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM tidal_artists WHERE id = ?', (id,)).fetchone()
     conn.close()
-    return convertToArtist(row)
-
-def getArtistsNameJSON(artists):
-        array = []
-        for item in json.loads(artists):
-            array.append(item["name"])
-        return ", ".join(array)
+    artist = None
+    if row is not None:
+        artist = convertToArtist(row)
+    return artist

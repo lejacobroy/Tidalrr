@@ -22,37 +22,42 @@ database_path = os.path.abspath(os.path.dirname(__file__))+'/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
 def createTables():
-    connection = sqlite3.connect(database_path)
-    with open(schema_path) as f:
-        connection.executescript(f.read())
-    cur = connection.cursor()
-    cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
-                 4,
-                 'Max',
-                 True,
-                 True,
-                 "./download",
-                 True,
-                 0,
-                 True,
-                 False,
-                 'Playlist/{PlaylistName} [{PlaylistUUID}]',
-                 True,
-                 True,
-                 True,
-                 False,
-                 '{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}',
-                 False,
-                 '',
-                 '',
-                 '',
-                 '',
-                 ''
-                 )
-                )
-    connection.commit()
-    connection.close()
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    settings = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings';").fetchone()
+    conn.close()
+    if settings is None:
+        connection = sqlite3.connect(database_path)
+        with open(schema_path) as f:
+            connection.executescript(f.read())
+        cur = connection.cursor()
+        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
+                    4,
+                    'Max',
+                    True,
+                    True,
+                    "./download",
+                    True,
+                    0,
+                    True,
+                    False,
+                    'Playlist/{PlaylistName} [{PlaylistUUID}]',
+                    True,
+                    True,
+                    True,
+                    False,
+                    '{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}',
+                    False,
+                    '',
+                    '',
+                    '',
+                    '',
+                    ''
+                    )
+                    )
+        connection.commit()
+        connection.close()
 
 def getSettings() -> Settings:
     conn = sqlite3.connect(database_path)

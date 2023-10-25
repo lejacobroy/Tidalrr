@@ -28,12 +28,12 @@ from tidalrr.apiKey import *
 requests.packages.urllib3.disable_warnings()
 requests.adapters.DEFAULT_RETRIES = 5
 
-def getArtistsName(artists=[]):
+""" def getArtistsName(artists=[]):
         array = []
         for item in artists:
             #print(item['name'])
             array.append(item['name'])
-        return ", ".join(array)
+        return ", ".join(array) """
 
 def changeApiKey():
     item = getItem(SETTINGS.apiKeyIndex)
@@ -215,6 +215,8 @@ class TidalAPI(object):
         ret = []
         while True:
             data = self.__get__(path, params)
+            if data is None:
+                return ret
             if 'totalNumberOfItems' in data:
                 total = data['totalNumberOfItems']
             if total > 0 and total <= len(ret):
@@ -328,7 +330,7 @@ class TidalAPI(object):
            audioModes= album['audioModes'],
            path= '',
            artist= album['artist']['id'],
-           artists= album['artists'],
+           artists= json.dumps(album['artists']),
            url= album['url'],
            duration= album['duration'],
            numberOfTracks=  album['numberOfTracks'],
@@ -475,19 +477,24 @@ class TidalAPI(object):
         return tracks
 
     def orderHighQAlbums(self, data=[]) -> [Album]:
-        for i, item in enumerate(data):
-            data[i]['nquality'] = 0
+        filteredAlbums = []
+        for album in data:
+            if 'title' in album.keys() and 'audioQuality' in album.keys():
+                filteredAlbums.append(album)
+
+        for i, item in enumerate(filteredAlbums):
+            filteredAlbums[i]['nquality'] = 0
             if item['audioQuality'] == "HIGH":
-                data[i]['nquality'] = 1
+                filteredAlbums[i]['nquality'] = 1
             elif item['audioQuality'] == "HI_RES":
-                data[i]['nquality'] = 2
+                filteredAlbums[i]['nquality'] = 2
             elif item['audioQuality'] == "LOSSLESS":
-                data[i]['nquality'] = 3
+                filteredAlbums[i]['nquality'] = 3
             elif item['audioQuality'] == "HI_RES_LOSSLESS":
-                data[i]['nquality'] = 4
+                filteredAlbums[i]['nquality'] = 4
 
         # get a list of duplicated album.name
-        df = pd.DataFrame(data)
+        df = pd.DataFrame(filteredAlbums)
         df.sort_values(by=['title', 'nquality'], inplace=True)
         df.drop_duplicates(subset=['title'], keep='last', inplace=True)
         new_albums = df.to_dict("records")
@@ -497,13 +504,16 @@ class TidalAPI(object):
 
     def getArtistAlbums(self, id, includeEP=False):
         data = self.__getItems__(f'artists/{str(id)}/albums')
-        albums = self.orderHighQAlbums(data)
+        albums = []
+        if len(data) > 0 :
+            albums = self.orderHighQAlbums(data)
 
-        if not includeEP:
-            return albums
+            if not includeEP:
+                return albums
 
-        data = self.__getItems__(f'artists/{str(id)}/albums', {"filter": "EPSANDSINGLES"})
-        albums += self.orderHighQAlbums(data)
+            data = self.__getItems__(f'artists/{str(id)}/albums', {"filter": "EPSANDSINGLES"})
+            if len(data) > 0 :
+                albums += self.orderHighQAlbums(data)
 
         return albums
     

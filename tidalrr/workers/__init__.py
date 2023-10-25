@@ -14,7 +14,7 @@ from tidalrr.settings import *
 from tidalrr.tidal import *
 
 def tidalrrStart():
-    #createTables()
+    createTables()
     SETTINGS.read()
     TOKEN.read()
     TIDAL_API.apiKey = getItem(SETTINGS.apiKeyIndex)
@@ -60,7 +60,7 @@ def setMetaData(track: Track, album: Album, artist: Artist, artists:str, filepat
     obj.composer = parseContributors('Composer', contributors)
     obj.isrc = track.isrc
 
-    obj.albumartist = artist.name
+    obj.albumartist = artist[0]
     obj.date = album.releaseDate
     obj.totaldisc = album.numberOfVolumes
     obj.lyrics = lyrics

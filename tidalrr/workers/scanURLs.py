@@ -12,10 +12,10 @@ import aigpy
 from tidalrr.tidal import *
 from tidalrr.settings import *
 from tidalrr.workers import *
-from tidalrr.workers.scanQueuedArtists import *
-from tidalrr.workers.scanQueuedAlbums import *
-from tidalrr.workers.scanQueuedTracks import *
-from tidalrr.workers.scanQueuedPlaylists import *
+from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
+from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
+from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
+from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 
 def readFile(val):
     print('Using file list: '+val)
@@ -42,21 +42,29 @@ def start(string):
             print('start_type', etype)
             if etype == Type.Artist:
                 addTidalArtist(obj)
+                print('addTidalArtist')
                 scanQueuedArtists()
-            elif etype == Type.Track:
-                addTidalTrack(obj)
-                scanQueuedTracks()
+                print('scanQueuedArtists')
             elif etype == Type.Album:
                 addTidalAlbum(obj)
+                print('addTidalAlbum')
                 scanQueuedAlbums()
+                print('scanQueuedAlbums')
+            elif etype == Type.Track:
+                addTidalTrack(obj)
+                print('addTidalTrack')
+                scanQueuedTracks()
+                print('scanQueuedTracks')
             elif etype == Type.Playlist:
                 addTidalPlaylist(obj)
+                print('addTidalPlaylist')
                 scanQueuedPlaylists()
+                print('scanQueuedPlaylists')
             #elif etype == Type.Mix:
                 #start_mix(obj)
         except Exception as e:
             print(str(e))
 
-def startScanURLs(val):
+def startImportFile(val):
     tidalrrStart()
     readFile(val)

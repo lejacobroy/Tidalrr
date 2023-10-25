@@ -13,18 +13,35 @@ from tidalrr.database import *
 from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
+from tidalrr.workers.scanQueuedAlbums import *
+from tidalrr.workers.scanQueuedTracks import *
 
 def scanQueuedPlaylists():
-    tidalrrStart()
     playlists = getTidalPlaylists()
-    for i, playlist in enumerate(playlists):
-        start_playlist(Playlist(*playlist))
+    if len(playlists) > 0 :
+        for playlist in playlists:
+            start_playlist(Playlist(*playlist))
 
 def start_playlist_sync(UserId=None):
     playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
     for playlist in playlists:
         if playlist.title is not None:
             addTidalPlaylist(playlist)
+
+def writePlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
+    def __getAlbum__(item: Track):
+        album = TIDAL_API.getAlbum(item.album.id)
+        if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
+            scanCover(album)
+        return album
+    
+    for index, item in enumerate(tracks):
+        itemAlbum = album
+        if itemAlbum is None:
+            itemAlbum = __getAlbum__(item)
+            item.trackNumberOnPlaylist = index + 1
+        addTidalTrack(item)
+
 
 def start_playlist(obj: Playlist):
     print(obj)
@@ -42,9 +59,12 @@ def start_playlist(obj: Playlist):
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     for track in tracks:
         addTidalTrack(track)
-
-    #paths = downloadTracks(tracks, None, obj)
-    # match the paths with the files table
+    paths = []
+    for index, item in enumerate(tracks):
+        itemAlbum = getTidalAlbum(item.album)
+        if itemAlbum is None:
+            item.trackNumberOnPlaylist = index + 1
+        paths.append(scanTrack(item, itemAlbum, obj)[1])
 
     with open(str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u', 'w') as f:
         #f.write('#EXTM3U\n')
@@ -62,5 +82,3 @@ def start_playlist(obj: Playlist):
             f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
             f.write(str(getTrueHomePath())+'/'+filename+'\n') 
     print('Done generating m3u8 playlist file: '+str(getTrueHomePath())+'/config/Playlists/'+obj.title+'.m3u8')
-
-scanQueuedPlaylists()

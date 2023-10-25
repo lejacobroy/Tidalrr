@@ -51,8 +51,9 @@ def getTidalQueues(type=str) -> [Queue]:
         rows = conn.execute('SELECT * FROM tidal_queue WHERE type = ?', (type,)).fetchall()
     conn.close()
     queues = []
-    for i, q in enumerate(rows):
-        queues.append(convertToQueue(q))
+    if len(rows) > 0:
+        for q in rows:
+            queues.append(convertToQueue(q))
     return queues
 
 def delTidalQueue(path=str):

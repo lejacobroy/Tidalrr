@@ -47,43 +47,36 @@ def tidalrrWeb(config=None):
     
     @app.route("/config")
     def config():
-        # to read settings we need a KV
         settings = getSettings()
         return render_template("config.html", settings = settings)
     
     @app.route("/tidal/artists")
     def tidalArtists():
-        # to read settings we need a KV
         rows = getTidalArtists()
         return render_template("artists.html", rows = rows)
     
     @app.route("/tidal/albums")
     def tidalAlbums():
-        # to read settings we need a KV
         rows = getTidalAlbums()
         return render_template("albums.html", rows = rows)
     
     @app.route("/tidal/playlists")
     def tidalPlaylists():
-        # to read settings we need a KV
         rows = getTidalPlaylists()
         return render_template("playlists.html", rows = rows)
     
     @app.route("/tidal/tracks")
     def tidalTracks():
-        # to read settings we need a KV
         rows = getTidalTracks()
         return render_template("tracks.html", rows = rows)
     
     @app.route("/download/queue")
     def tidalQueues():
-        # to read settings we need a KV
         rows = getTidalQueues('')
         return render_template("queues.html", rows = rows)
     
     @app.route("/files")
     def files():
-        # to read settings we need a KV
         rows = getFiles()
         return render_template("files.html", rows = rows)
 
@@ -94,6 +87,7 @@ def tidalrrWeb(config=None):
     return app
 
 def webServer():
+    createTables()
     tidalrrStart()
     port = int(os.environ.get("PORT", 3000))
     app = tidalrrWeb()
