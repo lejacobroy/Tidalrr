@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 import aigpy
-from tidalrr.events import *
+from tidalrr.tidal import *
 from tidalrr.settings import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedArtists import *

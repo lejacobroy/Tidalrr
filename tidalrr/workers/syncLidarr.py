@@ -9,11 +9,10 @@
 @Desc    :   
 '''
 
-from events import *
+from tidal import *
 from settings import *
 from model import *
 from tidalrr.workers import *
-from tidalrr.download import *
 
 def getMissingAlbums(URL: str, API: str):
     # http://pomelo:8686/api/v1/wanted/missing?apikey=LIDARR_APIKEY

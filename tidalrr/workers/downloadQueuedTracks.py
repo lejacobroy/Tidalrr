@@ -15,7 +15,6 @@ import time
 from paths import *
 from decryption import *
 from tidal import *
-from downloadUtils import *
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from tidalrr.workers import *
