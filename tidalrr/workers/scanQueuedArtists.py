@@ -17,11 +17,14 @@ from tidalrr.workers import *
 def scanQueuedArtists():
     artists = getTidalArtists()
     if len(artists) > 0 :
-        for artist in artists:
-            start_artist(Artist(*artist))
+        for i, artist in enumerate(artists):
+            if hasattr(artist, 'id'):
+                print('Scanning artist '+ str(i)+'/'+str(len(artists))+' '+artist.name)
+                start_artist(artist)
 
 def start_artist(obj: Artist):
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
     if len(albums) > 0 :
-        for album in albums:
+        for i,album in enumerate(albums):
+            print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
             addTidalAlbum(album)

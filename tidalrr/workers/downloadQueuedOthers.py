@@ -17,16 +17,19 @@ from tidalrr.workers import *
 
 def downloadQueuedCovers():
     covers = getTidalQueues('Cover')
-    for cover in covers:
-        aigpy.net.downloadFile(cover.url, cover.path)
-        album = getTidalAlbum(cover.id)
-        file = File(
-            description=album.title,
-            type='Cover',
-            id=cover.id,
-            path=cover.path
-        )
-        addFiles(file)
+    for i,cover in enumerate(covers):
+        file = getFileById(cover.id)
+        if file is None:
+            aigpy.net.downloadFile(cover.url, cover.path)
+            album = getTidalAlbum(cover.id)
+            print('Downloading album cover '+str(i)+'/'+str(len(covers))+' '+album.title)
+            file = File(
+                description=album.title,
+                type='Cover',
+                id=cover.id,
+                path=cover.path
+            )
+            addFiles(file)
         delTidalQueue(cover.path)
 
 """ def getDownloadTrackFilename(track: Track, playlist: Playlist):

@@ -17,14 +17,16 @@ from tidalrr.workers import *
 def scanQueuedAlbums():
     albums = getTidalAlbums()
     if len(albums) > 0 :
-        for album in albums:
+        for i,album in enumerate(albums):
             if hasattr(album, 'id'):
+                print('Scanning album '+ str(i)+'/'+str(len(albums))+' '+album.title)
                 start_album(album)
 
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
-    for i in tracks:
-        addTidalTrack(i)
+    for i, track in enumerate(tracks):
+        print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
+        addTidalTrack(track)
     if SETTINGS.saveAlbumInfo:
         writeAlbumInfo(obj, tracks)
     if SETTINGS.saveCovers and obj.cover is not None:

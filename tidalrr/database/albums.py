@@ -32,9 +32,9 @@ def addTidalAlbum(album=Album):
                     album.cover,
                     album.explicit,
                     album.audioQuality,
-                    json.dumps(album.audioModes),
+                    album.audioModes,
                     album.artist,
-                    json.dumps(album.artists),
+                    album.artists,
                     album.url
                 ))
     connection.commit()

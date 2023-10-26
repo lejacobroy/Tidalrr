@@ -18,35 +18,27 @@ from tidalrr.workers.scanQueuedAlbums import *
 def scanQueuedTracks():
     tracks = getTidalTracks()
     if len(tracks) > 0 :
-        for track in tracks:
-            start_track(track)
+        for i,track in enumerate(tracks):
+            if hasattr(track, 'id'):
+                print('Scanning track '+ str(i)+'/'+str(len(tracks))+' '+track.title)
+                start_track(track)
 
 def start_track(obj: Track):
-    album = TIDAL_API.getAlbum(obj.album)
+    album = getTidalAlbum(obj.album)
     if SETTINGS.saveCovers:
         scanCover(album)
-    scanTrack(obj, album)
+    file = getFileById(obj.id)
+    queue = getTidalQueueById(obj.id)
+    if file is None and queue is None:
+        scanTrack(obj, album)
+    else:
+        print('File Exists, skipping')
 
-def scanTrack(track: Track, album=None, playlist=None):
-    file = getFileById(track.id)
-    if file is None:
-        #try:
-        stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
-        artist = getTidalArtist(track.artist)
-        album = getTidalAlbum(track.album)
-
+def scanTrack(track: Track, album=Album, playlist=None):
+    stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
+    artist = getTidalArtist(track.artist)
+    if artist is not None:
         path = getTrackPath(track, stream, artist, album, playlist)
-
-        number = 0
-        if track.trackNumberOnPlaylist:
-            number = track.trackNumberOnPlaylist
-        else:
-            number = track.trackNumber
-        # check exist
-        """ if isSkip(path, stream.url):
-            # check if file is not already in db/linked to table file or queue
-            print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title + " (skip:already exists!)")
-            return True, path """
 
         queue = Queue(
             type='Track',
@@ -58,11 +50,7 @@ def scanTrack(track: Track, album=None, playlist=None):
         )
 
         addTidalQueue(queue)
-        
-        print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
-        return True, path
-        """ except Exception as e:
-            print(f"DL Track[{track.title}] failed.{str(e)}")
-            return False, str(e) """
+        print('Adding track to queue '+track.title)
     else:
-        print('File Exists, skipping')
+        print('Track '+str(track.id)+' Unknown artist '+ str(track.artist)+' '+ track.artists)
+        # maybe add the artist and re-run

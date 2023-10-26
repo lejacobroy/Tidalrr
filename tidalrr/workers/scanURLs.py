@@ -39,27 +39,28 @@ def start(string):
             return
 
         try:
-            print('start_type', etype)
             if etype == Type.Artist:
-                addTidalArtist(obj)
-                print('addTidalArtist')
-                scanQueuedArtists()
-                print('scanQueuedArtists')
+                dbArtist = getTidalArtist(obj.id)
+                if dbArtist is None:
+                    addTidalArtist(obj)
+                    print('Added artist to DB:', obj.name)
+                    #scanQueuedArtists()
             elif etype == Type.Album:
-                addTidalAlbum(obj)
-                print('addTidalAlbum')
-                scanQueuedAlbums()
-                print('scanQueuedAlbums')
+                dbAlbum = getTidalAlbum(obj.id)
+                if dbAlbum is None:
+                    addTidalAlbum(obj)
+                    print('Added album to DB:', obj.title)
+                    #scanQueuedAlbums()
             elif etype == Type.Track:
-                addTidalTrack(obj)
-                print('addTidalTrack')
-                scanQueuedTracks()
-                print('scanQueuedTracks')
+                dbTrack = getTidalTrack(obj.id)
+                if dbTrack is None:
+                    addTidalTrack(obj)
+                    print('addTidalTrack')
+                    #scanQueuedTracks()
             elif etype == Type.Playlist:
                 addTidalPlaylist(obj)
                 print('addTidalPlaylist')
-                scanQueuedPlaylists()
-                print('scanQueuedPlaylists')
+                #scanQueuedPlaylists()
             #elif etype == Type.Mix:
                 #start_mix(obj)
         except Exception as e:

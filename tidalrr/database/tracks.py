@@ -11,7 +11,6 @@
 import sqlite3
 import os
 from tidalrr.model import *
-import json
 
 from tidalrr.database.albums import getArtistsNameJSON
 
@@ -56,10 +55,10 @@ def addTidalTrack(track=Track):
                     track.isrc,
                     track.explicit,
                     track.audioQuality,
-                    json.dumps(track.audioModes),
+                    track.audioModes,
                     track.copyRight,
                     track.artist,
-                    json.dumps(track.artists),
+                    track.artists,
                     track.album,
                     track.url
                 ))

@@ -56,6 +56,16 @@ def getTidalQueues(type=str) -> [Queue]:
             queues.append(convertToQueue(q))
     return queues
 
+def getTidalQueueById(id= int) -> Queue:
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT * FROM tidal_queue WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    queue = None
+    if row is not None:
+        queue = convertToQueue(row)
+    return queue
+
 def delTidalQueue(path=str):
     conn = sqlite3.connect(database_path)
     cur = conn.cursor()

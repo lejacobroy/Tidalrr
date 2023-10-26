@@ -327,7 +327,7 @@ class TidalAPI(object):
            cover= album['cover'],
            explicit= album['explicit'],
            audioQuality= album['audioQuality'],
-           audioModes= album['audioModes'],
+           audioModes= json.dumps(album['audioModes']),
            path= '',
            artist= album['artist']['id'],
            artists= json.dumps(album['artists']),
@@ -400,10 +400,10 @@ class TidalAPI(object):
             isrc= track['isrc'],
             explicit= track['explicit'],
             audioQuality= track['audioQuality'],
-            audioModes= track['audioModes'],
+            audioModes= json.dumps(track['audioModes']),
             copyRight= track['copyright'],
             artist= track['artist']['id'],
-            artists= track['artists'],
+            artists= json.dumps(track['artists']),
             album= track['album']['id'],
             allowStreaming='',
             playlist='',
@@ -585,31 +585,33 @@ class TidalAPI(object):
         paras = {"audioquality": squality, "playbackmode": "STREAM", "assetpresentation": "FULL"}
         data = self.__get__(f'tracks/{str(id)}/playbackinfopostpaywall', paras)
         resp = aigpy.model.dictToModel(data, StreamRespond())
-
-        if "vnd.tidal.bt" in resp.manifestMimeType:
-            manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
-            ret = StreamUrl()
-            ret.trackid = resp.trackid
-            ret.soundQuality = resp.audioQuality
-            ret.codec = manifest['codecs']
-            ret.encryptionKey = manifest['keyId'] if 'keyId' in manifest else ""
-            ret.url = manifest['urls'][0]
-            ret.urls = [ret.url]
-            return ret
-        elif "dash+xml" in resp.manifestMimeType:
-            xmldata = base64.b64decode(resp.manifest).decode('utf-8')
-            ret = StreamUrl()
-            ret.trackid = resp.trackid
-            ret.soundQuality = resp.audioQuality
-            ret.codec = aigpy.string.getSub(xmldata, 'codecs="', '"')
-            ret.encryptionKey = ""#manifest['keyId'] if 'keyId' in manifest else ""
-            ret.urls = self.parse_mpd(xmldata)[0]
-            if len(ret.urls) > 0:
-                ret.url = ret.urls[0]
-            return ret
+        if hasattr(resp, 'manifestMimeType'):
+            if "vnd.tidal.bt" in resp.manifestMimeType:
+                manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
+                ret = StreamUrl()
+                ret.trackid = resp.trackid
+                ret.soundQuality = resp.audioQuality
+                ret.codec = manifest['codecs']
+                ret.encryptionKey = manifest['keyId'] if 'keyId' in manifest else ""
+                ret.url = manifest['urls'][0]
+                ret.urls = [ret.url]
+                return ret
+            elif "dash+xml" in resp.manifestMimeType:
+                xmldata = base64.b64decode(resp.manifest).decode('utf-8')
+                ret = StreamUrl()
+                ret.trackid = resp.trackid
+                ret.soundQuality = resp.audioQuality
+                ret.codec = aigpy.string.getSub(xmldata, 'codecs="', '"')
+                ret.encryptionKey = ""#manifest['keyId'] if 'keyId' in manifest else ""
+                ret.urls = self.parse_mpd(xmldata)[0]
+                if len(ret.urls) > 0:
+                    ret.url = ret.urls[0]
+                return ret
+        else:
+            print("Can't get the streamUrl, resp is None")
         # else:
         #     manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
-        raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType)
+        #raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType)
 
     def getTrackContributors(self, id):
         return self.__get__(f'tracks/{str(id)}/contributors')
@@ -643,7 +645,6 @@ class TidalAPI(object):
 
         obj = None
         etype, sid = self.parseUrl(string)
-        print(etype, sid)
         for index, item in enumerate(Type):
             if etype != Type.Null and etype != item:
                 continue

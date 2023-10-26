@@ -42,7 +42,7 @@ def getTidalArtists() -> [Artist]:
     if len(rows) > 0 :
         for item in rows:
             new_rows.append(convertToArtist(item))
-    return rows
+    return new_rows
 
 def getTidalArtist(id=int) -> Artist:
     conn = sqlite3.connect(database_path)
