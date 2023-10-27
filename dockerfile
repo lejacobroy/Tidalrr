@@ -9,4 +9,4 @@ RUN apt-get update && apt-get -y install gcc python3-dev
 RUN ./build.sh
 # tidalrr should be installed in /app/dist/tidalrr
 
-CMD ["/app/dist/tidalrr"]
+CMD ["python3", "app.py"]

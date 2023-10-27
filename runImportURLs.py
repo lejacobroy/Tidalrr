@@ -12,8 +12,6 @@ import os
 
 from tidalrr.workers.scanURLs import *
 
-def mainCommand():
+if __name__ == '__main__':
     file_path = os.path.abspath(os.path.dirname(__file__))+'/import/urls.txt'
     startImportFile(file_path)
-
-mainCommand()

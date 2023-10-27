@@ -9,7 +9,6 @@
 @Desc    :   
 '''
 import aigpy
-import logging
 import time
 
 from tidalrr.paths import *
@@ -20,30 +19,25 @@ from urllib.parse import parse_qs
 from tidalrr.workers import *
 
 def refreshStreamURL(id=int):
-    return (TIDAL_API.getStreamUrl(id, SETTINGS.audioQuality)).url
+    return TIDAL_API.getStreamUrl(id, SETTINGS.audioQuality)
 
 def isNeedRefresh(url):
     #extract the 'expire' key from the url
     parsed_url = urlparse(url)
     captured_value = parse_qs(parsed_url.query)['Expires'][0]
-    if captured_value > int( time.time() ):
+    if int(captured_value) > int( time.time() ):
         return False
     return True
 
 def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
+    result = False
     album = getTidalAlbum(track.album)
-    
-    if not queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
+
+    if queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
         print('Refreshing URL '+ track.title)
         temp = refreshStreamURL(queue.id)
         queue.url = temp.url
         queue.encryptionKey = temp.encryptionKey
-
-    number = 0
-    if track.trackNumberOnPlaylist:
-        number = track.trackNumberOnPlaylist
-    else:
-        number = track.trackNumber
 
     # check exist
     if not isSkip(queue.path, queue.url):
@@ -78,10 +72,10 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
                 aigpy.file.write(lrcPath, lyrics, 'w')
         except:
             lyrics = ''
-        metadataArtist = [(getTidalArtist(album.artist).name)]
-        metadataArtists = [album.artists]
+        metadataArtist = [str((getTidalArtist(album.artist).name))]
+        metadataArtists = [str(album.artists)]
+
         setMetaData(track, album, metadataArtist, metadataArtists, queue.path, contributors, lyrics)
-        
         #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
         #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
 
@@ -93,6 +87,8 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
         path=queue.path
     )
     addFiles(file)
+    result = True
+    return result
 
 
 def downloadQueuedTracks():
@@ -100,10 +96,13 @@ def downloadQueuedTracks():
     queue_items = getTidalQueues('Track')
     for i, queue in enumerate(queue_items):
         file = getFileById(queue.id)
+        result = False
         if file is None:
             track = getTidalTrack(queue.id)
-            print('Downloading track file '+str(i)+'/'+str(len(queue_items))+' '+queue.title)
-            workDownloadTrack(queue, track)
-        # remove queue in db
-        delTidalQueue(queue.path)
-        return True
+            print('Downloading track file '+str(i)+'/'+str(len(queue_items))+' '+track.title)
+            result = workDownloadTrack(queue, track)
+        else:
+            result = True
+        if result:
+            # remove queue in db
+            delTidalQueue(queue.path)

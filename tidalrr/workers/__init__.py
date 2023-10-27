@@ -60,7 +60,7 @@ def setMetaData(track: Track, album: Album, artist: Artist, artists:str, filepat
     obj.composer = parseContributors('Composer', contributors)
     obj.isrc = track.isrc
 
-    obj.albumartist = artist[0]
+    obj.albumartist = artist
     obj.date = album.releaseDate
     obj.totaldisc = album.numberOfVolumes
     obj.lyrics = lyrics

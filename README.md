@@ -65,6 +65,9 @@ While it's available in a docker image, there's currently no way to execute the 
     - login into Tidal to catch token
     - add urls to the queue from tidal search, urls or files (replace cli)
     - have better templates
+    - change settings
+    - migrate paths in queues and files
+    - stats page
 - ✅ split monolith into workers 
     - ✅ with cron jobs
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)

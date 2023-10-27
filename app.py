@@ -11,10 +11,8 @@
 import subprocess
 import sys
 
-def main():
+if __name__ == '__main__':
     subprocess.Popen([sys.executable, "runWebServer.py"])
     subprocess.Popen([sys.executable, "runImportURLs.py"])
     subprocess.Popen([sys.executable, "runScans.py"])
     subprocess.Popen([sys.executable, "runDownloads.py"])
-
-main()

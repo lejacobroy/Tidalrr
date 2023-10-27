@@ -13,4 +13,5 @@ services:
     volumes:
       - /path/to/config/folder:/app/config
       - /path/to/download/folder:/app/download
+      - /path/to/import/folder:/app/import
       - /path/to/lidarr/folders:/path/to/lidarr/folders

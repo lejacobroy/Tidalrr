@@ -14,7 +14,7 @@ import os
 from tidalrr.model import *
 import json
 
-database_path = os.path.abspath(os.path.dirname(__file__))+'/database.db'
+database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
 def addTidalArtist(artist=Artist):

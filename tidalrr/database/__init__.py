@@ -18,7 +18,7 @@ from tidalrr.database.queues import *
 from tidalrr.database.files import *
 from tidalrr.database.playlists import *
 
-database_path = os.path.abspath(os.path.dirname(__file__))+'/database.db'
+database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
 def createTables():

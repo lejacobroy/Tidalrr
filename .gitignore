@@ -28,3 +28,4 @@ tidalrr/database/database.db
 urls.txt
 .vscode/settings.json
 one_urls.txt
+tidalrr/config/database.db

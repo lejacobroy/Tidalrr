@@ -11,7 +11,5 @@
 
 from tidalrr.webserver import *
 
-def mainWebServer():
+if __name__ == '__main__':
     webServer()
-
-mainWebServer()
