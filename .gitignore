@@ -1,4 +1,3 @@
-.gitignore
 /download
 /__init__.spec
 __pycache__

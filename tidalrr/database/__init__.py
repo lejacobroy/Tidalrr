@@ -89,11 +89,10 @@ def getStats():
                         UNION\
                         SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
                         UNION\
-                        SELECT 'Queues' as type, count(*) as count FROM tidal_queue\
+                        SELECT 'Download Queue' as type, count(*) as count FROM tidal_queue\
                         UNION\
-                        SELECT 'Files' as type, count(*) as count FROM files\
+                        SELECT 'Downloaded Files' as type, count(*) as count FROM files\
                         "
-                        
                         ).fetchall()
     conn.close()
     return rows
