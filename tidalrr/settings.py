@@ -17,7 +17,7 @@ from tidalrr.database import *
 from os.path import exists
 
 
-class Settings(aigpy.model.ModelBase):
+class SettingsClass(aigpy.model.ModelBase):
     checkExist = True
     includeEP = True
     saveCovers = True
@@ -29,8 +29,11 @@ class Settings(aigpy.model.ModelBase):
     saveAlbumInfo = True
     multiThread = True
     downloadDelay = True
-    lidarrURL = ''
-    lidarrAPI = ''
+    lidarrUrl = ''
+    lidarrApi = ''
+    tidalToken = ''
+    plexUrl = ''
+    plexToken = ''
 
     downloadPath = "./download/"
     audioQuality = AudioQuality.Max
@@ -56,21 +59,17 @@ class Settings(aigpy.model.ModelBase):
     
     def read(self):
         settings = getSettings()
-        #self._path_ = path
-        #txt = aigpy.file.getContent(self._path_)
-        #if len(txt) > 0:
-        #    data = json.loads(txt)
-        if aigpy.model.dictToModel(settings, self) is None:
-            # migrate old settings
-            path = os.path.join(os.path.dirname(__file__))+'/config/tidalrr.json'
-            if exists(path):
-                txt = aigpy.file.getContent(path)
-                if len(txt) > 0:
-                    data = json.loads(txt)
-                    if aigpy.model.dictToModel(data, self) is None:
-                        return
-                    else:
-                        self.save()
+
+        # migrate old settings
+        path = os.path.join(os.path.dirname(__file__))+'/config/tidalrr.json'
+        if exists(path):
+            txt = aigpy.file.getContent(path)
+            if len(txt) > 0:
+                data = json.loads(txt)
+                if aigpy.model.dictToModel(data, self) is None:
+                    return
+                else:
+                    self.save()
 
         self.audioQuality = self.getAudioQuality(self.audioQuality)
 
@@ -85,10 +84,10 @@ class Settings(aigpy.model.ModelBase):
 
     def save(self):
         data = aigpy.model.modelToDict(self)
-        data['audioQuality'] = self.audioQuality.name
+        data['audioQuality'] = self.audioQuality
         #txt = json.dumps(data)
         #aigpy.file.write(self._path_, txt, 'w+')
-        setSettings(data)
+        setSettings(Settings(**data))
 
 
 class TokenSettings(aigpy.model.ModelBase):
@@ -116,15 +115,16 @@ class TokenSettings(aigpy.model.ModelBase):
         #self._path_ = path
         #txt = aigpy.file.getContent(self._path_)
         path = os.path.join(os.path.dirname(__file__))+'/config/tidalrr.token.json'
-        if len(settings['tidalToken']) > 0:
-            data = json.loads(self.__decode__(settings['tidalToken']))
-            aigpy.model.dictToModel(data, self)
-        elif exists(path):
-            # migrate old token file
-            txt = aigpy.file.getContent(path)
-            data = json.loads(self.__decode__(txt))
-            aigpy.model.dictToModel(data, self)
-            self.save()
+        if settings.tidalToken:
+            if len(settings.tidalToken) > 0:
+                data = json.loads(self.__decode__(settings.tidalToken))
+                aigpy.model.dictToModel(data, self)
+            elif exists(path):
+                # migrate old token file
+                txt = aigpy.file.getContent(path)
+                data = json.loads(self.__decode__(txt))
+                aigpy.model.dictToModel(data, self)
+                self.save()
 
     def save(self):
         data = aigpy.model.modelToDict(self)
@@ -136,5 +136,5 @@ class TokenSettings(aigpy.model.ModelBase):
 
 
 # Singleton
-SETTINGS = Settings()
+SETTINGS = SettingsClass()
 TOKEN = TokenSettings()

@@ -50,6 +50,11 @@ def tidalrrWeb(config=None):
         settings = getSettings()
         return render_template("config.html", settings = settings)
     
+    @app.route("/stats")
+    def stats():
+        rows = getStats()
+        return render_template("stats.html", rows = rows)
+    
     @app.route("/tidal/artists")
     def tidalArtists():
         rows = getTidalArtists()
@@ -89,6 +94,7 @@ def tidalrrWeb(config=None):
 def webServer():
     createTables()
     tidalrrStart()
+    print("Starting web server")
     port = int(os.environ.get("PORT", 3000))
     app = tidalrrWeb()
     app.run(host="0.0.0.0", port=port)

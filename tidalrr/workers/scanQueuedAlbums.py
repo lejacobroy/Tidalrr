@@ -25,12 +25,17 @@ def scanQueuedAlbums():
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
     for i, track in enumerate(tracks):
-        print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
-        addTidalTrack(track)
-    if SETTINGS.saveAlbumInfo:
-        writeAlbumInfo(obj, tracks)
-    if SETTINGS.saveCovers and obj.cover is not None:
-        scanCover(obj)
+        existing = getTidalTrack(track.id)
+        if existing is None:
+            print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
+            if obj.queued:
+                track.queued = True
+            addTidalTrack(track)
+    if obj.queued:
+        if SETTINGS.saveAlbumInfo:
+            writeAlbumInfo(obj, tracks)
+        if SETTINGS.saveCovers and obj.cover is not None:
+            scanCover(obj)
 
 def scanCover(album):
     cover = getFileById(album.id)

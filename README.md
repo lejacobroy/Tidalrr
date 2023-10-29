@@ -50,8 +50,8 @@ While it's available in a docker image, there's currently no way to execute the 
     - ✅ download covers
     - scan files
 - replace and select Masters albums/track
-    - store matching information in db for future use
-- split wanted artists/albums/tracks from the watched ones
+    - store matching information in db for future use (superseeded)
+- ✅ split wanted artists/albums/tracks from the watched ones
 - replace classes with functions as it's not needed and makes the code less readable
     - ✅ language.py
     - tidal.py
@@ -67,7 +67,7 @@ While it's available in a docker image, there's currently no way to execute the 
     - have better templates
     - change settings
     - migrate paths in queues and files
-    - stats page
+    - ✅ stats page
 - ✅ split monolith into workers 
     - ✅ with cron jobs
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)

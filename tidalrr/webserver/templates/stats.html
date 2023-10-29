@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Stats</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+        <th scope="col">Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+            <td>{{ row['type'] }}</td>
+            <td>{{ row['count'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -15,15 +15,6 @@ from tidalrr.model import *
 database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
-def convertToFile(file) -> File:
-    fileType = File(
-        id= file['id'],
-        type= file['type'],
-        path= file['path'],
-        description= file['description']
-    )
-    return fileType
-
 def addFiles(file=File):
     connection = sqlite3.connect(database_path)
     cur = connection.cursor()

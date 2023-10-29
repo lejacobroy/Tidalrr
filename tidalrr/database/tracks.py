@@ -17,33 +17,10 @@ from tidalrr.database.albums import getArtistsNameJSON
 database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
-def convertToTrack(track) -> Track:
-    trackType = Track(
-        id= track['id'],
-        title= track['title'],
-        duration= track['duration'],
-        trackNumber= track['trackNumber'],
-        volumeNumber= track['volumeNumber'],
-        trackNumberOnPlaylist= '',
-        version= track['version'],
-        isrc= track['isrc'],
-        explicit= track['explicit'],
-        audioQuality= track['audioQuality'],
-        audioModes= track['audioModes'],
-        copyRight= track['copyright'],
-        artist= track['artist'],
-        artists= track['artists'],
-        album= track['album'],
-        allowStreaming='',
-        playlist='',
-        url= track['url'],
-    )
-    return trackType
-
 def addTidalTrack(track=Track):
     connection = sqlite3.connect(database_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_tracks VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_tracks VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     track.id,
                     track.title,
@@ -60,8 +37,19 @@ def addTidalTrack(track=Track):
                     track.artist,
                     track.artists,
                     track.album,
-                    track.url
+                    track.url,
+                    track.path,
+                    track.queued,
+                    track.downloaded
                 ))
+    connection.commit()
+    connection.close()
+
+def updateTidalTrack(track=Track):
+    connection = sqlite3.connect(database_path)
+    cur = connection.cursor()
+    cur.execute("UPDATE tidal_tracks SET queued = ?, downloaded = ? WHERE id = ?",
+                (track.queued, track.downloaded, track.id))
     connection.commit()
     connection.close()
 

@@ -30,7 +30,6 @@ def isNeedRefresh(url):
     return True
 
 def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
-    result = False
     album = getTidalAlbum(track.album)
 
     if queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
@@ -79,30 +78,36 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
         #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
         #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
 
-    # save file in db
-    file = File(
-        description=track.title,
-        type='Track',
-        id=track.id,
-        path=queue.path
-    )
-    addFiles(file)
-    result = True
-    return result
-
 
 def downloadQueuedTracks():
     tidalrrStart()
     queue_items = getTidalQueues('Track')
     for i, queue in enumerate(queue_items):
         file = getFileById(queue.id)
-        result = False
+
+        track = getTidalTrack(queue.id)
         if file is None:
-            track = getTidalTrack(queue.id)
-            print('Downloading track file '+str(i)+'/'+str(len(queue_items))+' '+track.title)
-            result = workDownloadTrack(queue, track)
-        else:
-            result = True
-        if result:
+            if not exists(track.path):
+                print('Downloading track file '+str(i)+'/'+str(len(queue_items))+' '+track.title)
+                workDownloadTrack(queue, track)
+            # save file in db
+            file = File(
+                description=track.title,
+                type='Track',
+                id=track.id,
+                path=queue.path
+            )
+            addFiles(file)
+
             # remove queue in db
             delTidalQueue(queue.path)
+
+            # update track row
+            track.path = queue.path
+            track.queued = False
+            track.downloaded = True
+            updateTidalTrack(track)
+
+    # update downloaded albums & artists
+    updateTidalAlbumsDownloaded()
+    updateTidalArtistsDownloaded()

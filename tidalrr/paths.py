@@ -64,7 +64,7 @@ def getFlag(data, type: Type, short=True, separator=" / "):
             array.append("E" if short else "Explicit")
         return separator.join(array)
 
-def getAlbumPath(album):
+def getAlbumPath(album:Album):
     artist = getTidalArtist(album.artist)
     if artist is not None:
         artistName = fixPath(str(album.artists))

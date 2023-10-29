@@ -64,9 +64,41 @@ def getSettings() -> Settings:
     conn.row_factory = sqlite3.Row
     settings = conn.execute('SELECT * FROM settings').fetchone()
     conn.close()
+    if settings is not None:
+        settings = Settings(**settings)
     return settings
 
-def setSettings(settings=Settings()):
+def getStats():
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
+                        UNION\
+                        SELECT 'Artists Queued' as type, count(*) as count FROM tidal_artists WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Artists Downloaded' as type, count(*) as count FROM tidal_artists WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Albums' as type, count(*) as count FROM tidal_albums\
+                        UNION\
+                        SELECT 'Albums Queued' as type, count(*) as count FROM tidal_albums WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Albums Downloaded' as type, count(*) as count FROM tidal_albums WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Tracks' as type, count(*) as count FROM tidal_tracks\
+                        UNION\
+                        SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Queues' as type, count(*) as count FROM tidal_queue\
+                        UNION\
+                        SELECT 'Files' as type, count(*) as count FROM files\
+                        "
+                        
+                        ).fetchall()
+    conn.close()
+    return rows
+
+def setSettings(settings=Settings):
     connection = sqlite3.connect(database_path)
     cur = connection.cursor()
     cur.execute("UPDATE settings SET \

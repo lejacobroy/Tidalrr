@@ -80,7 +80,7 @@ def loginByWeb():
         #print(LANG.select.AUTH_START_LOGIN)
         # get device code
         url = TIDAL_API.getDeviceCode()
-
+        print(__displayTime__(TIDAL_API.key.authCheckTimeout), " " + url)
         """ print(LANG.select.AUTH_NEXT_STEP.format(
             aigpy.cmd.green(url),
             aigpy.cmd.yellow(__displayTime__(TIDAL_API.key.authCheckTimeout))))
@@ -113,7 +113,7 @@ def loginByWeb():
 
 def loginByConfig():
     try:
-        if aigpy.string.isNull(TOKEN.accessToken):
+        if TOKEN.accessToken is None:
             return False
 
         if TIDAL_API.verifyAccessToken(TOKEN.accessToken):
@@ -125,7 +125,6 @@ def loginByConfig():
             TIDAL_API.key.accessToken = TOKEN.accessToken
             return True
 
-        #print(LANG.select.MSG_INVALID_ACCESSTOKEN)
         if TIDAL_API.refreshAccessToken(TOKEN.refreshToken):
             """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
                 __displayTime__(int(TIDAL_API.key.expiresIn)))) """
@@ -140,6 +139,7 @@ def loginByConfig():
             TokenSettings().save()
             return False
     except Exception as e:
+        print(e)
         return False
 
 
@@ -318,32 +318,17 @@ class TidalAPI(object):
         self.key.accessToken = accessToken
         return
 
-    def convertToAlbum(self, album) -> Album:
-        albumType = Album(
-           id= album['id'],
-           title= album['title'],
-           releaseDate= album['releaseDate'],
-           type= album['type'],
-           cover= album['cover'],
-           explicit= album['explicit'],
-           audioQuality= album['audioQuality'],
-           audioModes= json.dumps(album['audioModes']),
-           path= '',
-           artist= album['artist']['id'],
-           artists= json.dumps(album['artists']),
-           url= album['url'],
-           duration= album['duration'],
-           numberOfTracks=  album['numberOfTracks'],
-           numberOfVolumes= album['numberOfVolumes'],
-           version= album['version']
-        )
-        albumType.path = getAlbumPath(albumType)
-
-        return albumType
-
     def getAlbum(self, id) -> Album:
         album = self.__get__('albums/' + str(id))
-        return self.convertToAlbum(album)
+        album['audioModes'] = json.dumps(album['audioModes'])
+        album['artists'] = json.dumps(album['artists'])
+        album['path'] = ''
+        album['queued'] = False
+        album['downloaded'] = False
+        album['artist'] = album['artist']['id']
+        convertedAlbum = convertToAlbum(album)
+        convertedAlbum.path = getAlbumPath(convertedAlbum)
+        return convertedAlbum
     
     def searchAlbum(self, obj) -> Album:
         #print(aigpy.model.modelToDict(obj))
@@ -359,7 +344,16 @@ class TidalAPI(object):
         if len(output_dict) == 0:
             print('no album matched')
             return
-        return self.convertToAlbum(output_dict[0])
+        output_dict[0]['audioModes'] = json.dumps(output_dict[0]['audioModes'])
+        output_dict[0]['artists'] = json.dumps(output_dict[0]['artists'])
+        output_dict[0]['path'] = ''
+        output_dict[0]['queued'] = False
+        output_dict[0]['downloaded'] = False
+        output_dict[0]['artist'] = output_dict[0]['artist']['id']
+        convertedAlbum = convertToAlbum(output_dict[0])
+        convertedAlbum.path = getAlbumPath(convertedAlbum)
+
+        return convertToAlbum(output_dict[0])
     
     def getPlaylistsAndFavorites(self, userId=None) -> Playlist:
         # Transform json input to python objects
@@ -375,45 +369,20 @@ class TidalAPI(object):
 
     def getPlaylist(self, id) -> Playlist:
         return Playlist(*self.__get__('playlists/' + str(id)))
-
-    def convertToArtist(self, artist) -> Artist:
-        artistType = Artist(
-            id= artist['id'],
-            name= artist['name'],
-            url= artist['url']
-        )
-        return artistType
     
     def getArtist(self, id) -> Artist:
         artist = self.__get__('artists/' + str(id))
-        return self.convertToArtist(artist)
-
-    def convertToTrack(self, track) -> Track:
-        trackType = Track(
-            id= track['id'],
-            title= track['title'],
-            duration= track['duration'],
-            trackNumber= track['trackNumber'],
-            volumeNumber= track['volumeNumber'],
-            trackNumberOnPlaylist= '',
-            version= track['version'],
-            isrc= track['isrc'],
-            explicit= track['explicit'],
-            audioQuality= track['audioQuality'],
-            audioModes= json.dumps(track['audioModes']),
-            copyRight= track['copyright'],
-            artist= track['artist']['id'],
-            artists= json.dumps(track['artists']),
-            album= track['album']['id'],
-            allowStreaming='',
-            playlist='',
-            url= track['url'],
-        )
-        return trackType
+        artist['path'] = f"{SETTINGS.downloadPath}/{fixPath(artist['name'])}"
+        artist['queued'] = False
+        artist['downloaded'] = False
+        return convertToArtist(artist)
 
     def getTrack(self, id) -> Track:
         track = self.__get__('tracks/' + str(id))
-        return self.convertToTrack(track)
+        track['path'] = ''
+        track['queued'] = False
+        track['downloaded'] = False
+        return convertToTrack(track)
 
     def getMix(self, id) -> Mix:
         mix = Mix()
@@ -423,7 +392,6 @@ class TidalAPI(object):
 
     def getTypeData(self, id, type: Type):
         if type == Type.Album:
-            print('getTypeData', id)
             return self.getAlbum(id)
         if type == Type.Artist:
             return self.getArtist(id)
@@ -473,7 +441,14 @@ class TidalAPI(object):
         tracks = []
         for item in data:
             if item['type'] == 'track' and item['item']['streamReady']:
-                tracks.append(self.convertToTrack(item['item']))
+                item['item']['path'] = ''
+                item['item']['queued'] = False
+                item['item']['downloaded'] = False
+                item['item']['artist'] = item['item']['artist']['id']
+                item['item']['album'] = item['item']['album']['id']
+                item['item']['audioModes'] = json.dumps(item['item']['audioModes'])
+                item['item']['artists'] = json.dumps(item['item']['artists'])
+                tracks.append(convertToTrack(item['item']))
         return tracks
 
     def orderHighQAlbums(self, data=[]) -> [Album]:
@@ -499,7 +474,17 @@ class TidalAPI(object):
         df.drop_duplicates(subset=['title'], keep='last', inplace=True)
         new_albums = df.to_dict("records")
 
-        albums = list(self.convertToAlbum(item) for item in new_albums)
+        albums = [Album]
+        for i,album in enumerate(new_albums):
+            new_albums[i]['audioModes'] = json.dumps(new_albums[i]['audioModes'])
+            new_albums[i]['artists'] = json.dumps(new_albums[i]['artists'])
+            new_albums[i]['path'] = ''
+            new_albums[i]['queued'] = False
+            new_albums[i]['downloaded'] = False
+            new_albums[i]['artist'] = new_albums[i]['artist']['id']
+            convertedAlbum = convertToAlbum(new_albums[i])
+            convertedAlbum.path = getAlbumPath(convertedAlbum)
+            albums.append(convertedAlbum)
         return albums
 
     def getArtistAlbums(self, id, includeEP=False):

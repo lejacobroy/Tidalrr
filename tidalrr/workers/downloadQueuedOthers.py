@@ -20,9 +20,11 @@ def downloadQueuedCovers():
     for i,cover in enumerate(covers):
         file = getFileById(cover.id)
         if file is None:
-            aigpy.net.downloadFile(cover.url, cover.path)
             album = getTidalAlbum(cover.id)
-            print('Downloading album cover '+str(i)+'/'+str(len(covers))+' '+album.title)
+            # check exisitng path
+            if not exists(cover.path):
+                aigpy.net.downloadFile(cover.url, cover.path)
+                print('Downloading album cover '+str(i)+'/'+str(len(covers))+' '+album.title)
             file = File(
                 description=album.title,
                 type='Cover',

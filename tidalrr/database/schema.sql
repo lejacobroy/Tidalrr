@@ -28,7 +28,10 @@ DROP TABLE IF EXISTS tidal_artists;
 CREATE TABLE tidal_artists (
     id INTEGER NOT NULL PRIMARY KEY,
     name TEXT,
-    url TEXT
+    url TEXT,
+    path TEXT,
+    queued BOOLEAN,
+    downloaded BOOLEAN
 );
 
 DROP TABLE IF EXISTS tidal_albums;
@@ -47,7 +50,10 @@ CREATE TABLE tidal_albums (
     audioModes TEXT,
     artist INTEGER,
     artists TEXT,
-    url TEXT
+    url TEXT,
+    path TEXT,
+    queued BOOLEAN,
+    downloaded BOOLEAN
 );
 
 DROP TABLE IF EXISTS tidal_playlists;
@@ -59,7 +65,10 @@ CREATE TABLE tidal_playlists (
     description TEXT,
     image TEXT,
     squareImage TEXT,
-    URL TEXT
+    URL TEXT,
+    path TEXT,
+    queued BOOLEAN,
+    downloaded BOOLEAN
 );
 
 DROP TABLE IF EXISTS tidal_tracks;
@@ -79,7 +88,10 @@ CREATE TABLE tidal_tracks (
     artist INTEGER,
     artists TEXT,
     album INTEGER,
-    URL TEXT
+    URL TEXT,
+    path TEXT,
+    queued BOOLEAN,
+    downloaded BOOLEAN
 );
 
 DROP TABLE IF EXISTS tidal_queue;

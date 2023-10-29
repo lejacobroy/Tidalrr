@@ -12,10 +12,6 @@ import aigpy
 from tidalrr.tidal import *
 from tidalrr.settings import *
 from tidalrr.workers import *
-from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
-from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
-from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
-from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 
 def readFile(val):
     print('Using file list: '+val)
@@ -31,14 +27,14 @@ def start(string):
     for item in strings:
         if aigpy.string.isNull(item):
             continue
-
         try:
             etype, obj = TIDAL_API.getByString(item)
         except Exception as e:
             print(str(e) + " [" + item + "]")
             return
-
         try:
+            obj.queued = True
+            # add files in queued state, to download them later
             if etype == Type.Artist:
                 dbArtist = getTidalArtist(obj.id)
                 if dbArtist is None:

@@ -18,7 +18,6 @@ def tidalrrStart():
     SETTINGS.read()
     TOKEN.read()
     TIDAL_API.apiKey = getItem(SETTINGS.apiKeyIndex)
-    
     #Printf.logo()
     #Printf.settings()
     if not aigpy.path.mkdirs(SETTINGS.downloadPath):

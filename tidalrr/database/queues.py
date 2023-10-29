@@ -11,7 +11,6 @@
 import sqlite3
 import os
 from tidalrr.model import *
-import json
 
 database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
@@ -30,17 +29,6 @@ def addTidalQueue(queue=Queue):
                 ))
     connection.commit()
     connection.close()
-
-def convertToQueue(queue) -> Queue:
-    queueType = Queue(
-        id= queue['id'],
-        login= queue['login'],
-        type= queue['type'],
-        path= queue['path'],
-        url= queue['url'],
-        encryptionKey= queue['encryptionKey']
-    )
-    return queueType
 
 def getTidalQueues(type=str) -> [Queue]:
     conn = sqlite3.connect(database_path)

@@ -19,7 +19,7 @@ def scanQueuedTracks():
     tracks = getTidalTracks()
     if len(tracks) > 0 :
         for i,track in enumerate(tracks):
-            if hasattr(track, 'id'):
+            if hasattr(track, 'id') and track.queued:
                 print('Scanning track '+ str(i)+'/'+str(len(tracks))+' '+track.title)
                 start_track(track)
 

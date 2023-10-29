@@ -1,5 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Config</h1>
-{{ settings }}
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">albumFolderFormat</th>
+        <th scope="col">apiKeyIndex</th>
+        <th scope="col">audioQuality</th>
+        <th scope="col">checkExist</th>
+        <th scope="col">downloadDelay</th>
+        <th scope="col">downloadPath</th>
+        <th scope="col">includeEP</th>
+        <th scope="col">language</th>
+        <th scope="col">lyricFile</th>
+        <th scope="col">multiThread</th>
+        <th scope="col">playlistFolderFormat</th>
+        <th scope="col">saveAlbumInfo</th>
+        <th scope="col">saveCovers</th>
+        <th scope="col">showProgress</th>
+        <th scope="col">showTrackInfo</th>
+        <th scope="col">trackFileFormat</th>
+        <th scope="col">usePlaylistFolder</th>
+        <th scope="col">lidarrUrl</th>
+        <th scope="col">lidarrApi</th>
+        <th scope="col">tidalToken</th>
+        <th scope="col">plexUrl</th>
+        <th scope="col">plexToken</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+            <td>{{ row['albumFolderFormat'] }}</td>
+            <td>{{ row['apiKeyIndex'] }}</td>
+            <td>{{ row['audioQuality'] }}</td>
+            <td>{{ row['checkExist'] }}</td>
+            <td>{{ row['downloadDelay'] }}</td>
+            <td>{{ row['downloadPath'] }}</td>
+            <td>{{ row['includeEP'] }}</td>
+            <td>{{ row['language'] }}</td>
+            <td>{{ row['lyricFile'] }}</td>
+            <td>{{ row['multiThread'] }}</td>
+            <td>{{ row['playlistFolderFormat'] }}</td>
+            <td>{{ row['saveAlbumInfo'] }}</td>
+            <td>{{ row['saveCovers'] }}</td>
+            <td>{{ row['showProgress'] }}</td>
+            <td>{{ row['showTrackInfo'] }}</td>
+            <td>{{ row['trackFileFormat'] }}</td>
+            <td>{{ row['usePlaylistFolder'] }}</td>
+            <td>{{ row['lidarrUrl'] }}</td>
+            <td>{{ row['lidarrApi'] }}</td>
+            <td>{{ row['tidalToken'] }}</td>
+            <td>{{ row['plexUrl'] }}</td>
+            <td>{{ row['plexToken'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

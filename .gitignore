@@ -29,3 +29,6 @@ urls.txt
 .vscode/settings.json
 one_urls.txt
 tidalrr/config/database.db
+tidalrr/config/old/tidalrr-example.json
+tidalrr/config/old/tidalrr.json
+tidalrr/config/old/tidalrr.token.json

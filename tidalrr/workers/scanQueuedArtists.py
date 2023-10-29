@@ -26,5 +26,10 @@ def start_artist(obj: Artist):
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
     if len(albums) > 0 :
         for i,album in enumerate(albums):
-            print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
-            addTidalAlbum(album)
+            if hasattr(album, 'id'):
+                existing = getTidalAlbum(album.id)
+                if existing is None:
+                    print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
+                    if obj.queued:
+                        album.queued = True
+                    addTidalAlbum(album)

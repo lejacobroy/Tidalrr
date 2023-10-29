@@ -47,6 +47,17 @@ class Queue:
     path : str
     encryptionKey: str
 
+def convertToQueue(queue) -> Queue:
+    queueType = Queue(
+        id= queue['id'],
+        login= queue['login'],
+        type= queue['type'],
+        path= queue['path'],
+        url= queue['url'],
+        encryptionKey= queue['encryptionKey']
+    )
+    return queueType
+
 @dataclass
 class File:
     description: str
@@ -54,11 +65,34 @@ class File:
     id : int
     path : str
 
+def convertToFile(file) -> File:
+    fileType = File(
+        id= file['id'],
+        type= file['type'],
+        path= file['path'],
+        description= file['description']
+    )
+    return fileType
+
 @dataclass
 class Artist:
     id: int
     name : str
     url : str
+    path: str
+    queued: bool
+    downloaded: bool
+
+def convertToArtist(artist) -> Artist:
+    artistType = Artist(
+        id= artist['id'],
+        name= artist['name'],
+        url= artist['url'],
+        path= artist['path'],
+        queued= artist['queued'],
+        downloaded= artist['downloaded']
+    )
+    return artistType
 
 @dataclass
 class Album:
@@ -70,14 +104,39 @@ class Album:
     explicit : bool
     audioQuality : str
     audioModes : str
-    path : str
     artist : Artist
     artists : Artist
     url : str
+    path : str
+    queued: bool
+    downloaded: bool
     duration : int = 0
     numberOfTracks : int = 0
     numberOfVolumes : int = 0
     version : int = 0
+
+def convertToAlbum(album) -> Album:
+    albumType = Album(
+        id= album['id'],
+        title= album['title'],
+        releaseDate= album['releaseDate'],
+        type= album['type'],
+        cover= album['cover'],
+        explicit= album['explicit'],
+        audioQuality= album['audioQuality'],
+        audioModes= album['audioModes'],
+        artist= album['artist'],
+        artists= album['artists'],
+        url= album['url'],
+        duration= album['duration'],
+        numberOfTracks=  album['numberOfTracks'],
+        numberOfVolumes= album['numberOfVolumes'],
+        version= album['version'],
+        path= album['path'],
+        queued= album['queued'],
+        downloaded= album['downloaded']
+    )
+    return albumType
 
 @dataclass
 class Playlist:
@@ -87,6 +146,9 @@ class Playlist:
     image : str
     squareImage : str
     url : str
+    path : str
+    queued: bool
+    downloaded: bool
     numberOfTracks : int = 0
     duration : int = 0
 
@@ -110,6 +172,35 @@ class Track:
     allowStreaming : None
     playlist : None
     url : str
+    path : str
+    queued: bool
+    downloaded: bool
+
+def convertToTrack(track) -> Track:
+    trackType = Track(
+        id= track['id'],
+        title= track['title'],
+        duration= track['duration'],
+        trackNumber= track['trackNumber'],
+        volumeNumber= track['volumeNumber'],
+        trackNumberOnPlaylist= '',
+        version= track['version'],
+        isrc= track['isrc'],
+        explicit= track['explicit'],
+        audioQuality= track['audioQuality'],
+        audioModes= track['audioModes'],
+        copyRight= track['copyright'],
+        artist= track['artist'],
+        artists= track['artists'],
+        album= track['album'],
+        allowStreaming='',
+        playlist='',
+        url= track['url'],
+        path= track['path'],
+        queued= track['queued'],
+        downloaded= track['downloaded']
+    )
+    return trackType
 
 class Mix(aigpy.model.ModelBase):
     def __init__(self) -> None:
@@ -196,28 +287,27 @@ class StreamRespond(aigpy.model.ModelBase):
         self.manifestMimeType = None
         self.manifest = None
 
-class Settings (aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.albumFolderFormat = None
-        self.apiKeyIndex = None
-        self.audioQuality = None
-        self.checkExist = None
-        self.downloadDelay = None
-        self.downloadPath = None
-        self.includeEP = None
-        self.language = None
-        self.lyricFile = None
-        self.multiThread = None
-        self.playlistFolderFormat = None
-        self.saveAlbumInfo = None
-        self.saveCovers = None
-        self.showProgress = None
-        self.showTrackInfo = None
-        self.trackFileFormat = None
-        self.usePlaylistFolder = None
-        self.lidarrUrl = None
-        self.lidarrApi = None
-        self.tidalToken = None
-        self.plexUrl = None
-        self.plexToken = None
+@dataclass
+class Settings:
+    albumFolderFormat: str
+    apiKeyIndex: int
+    audioQuality: str
+    checkExist: bool
+    downloadDelay: int
+    downloadPath: str
+    includeEP: bool
+    language: str
+    lyricFile: str
+    multiThread: bool
+    playlistFolderFormat: str
+    saveAlbumInfo: bool
+    saveCovers: bool
+    showProgress: bool
+    showTrackInfo: bool
+    trackFileFormat: str
+    usePlaylistFolder: bool
+    lidarrUrl: str
+    lidarrApi: str
+    tidalToken: str
+    plexUrl: str
+    plexToken: str
