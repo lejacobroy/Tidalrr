@@ -19,8 +19,9 @@ def scanQueuedAlbums():
     if len(albums) > 0 :
         for i,album in enumerate(albums):
             if hasattr(album, 'id'):
-                print('Scanning album '+ str(i)+'/'+str(len(albums))+' '+album.title)
-                start_album(album)
+                if album.queued:
+                    print('Scanning album '+ str(i)+'/'+str(len(albums))+' '+album.title)
+                    start_album(album)
 
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)

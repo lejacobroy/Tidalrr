@@ -73,6 +73,6 @@ def mainSchedule():
         time.sleep(1)
 
 if __name__ == '__main__':
-    startScans()
+    #startScans()
     #main()
-    #mainSchedule()
+    mainSchedule()

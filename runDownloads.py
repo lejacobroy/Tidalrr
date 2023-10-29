@@ -64,6 +64,6 @@ def mainSchedule():
         time.sleep(1)
 
 if __name__ == '__main__':
-    startDownloads()
+    #startDownloads()
     #main()
-    #mainSchedule()
+    mainSchedule()

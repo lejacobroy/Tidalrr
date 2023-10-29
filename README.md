@@ -9,15 +9,32 @@
 </p>
 
 ## How to use:
-### Load urls to the database using the cli tool
-`python3 tidalrr.py --url URL` 
-Or `python3 tidalrr.py --file urls.txt` , where each link is on a new line in the urls.txt file.
+Tidalrr is a complete software to keep an offline copy of your Tidal library and sychronise it every night.
+By default, it will synchronise all of your playlists, but you can also import artists (and all their albums), albums, tracks and playlists from others.
+The artists, albums and tracks are organized for an easy import in PlexAmp, so you can point you library folder to Plex.
+The playlists are pushed to Plex also, for offline plexAmp listening (providing that you have access to the server running Plex)
+There is a webserver to look into the progress, but not much else ATM.
 
-### Download files from the database queue
-`python3 worker_download.py`
+### First, import some URLs from a text file:
+This script will load content from a txt file containing tidal urls.
+You can add artists, albums, playlists, tracks.
+Add the links to the file located in /import/urls.txt
+All content imported this way will be queued to download automaticaly.
+`python3 runImportURLs.py` 
+
+### Second, start the scanning process:
+Note, it will only run between 12:00 and 6:00 AM.
+This script will scan all the saved and Queued content (artists, albums, tracks, playlists) and extract the download url, preparing for the download phase.
+`python3 runScans.py` 
+
+### Third, download the prepared files:
+`python3 runDownload.py` 
+
+### to start everything:
+`python3 app.py` 
 
 ### Watch progression from the webpage
-`python3 tidalrr.py`
+`python3 runWebServer.py`
 
 ### Query Lidarr's wanted list of albums and downloads them from Tidal
 ``tidalrr --lidarr` . Note that for now, the matching algorithm is pretty strict and needs a perfect match for both the artist's name and the album's title.
@@ -29,50 +46,6 @@ Or `python3 tidalrr.py --file urls.txt` , where each link is on a new line in th
 `tidalrr --inject`  WARNING: you should not use this, as it can corrupt your Spark database.
 
 While it's available in a docker image, there's currently no way to execute the different options except by connecting directly to the container.
-
-## Todo:
-- ✅ refactor and cleanup code
-- ✅ remove video support
-- ✅ configureable highest quality
-- ✅ download content from a file list of links (great for playlists)
-- ✅ query Lidarr wanted list of albums and downloads them
-- ✅ Sync all user's playlists
-- ✅ package it in a docker container [Dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
-- ✅ generate .m3u and .m3u8 playlist files
-- ✅ add files to a queue and download them using a separate worker thread
-- migrate to SQLAlchemy to remove complexity
-- ✅ remove duplicated functions and refactor files
-- ✅ completely remove events.py, download.py and downloadUtils.py
-- more work on the Queues
-    - ✅ worker_scan to fetch urls from queue type 'Scan'
-    - ✅ add artists
-    - ✅ add albums
-    - ✅ download covers
-    - scan files
-- replace and select Masters albums/track
-    - store matching information in db for future use (superseeded)
-- ✅ split wanted artists/albums/tracks from the watched ones
-- replace classes with functions as it's not needed and makes the code less readable
-    - ✅ language.py
-    - tidal.py
-    - settings.py
-    - model.py
-- replace the aigpy library
-- create and sync Plex Playlist from Tidal Playlists (using PPP)
-- create an api webserver and control center
-    - ✅ Read-only mode for now
-    - start jobs
-    - login into Tidal to catch token
-    - add urls to the queue from tidal search, urls or files (replace cli)
-    - have better templates
-    - change settings
-    - migrate paths in queues and files
-    - ✅ stats page
-- ✅ split monolith into workers 
-    - ✅ with cron jobs
-- Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
-- local ai matching pattern
-- clean up the README and package in docker
 
 ## 🎨 Libraries and reference
 

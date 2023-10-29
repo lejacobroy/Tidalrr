@@ -19,8 +19,9 @@ def scanQueuedArtists():
     if len(artists) > 0 :
         for i, artist in enumerate(artists):
             if hasattr(artist, 'id'):
-                print('Scanning artist '+ str(i)+'/'+str(len(artists))+' '+artist.name)
-                start_artist(artist)
+                if artist.queued :
+                    print('Scanning artist '+ str(i)+'/'+str(len(artists))+' '+artist.name)
+                    start_artist(artist)
 
 def start_artist(obj: Artist):
     albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
