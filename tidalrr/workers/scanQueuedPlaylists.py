@@ -10,7 +10,6 @@
 '''
 
 from tidalrr.database import *
-from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import *
@@ -31,7 +30,8 @@ def start_playlist_sync(UserId=None):
 def writePlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
     def __getAlbum__(item: Track):
         album = TIDAL_API.getAlbum(item.album.id)
-        if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
+        settings = getSettings()
+        if settings.saveCovers and not settings.usePlaylistFolder:
             scanCover(album)
         return album
     

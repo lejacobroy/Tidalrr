@@ -261,19 +261,21 @@ class SearchResult(aigpy.model.ModelBase):
         self.playlists = SearchPlaylists()
 
 
+@dataclass
 class LoginKey(aigpy.model.ModelBase):
-    def __init__(self) -> None:
-        super().__init__()
-        self.deviceCode = None
-        self.userCode = None
-        self.verificationUrl = None
-        self.authCheckTimeout = None
-        self.authCheckInterval = None
-        self.userId = None
-        self.countryCode = None
-        self.accessToken = None
-        self.refreshToken = None
-        self.expiresIn = None
+    deviceCode: str
+    userCode: str
+    verificationUrl: str
+    authCheckTimeout: int
+    authCheckInterval: int
+    userId: str
+    countryCode: str
+    accessToken: str
+    refreshToken: str
+    expiresIn: int
+    token:str
+    clientId:str
+    clientSecret:str
 
 
 class StreamRespond(aigpy.model.ModelBase):

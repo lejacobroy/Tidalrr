@@ -13,14 +13,12 @@ import random
 import re
 import time
 import aigpy
-import datetime
 import base64
 import requests
 from xml.etree import ElementTree
 import pandas as pd
 
 from tidalrr.model import *
-from tidalrr.settings import *
 from tidalrr.paths import *
 from tidalrr.apiKey import *
 
@@ -28,26 +26,19 @@ from tidalrr.apiKey import *
 requests.packages.urllib3.disable_warnings()
 requests.adapters.DEFAULT_RETRIES = 5
 
-""" def getArtistsName(artists=[]):
-        array = []
-        for item in artists:
-            #print(item['name'])
-            array.append(item['name'])
-        return ", ".join(array) """
-
 def changeApiKey():
-    item = getItem(SETTINGS.apiKeyIndex)
+    settings = getSettings()
+    item = getItem(settings.apiKeyIndex)
     ver = getVersion()
 
-    print(f'Current APIKeys: {str(SETTINGS.apiKeyIndex)} {item["platform"]}-{item["formats"]}')
+    print(f'Current APIKeys: {str(settings.apiKeyIndex)} {item["platform"]}-{item["formats"]}')
     print(f'Current Version: {str(ver)}')
     print(getItems())
     index = int(print("APIKEY index:",getLimitIndexs()))
 
-    if index != SETTINGS.apiKeyIndex:
-        SETTINGS.apiKeyIndex = index
-        SETTINGS.save()
-        TIDAL_API.apiKey = getItem(index)
+    if index != settings.apiKeyIndex:
+        settings.apiKeyIndex = index
+        setSettings(settings)
         return True
     return False
 
@@ -55,7 +46,6 @@ def changeApiKey():
 def displayTime(seconds, granularity=2):
     if seconds <= 0:
         return "unknown"
-
     result = []
     intervals = (
         ('weeks', 604800),
@@ -64,7 +54,6 @@ def displayTime(seconds, granularity=2):
         ('minutes', 60),
         ('seconds', 1),
     )
-
     for name, count in intervals:
         value = seconds // count
         if value:
@@ -79,16 +68,11 @@ def loginByWeb():
     try:
         #print(LANG.select.AUTH_START_LOGIN)
         # get device code
-        url = TIDAL_API.getDeviceCode()
-        print(displayTime(TIDAL_API.key.authCheckTimeout), " " + url)
-        """ print(LANG.select.AUTH_NEXT_STEP.format(
-            aigpy.cmd.green(url),
-            aigpy.cmd.yellow(displayTime(TIDAL_API.key.authCheckTimeout))))
-        print(LANG.select.AUTH_WAITING) """
-
+        url = getDeviceCode()
+        key = getTidalKey()
+        print(displayTime(int(key.authCheckTimeout)), " " + url)
+ 
         return waitForAuth()
-
-        raise Exception()
     except Exception as e:
         print(f"Login failed.{str(e)}")
         return False
@@ -96,32 +80,16 @@ def loginByWeb():
 
 def waitForAuth():
     try:
-        #print(LANG.select.AUTH_START_LOGIN)
-        # get device code
-        """ url = TIDAL_API.getDeviceCode()
-        print(displayTime(TIDAL_API.key.authCheckTimeout), " " + url) """
-        """ print(LANG.select.AUTH_NEXT_STEP.format(
-            aigpy.cmd.green(url),
-            aigpy.cmd.yellow(displayTime(TIDAL_API.key.authCheckTimeout))))
-        print(LANG.select.AUTH_WAITING) """
-
         start = time.time()
         elapsed = 0
-        while elapsed < TIDAL_API.key.authCheckTimeout:
+        key = getTidalKey()
+        while elapsed < int(key.authCheckTimeout):
             elapsed = time.time() - start
-            if not TIDAL_API.checkAuthStatus():
-                time.sleep(TIDAL_API.key.authCheckInterval + 1)
+            if not checkAuthStatus():
+                time.sleep(int(key.authCheckInterval) + 1)
                 continue
-
-            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                displayTime(int(TIDAL_API.key.expiresIn)))) """
-
-            TOKEN.userid = TIDAL_API.key.userId
-            TOKEN.countryCode = TIDAL_API.key.countryCode
-            TOKEN.accessToken = TIDAL_API.key.accessToken
-            TOKEN.refreshToken = TIDAL_API.key.refreshToken
-            TOKEN.expiresAfter = time.time() + int(TIDAL_API.key.expiresIn)
-            TOKEN.save()
+            #key.expiresAfter = time.time() + int(key.expiresIn)
+            #setTidalKey(key)
             return True
 
         raise Exception()
@@ -130,64 +98,123 @@ def waitForAuth():
         return False
 
 def loginByConfig():
+    key = getTidalKey()
     try:
-        if TOKEN.accessToken is None:
+        if key.accessToken is None:
             return False
 
-        if TIDAL_API.verifyAccessToken(TOKEN.accessToken):
-            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                displayTime(int(TOKEN.expiresAfter - time.time())))) """
-
-            TIDAL_API.key.countryCode = TOKEN.countryCode
-            TIDAL_API.key.userId = TOKEN.userid
-            TIDAL_API.key.accessToken = TOKEN.accessToken
+        if verifyAccessToken(key.accessToken):
             return True
 
-        if TIDAL_API.refreshAccessToken(TOKEN.refreshToken):
-            """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                displayTime(int(TIDAL_API.key.expiresIn)))) """
-
-            TOKEN.userid = TIDAL_API.key.userId
-            TOKEN.countryCode = TIDAL_API.key.countryCode
-            TOKEN.accessToken = TIDAL_API.key.accessToken
-            TOKEN.expiresAfter = time.time() + int(TIDAL_API.key.expiresIn)
-            TOKEN.save()
+        if refreshAccessToken(key.refreshToken):
             return True
         else:
-            TokenSettings().save()
             return False
     except Exception as e:
         print(e)
         return False
 
+def getDeviceCode() -> str:
+    key = getTidalKey()
+    data = {
+        'client_id': key.clientId,
+        'scope': 'r_usr+w_usr+w_sub'
+    }
+    result = post('/device_authorization', data)
+    if 'status' in result and result['status'] != 200:
+        raise Exception("Device authorization failed. Please choose another apikey.")
 
-def loginByAccessToken():
-    try:
-        print("-------------AccessToken---------------")
-        token = print("accessToken('0' go back):")
-        if token == '0':
-            return
-        TIDAL_API.loginByAccessToken(token, TOKEN.userid)
-    except Exception as e:
-        print(str(e))
-        return
+    key.deviceCode = result['deviceCode']
+    key.userCode = result['userCode']
+    key.verificationUrl = result['verificationUri']
+    key.authCheckTimeout = result['expiresIn']
+    key.authCheckInterval = result['interval']
+    setTidalKey(key)
+    return "http://" + key.verificationUrl + "/" + key.userCode
 
-    print("-------------RefreshToken---------------")
-    refreshToken = print("refreshToken('0' to skip):")
-    if refreshToken == '0':
-        refreshToken = TOKEN.refreshToken
+def post(path, data, auth=None, urlpre='https://auth.tidal.com/v1/oauth2'):
+    for index in range(3):
+        try:
+            result = requests.post(urlpre+path, data=data, auth=auth, verify=False).json()
+            return result
+        except Exception as e:
+            if index == 2:
+                raise e
 
-    TOKEN.accessToken = token
-    TOKEN.refreshToken = refreshToken
-    TOKEN.expiresAfter = 0
-    TOKEN.countryCode = TIDAL_API.key.countryCode
-    TOKEN.save()
+def checkAuthStatus() -> bool:
+    key = getTidalKey()
+    data = {
+        'client_id': key.clientId,
+        'device_code': key.deviceCode,
+        'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+        'scope': 'r_usr+w_usr+w_sub'
+    }
+    auth = (key.clientId, key.clientSecret)
+    result = post('/token', data, auth)
+    if 'status' in result and result['status'] != 200:
+        if result['status'] == 400 and result['sub_status'] == 1002:
+            return False
+        else:
+            raise Exception("Error while checking for authorization. Trying again...")
+    # if auth is successful:
+    key.userId = result['user']['userId']
+    key.countryCode = result['user']['countryCode']
+    key.accessToken = result['access_token']
+    key.refreshToken = result['refresh_token']
+    key.expiresIn = result['expires_in']
+    setTidalKey(key)
+    return True
+
+def verifyAccessToken(accessToken) -> bool:
+    header = {'authorization': 'Bearer {}'.format(accessToken)}
+    result = requests.get('https://api.tidal.com/v1/sessions', headers=header).json()
+    if 'status' in result and result['status'] != 200:
+        return False
+    return True
+
+def refreshAccessToken(refreshToken) -> bool:
+    key = getTidalKey()
+    data = {
+        'client_id': key.clientId,
+        'refresh_token': refreshToken,
+        'grant_type': 'refresh_token',
+        'scope': 'r_usr+w_usr+w_sub'
+    }
+    auth = (key.clientId, key.clientSecret)
+    result = post('/token', data, auth)
+    if 'status' in result and result['status'] != 200:
+        return False
+    # if auth is successful:
+    key.userId = result['user']['userId']
+    key.countryCode = result['user']['countryCode']
+    key.accessToken = result['access_token']
+    key.expiresIn = result['expires_in']
+    setTidalKey(key)
+    return True
+
+def loginByAccessToken(accessToken, userid=None):
+    key = getTidalKey()
+    header = {'authorization': 'Bearer {}'.format(accessToken)}
+    result = requests.get('https://api.tidal.com/v1/sessions', headers=header).json()
+    if 'status' in result and result['status'] != 200:
+        raise Exception("Login failed!")
+
+    if not aigpy.string.isNull(userid):
+        if str(result['userId']) != str(userid):
+            raise Exception("User mismatch! Please use your own accesstoken.",)
+
+    key.userId = result['userId']
+    key.countryCode = result['countryCode']
+    key.accessToken = accessToken
+    setTidalKey(key)
+    return
     
 class TidalAPI(object):
     def __init__(self):
-        self.key = LoginKey()
-        self.apiKey = {'clientId': '7m7Ap0JC9j1cOM3n',
-                       'clientSecret': 'vRAdA108tlvkJpTsGZS8rGZ7xTlbJ0qaZ2K9saEzsgY='}
+        self.key = getTidalKey()
+        self.key.clientId = '7m7Ap0JC9j1cOM3n'
+        self.key.clientSecret ='vRAdA108tlvkJpTsGZS8rGZ7xTlbJ0qaZ2K9saEzsgY='
+        setTidalKey(self.key)
 
     def __get__(self, path, params={}, urlpre='https://api.tidalhifi.com/v1/'):
         header = {}
@@ -198,7 +225,8 @@ class TidalAPI(object):
         #print(urlpre + path, header, params)
         respond = requests.get(urlpre + path, headers=header, params=params)
         #print(respond)
-        if respond.url.find("playbackinfopostpaywall") != -1 and SETTINGS.downloadDelay is not False:
+        settings = getSettings()
+        if respond.url.find("playbackinfopostpaywall") != -1 and settings.downloadDelay is not False:
             # random sleep between 0.5 and 5 seconds and print it
             sleep_time = random.randint(500, 2000) / 1000
             #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
@@ -246,95 +274,6 @@ class TidalAPI(object):
                 break
             params['offset'] += num
         return ret
-
-    def __post__(self, path, data, auth=None, urlpre='https://auth.tidal.com/v1/oauth2'):
-        for index in range(3):
-            #try:
-            result = requests.post(urlpre+path, data=data, auth=auth, verify=False).json()
-            return result
-            #except Exception as e:
-            #    if index == 2:
-            #        raise e
-
-    def getDeviceCode(self) -> str:
-        data = {
-            'client_id': self.apiKey['clientId'],
-            'scope': 'r_usr+w_usr+w_sub'
-        }
-        result = self.__post__('/device_authorization', data)
-        if 'status' in result and result['status'] != 200:
-            raise Exception("Device authorization failed. Please choose another apikey.")
-
-        self.key.deviceCode = result['deviceCode']
-        self.key.userCode = result['userCode']
-        self.key.verificationUrl = result['verificationUri']
-        self.key.authCheckTimeout = result['expiresIn']
-        self.key.authCheckInterval = result['interval']
-        return "http://" + self.key.verificationUrl + "/" + self.key.userCode
-
-    def checkAuthStatus(self) -> bool:
-        data = {
-            'client_id': self.apiKey['clientId'],
-            'device_code': self.key.deviceCode,
-            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
-            'scope': 'r_usr+w_usr+w_sub'
-        }
-        auth = (self.apiKey['clientId'], self.apiKey['clientSecret'])
-        result = self.__post__('/token', data, auth)
-        if 'status' in result and result['status'] != 200:
-            if result['status'] == 400 and result['sub_status'] == 1002:
-                return False
-            else:
-                raise Exception("Error while checking for authorization. Trying again...")
-
-        # if auth is successful:
-        self.key.userId = result['user']['userId']
-        self.key.countryCode = result['user']['countryCode']
-        self.key.accessToken = result['access_token']
-        self.key.refreshToken = result['refresh_token']
-        self.key.expiresIn = result['expires_in']
-        return True
-
-    def verifyAccessToken(self, accessToken) -> bool:
-        header = {'authorization': 'Bearer {}'.format(accessToken)}
-        result = requests.get('https://api.tidal.com/v1/sessions', headers=header).json()
-        if 'status' in result and result['status'] != 200:
-            return False
-        return True
-
-    def refreshAccessToken(self, refreshToken) -> bool:
-        data = {
-            'client_id': self.apiKey['clientId'],
-            'refresh_token': refreshToken,
-            'grant_type': 'refresh_token',
-            'scope': 'r_usr+w_usr+w_sub'
-        }
-        auth = (self.apiKey['clientId'], self.apiKey['clientSecret'])
-        result = self.__post__('/token', data, auth)
-        if 'status' in result and result['status'] != 200:
-            return False
-
-        # if auth is successful:
-        self.key.userId = result['user']['userId']
-        self.key.countryCode = result['user']['countryCode']
-        self.key.accessToken = result['access_token']
-        self.key.expiresIn = result['expires_in']
-        return True
-
-    def loginByAccessToken(self, accessToken, userid=None):
-        header = {'authorization': 'Bearer {}'.format(accessToken)}
-        result = requests.get('https://api.tidal.com/v1/sessions', headers=header).json()
-        if 'status' in result and result['status'] != 200:
-            raise Exception("Login failed!")
-
-        if not aigpy.string.isNull(userid):
-            if str(result['userId']) != str(userid):
-                raise Exception("User mismatch! Please use your own accesstoken.",)
-
-        self.key.userId = result['userId']
-        self.key.countryCode = result['countryCode']
-        self.key.accessToken = accessToken
-        return
 
     def getAlbum(self, id) -> Album:
         album = self.__get__('albums/' + str(id))
@@ -389,8 +328,9 @@ class TidalAPI(object):
         return Playlist(*self.__get__('playlists/' + str(id)))
     
     def getArtist(self, id) -> Artist:
+        settings = getSettings()
         artist = self.__get__('artists/' + str(id))
-        artist['path'] = f"{SETTINGS.downloadPath}/{fixPath(artist['name'])}"
+        artist['path'] = f"{settings.downloadPath}/{fixPath(artist['name'])}"
         artist['queued'] = False
         artist['downloaded'] = False
         return convertToArtist(artist)

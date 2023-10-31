@@ -10,7 +10,7 @@
 '''
 import aigpy
 import time
-
+from os.path import exists
 from tidalrr.paths import *
 from tidalrr.decryption import *
 from tidalrr.tidal import *
@@ -18,8 +18,8 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from tidalrr.workers import *
 
-def refreshStreamURL(id=int):
-    return TIDAL_API.getStreamUrl(id, SETTINGS.audioQuality)
+def refreshStreamURL(id=int, audioQuality='Normal'):
+    return TIDAL_API.getStreamUrl(id, audioQuality)
 
 def isNeedRefresh(url):
     #extract the 'expire' key from the url
@@ -31,10 +31,10 @@ def isNeedRefresh(url):
 
 def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
     album = getTidalAlbum(track.album)
-
+    settings = getSettings()
     if queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
         print('Refreshing URL '+ track.title)
-        temp = refreshStreamURL(queue.id)
+        temp = refreshStreamURL(queue.id, settings.audioQuality)
         queue.url = temp.url
         queue.encryptionKey = temp.encryptionKey
 
@@ -42,7 +42,7 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
     if not isSkip(queue.path, queue.url):
         # download
         #logging.info("[DL Track] name=" + aigpy.path.getFileName(queue.path) + "\nurl=" + queue.url)
-        if SETTINGS.downloadDelay:
+        if settings.downloadDelay:
             sleep_time = random.randint(500, 5000) / 1000
             #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
             time.sleep(sleep_time)
@@ -66,7 +66,7 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
         # lyrics
         try:
             lyrics = TIDAL_API.getLyrics(track.id).subtitles
-            if SETTINGS.lyricFile:
+            if settings.lyricFile:
                 lrcPath = queue.path.rsplit(".", 1)[0] + '.lrc'
                 aigpy.file.write(lrcPath, lyrics, 'w')
         except:

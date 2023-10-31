@@ -111,3 +111,20 @@ CREATE TABLE files (
     id INTEGER,
     description TEXT
 );
+
+DROP TABLE IF EXISTS tidal_key;
+CREATE TABLE tidal_key (
+    deviceCode TEXT,
+    userCode TEXT,
+    verificationUrl TEXT,
+    authCheckTimeout INT,
+    authCheckInterval INT,
+    userId TEXT,
+    countryCode TEXT,
+    accessToken TEXT,
+    refreshToken TEXT,
+    expiresIn INT,
+    token TEXT,
+    clientId TEXT,
+    clientSecret TEXT
+);

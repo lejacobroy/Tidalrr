@@ -56,6 +56,22 @@ def createTables():
                     ''
                     )
                     )
+        cur.execute("INSERT INTO tidal_key VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    ('', 
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    ''
+                    )
+                    )
         connection.commit()
         connection.close()
 
@@ -68,34 +84,14 @@ def getSettings() -> Settings:
         settings = Settings(**settings)
     return settings
 
-def getStats():
+def getTidalKey() -> LoginKey:
     conn = sqlite3.connect(database_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
-                        UNION\
-                        SELECT 'Artists Queued' as type, count(*) as count FROM tidal_artists WHERE queued = TRUE\
-                        UNION\
-                        SELECT 'Artists Downloaded' as type, count(*) as count FROM tidal_artists WHERE downloaded = TRUE\
-                        UNION\
-                        SELECT 'Albums' as type, count(*) as count FROM tidal_albums\
-                        UNION\
-                        SELECT 'Albums Queued' as type, count(*) as count FROM tidal_albums WHERE queued = TRUE\
-                        UNION\
-                        SELECT 'Albums Downloaded' as type, count(*) as count FROM tidal_albums WHERE downloaded = TRUE\
-                        UNION\
-                        SELECT 'Tracks' as type, count(*) as count FROM tidal_tracks\
-                        UNION\
-                        SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
-                        UNION\
-                        SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
-                        UNION\
-                        SELECT 'Download Queue' as type, count(*) as count FROM tidal_queue\
-                        UNION\
-                        SELECT 'Downloaded Files' as type, count(*) as count FROM files\
-                        "
-                        ).fetchall()
+    key = conn.execute('SELECT * FROM tidal_key').fetchone()
     conn.close()
-    return rows
+    if key is not None:
+        key = LoginKey(**key)
+    return key
 
 def setSettings(settings=Settings):
     connection = sqlite3.connect(database_path)
@@ -150,9 +146,66 @@ def setSettings(settings=Settings):
     connection.commit()
     connection.close()
 
-def setToken(token=str):
+def setTidalKey(key=LoginKey):
     connection = sqlite3.connect(database_path)
     cur = connection.cursor()
-    cur.execute("UPDATE settings SET tidalToken = ?",( token, ))
+    cur.execute("UPDATE tidal_key SET \
+                deviceCode = ?,\
+                userCode = ?,\
+                verificationUrl = ?,\
+                authCheckTimeout = ?,\
+                authCheckInterval = ?,\
+                userId = ?,\
+                countryCode = ?,\
+                accessToken = ?,\
+                refreshToken = ?,\
+                expiresIn = ?,\
+                token = ?,\
+                clientId = ?,\
+                clientSecret = ?\
+                ",(
+                    key.deviceCode,
+                    key.userCode,
+                    key.verificationUrl,
+                    key.authCheckTimeout,
+                    key.authCheckInterval,
+                    key.userId,
+                    key.countryCode,
+                    key.accessToken,
+                    key.refreshToken,
+                    key.expiresIn,
+                    key.token,
+                    key.clientId,
+                    key.clientSecret
+                    ))
     connection.commit()
     connection.close()
+
+def getStats():
+    conn = sqlite3.connect(database_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
+                        UNION\
+                        SELECT 'Artists Queued' as type, count(*) as count FROM tidal_artists WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Artists Downloaded' as type, count(*) as count FROM tidal_artists WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Albums' as type, count(*) as count FROM tidal_albums\
+                        UNION\
+                        SELECT 'Albums Queued' as type, count(*) as count FROM tidal_albums WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Albums Downloaded' as type, count(*) as count FROM tidal_albums WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Tracks' as type, count(*) as count FROM tidal_tracks\
+                        UNION\
+                        SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Download Queue' as type, count(*) as count FROM tidal_queue\
+                        UNION\
+                        SELECT 'Downloaded Files' as type, count(*) as count FROM files\
+                        "
+                        ).fetchall()
+    conn.close()
+    return rows

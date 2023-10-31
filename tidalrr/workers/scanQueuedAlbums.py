@@ -8,9 +8,8 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-
+from os.path import exists
 from tidalrr.database import *
-from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
@@ -26,10 +25,11 @@ def scanQueuedAlbums():
 
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
+    settings = getSettings()
     if obj.queued:
-        if SETTINGS.saveAlbumInfo:
+        if settings.saveAlbumInfo:
             writeAlbumInfo(obj, tracks)
-        if SETTINGS.saveCovers and obj.cover is not None:
+        if settings.saveCovers and obj.cover is not None:
             scanCover(obj)
     for i, track in enumerate(tracks):
         existing = getTidalTrack(track.id)

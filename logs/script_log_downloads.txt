@@ -1,0 +1,23 @@
+2023-10-31 17:07:05 Starting downloads
+LOG: Running job "startDownloads"
+2023-10-31 17:07:06 startDownloads
+Downloading track file 0/3 One Ray of Sunlight
+Refreshing URL One Ray of Sunlight
+Can't get the streamUrl, resp is None
+Process Process-1:
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.6/Frameworks/Python.framework/Versions/3.11/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/opt/homebrew/Cellar/python@3.11/3.11.6/Frameworks/Python.framework/Versions/3.11/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/jacobroy/GitLab/Tidalrr/runDownloadsNow.py", line 26, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jacobroy/GitLab/Tidalrr/runDownloadsNow.py", line 37, in startDownloads
+    downloadQueuedTracks()
+  File "/Users/jacobroy/GitLab/Tidalrr/tidalrr/workers/downloadQueuedTracks.py", line 92, in downloadQueuedTracks
+    workDownloadTrack(queue, track)
+  File "/Users/jacobroy/GitLab/Tidalrr/tidalrr/workers/downloadQueuedTracks.py", line 38, in workDownloadTrack
+    queue.url = temp.url
+                ^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'url'

@@ -10,20 +10,17 @@
 '''
 
 from tidalrr.tidal import *
-from tidalrr.settings import *
 
 def tidalrrStart():
     createTables()
-    SETTINGS.read()
-    TOKEN.read()
-    TIDAL_API.apiKey = getItem(SETTINGS.apiKeyIndex)
+    settings = getSettings()
     #Printf.logo()
     #Printf.settings()
-    if not aigpy.path.mkdirs(SETTINGS.downloadPath):
-        print(SETTINGS.downloadPath)
+    if not aigpy.path.mkdirs(settings.downloadPath):
+        print(settings.downloadPath)
         return
 
-    """ if not isItemValid(SETTINGS.apiKeyIndex):
+    """ if not isItemValid(settings.apiKeyIndex):
         changeApiKey()
         loginByWeb()
     elif not loginByConfig():
@@ -68,7 +65,8 @@ def setMetaData(track: Track, album: Album, artist: Artist, artists:str, filepat
     obj.save(coverpath)
 
 def isSkip(finalpath, url):
-    if not SETTINGS.checkExist:
+    settings = getSettings()
+    if not settings.checkExist:
         return False
     curSize = aigpy.file.getSize(finalpath)
     if curSize <= 0:

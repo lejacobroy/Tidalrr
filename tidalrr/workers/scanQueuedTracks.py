@@ -10,7 +10,6 @@
 '''
 
 from tidalrr.database import *
-from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import *
@@ -25,18 +24,19 @@ def scanQueuedTracks():
                     start_track(track)
 
 def start_track(obj: Track):
+    settings = getSettings()
     album = getTidalAlbum(obj.album)
-    if SETTINGS.saveCovers:
+    if settings.saveCovers:
         scanCover(album)
     file = getFileById(obj.id)
     queue = getTidalQueueById(obj.id)
     if file is None and queue is None:
-        scanTrack(obj, album)
+        scanTrack(obj, album, settings.audioQuality)
     else:
         print('File Exists, skipping')
 
-def scanTrack(track: Track, album=Album, playlist=None):
-    stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
+def scanTrack(track: Track, album=Album, audioQuality='Normal', playlist=None):
+    stream = TIDAL_API.getStreamUrl(track.id, audioQuality)
     artist = getTidalArtist(track.artist)
     if artist is not None:
         path = getTrackPath(track, stream, artist, album, playlist)

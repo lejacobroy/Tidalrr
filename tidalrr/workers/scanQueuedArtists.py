@@ -10,7 +10,6 @@
 '''
 
 from tidalrr.database import *
-from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
@@ -25,7 +24,8 @@ def scanQueuedArtists():
                     start_artist(artist)
 
 def start_artist(obj: Artist):
-    albums = TIDAL_API.getArtistAlbums(obj.id, SETTINGS.includeEP)
+    settings = getSettings()
+    albums = TIDAL_API.getArtistAlbums(obj.id, settings.includeEP)
     if len(albums) > 0 :
         for i,album in enumerate(albums):
             if hasattr(album, 'id'):

@@ -10,7 +10,6 @@
 '''
 
 from tidal import *
-from settings import *
 from model import *
 from tidalrr.workers import *
 
@@ -60,10 +59,11 @@ def start_album_search(obj: Album):
         addTidalAlbum(obj)
         
 tidalrrStart()
+settings = getSettings()
 albums = [Album]
-albums = getMissingAlbums(SETTINGS.lidarrURL, SETTINGS.lidarrAPI)
+albums = getMissingAlbums(settings.lidarrURL, settings.lidarrAPI)
 for a in albums :
     if a.title is not None:    
         # set download path
-        SETTINGS.downloadPath = str(a.path)
+        settings.downloadPath = str(a.path)
         start_album_search(a)

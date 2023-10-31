@@ -13,8 +13,7 @@
     - when scanning a track, look if it's album is superseeded, then scan the corresponding track
     - superseeded table? - for albums and tracks
 - replace classes with functions as it's not needed and makes the code less readable
-    - tidal.py
-    - settings.py
+    - tidal.py --ongoing
     - model.py
 - create an api webserver and control center
     - login into Tidal to catch token

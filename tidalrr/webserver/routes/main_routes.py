@@ -30,8 +30,9 @@ class UserSettingsForm(FlaskForm):
     submit = SubmitField('Save Settings')
 
 def startWaitForAuth():
-    url = TIDAL_API.getDeviceCode()
-    timeout = displayTime(TIDAL_API.key.authCheckTimeout)
+    url = getDeviceCode()
+    key = getTidalKey()
+    timeout = displayTime(int(key.authCheckTimeout))
     # start subprocess to waitFroAuth()
     try:
         process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
@@ -41,22 +42,20 @@ def startWaitForAuth():
 
 @main_bp.route("/")
 def hello_world():
-    catch = False
     url = ''
     timeout = ''
-    if not isItemValid(SETTINGS.apiKeyIndex):
+    settings = getSettings()
+    if not isItemValid(settings.apiKeyIndex):
         changeApiKey()
-        #loginByWeb()
-        catch = True
-    elif not loginByConfig():
-        #loginByWeb()
-        catch = True
-    if catch:
         url, timeout = startWaitForAuth()
+        
+    elif not loginByConfig():
+        url, timeout = startWaitForAuth()
+
     return render_template("content.html", url=url, timeout=timeout)
 
 @main_bp.route('/settings', methods=['GET', 'POST'])
-def settings():
+def settingsPage():
     # Simulate user data, you should replace this with your own user data retrieval logic
     settings = getSettings()
 

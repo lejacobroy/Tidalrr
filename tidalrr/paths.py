@@ -11,8 +11,8 @@
 import os
 import aigpy
 import datetime
-
-from tidalrr.settings import *
+from tidalrr.model import *
+from tidalrr.database import *
 
 def fixPath(name: str):
     return aigpy.path.replaceLimitChar(name, '-').strip()
@@ -65,13 +65,14 @@ def getFlag(data, type: Type, short=True, separator=" / "):
         return separator.join(array)
 
 def getAlbumPath(album:Album):
+    settings = getSettings()
     artist = getTidalArtist(album.artist)
     if artist is not None:
         artistName = fixPath(str(album.artists))
         albumArtistName = fixPath(artist.name) if album.artist is not None else ""
         # album folder pre: [ME]
         flag = getFlag(album, Type.Album, True, "")
-        if SETTINGS.audioQuality != AudioQuality.Master and SETTINGS.audioQuality != AudioQuality.Max:
+        if settings.audioQuality != AudioQuality.Master and settings.audioQuality != AudioQuality.Max:
             flag = flag.replace("M", "")
         if flag != "":
             flag = "[" + flag + "] "
@@ -81,9 +82,9 @@ def getAlbumPath(album:Album):
         year = getYear(album.releaseDate)
 
         # retpath
-        retpath = SETTINGS.albumFolderFormat
+        retpath = settings.albumFolderFormat
         if retpath is None or len(retpath) <= 0:
-            retpath = SETTINGS.getDefaultAlbumFolderFormat()
+            retpath = settings.getDefaultAlbumFolderFormat()
         retpath = retpath.replace(R"{ArtistName}", artistName)
         retpath = retpath.replace(R"{AlbumArtistName}", albumArtistName)
         retpath = retpath.replace(R"{Flag}", flag)
@@ -99,21 +100,22 @@ def getAlbumPath(album:Album):
         retpath = retpath.replace(R"{RecordType}", album.type)
         retpath = retpath.replace(R"{None}", "")
         retpath = retpath.strip()
-        return f"{SETTINGS.downloadPath}/{retpath}"
+        return f"{settings.downloadPath}/{retpath}"
 
 def getPlaylistPath(playlist):
     playlistName = fixPath(playlist.title)
-
+    settings = getSettings()
     # retpath
-    retpath = SETTINGS.playlistFolderFormat
+    retpath = settings.playlistFolderFormat
     if retpath is None or len(retpath) <= 0:
-        retpath = SETTINGS.getDefaultPlaylistFolderFormat()
+        retpath = settings.getDefaultPlaylistFolderFormat()
     retpath = retpath.replace(R"{PlaylistUUID}", str(playlist.uuid))
     retpath = retpath.replace(R"{PlaylistName}", playlistName)
-    return f"{SETTINGS.downloadPath}/{retpath}"
+    return f"{settings.downloadPath}/{retpath}"
 
 
 def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename=None):
+    settings = getSettings()
     base = './'
     number = str(track.trackNumber).rjust(2, '0')
     if album is not None:
@@ -121,7 +123,7 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
         if album.numberOfVolumes > 1:
             base += f'/CD{str(track.volumeNumber)}'
 
-    if playlist is not None and SETTINGS.usePlaylistFolder:
+    if playlist is not None and settings.usePlaylistFolder:
         base = getPlaylistPath(playlist)
         number = str(track.trackNumberOnPlaylist).rjust(2, '0')
     # artist
@@ -147,9 +149,9 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
     # extension
     extension = __getExtension__(stream)
 
-    retpath = SETTINGS.trackFileFormat
+    retpath = settings.trackFileFormat
     if retpath is None or len(retpath) <= 0:
-        retpath = SETTINGS.getDefaultTrackFileFormat()
+        retpath = settings.getDefaultTrackFileFormat()
     retpath = retpath.replace(R"{TrackNumber}", number)
     retpath = retpath.replace(R"{ArtistName}", artist)
     retpath = retpath.replace(R"{ArtistsName}", artists)

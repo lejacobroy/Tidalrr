@@ -10,7 +10,6 @@
 '''
 import aigpy
 from tidalrr.tidal import *
-from tidalrr.settings import *
 from tidalrr.workers import *
 
 def readFile(val):

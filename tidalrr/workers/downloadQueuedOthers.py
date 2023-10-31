@@ -35,7 +35,7 @@ def downloadQueuedCovers():
         delTidalQueue(cover.path)
 
 """ def getDownloadTrackFilename(track: Track, playlist: Playlist):
-    stream = TIDAL_API.getStreamUrl(track.id, SETTINGS.audioQuality)
+    stream = TIDAL_API.getStreamUrl(track.id, settings.audioQuality)
     path = getTrackPath(track, stream, None, playlist, 'filename')
     return path """
 
@@ -43,7 +43,7 @@ def downloadQueuedCovers():
     print('downloadTracks')
     def __getAlbum__(item: Track):
         album = TIDAL_API.getAlbum(item.album.id)
-        if SETTINGS.saveCovers and not SETTINGS.usePlaylistFolder:
+        if settings.saveCovers and not settings.usePlaylistFolder:
             scanCover(album)
             #print('downloadCover')
         return album
