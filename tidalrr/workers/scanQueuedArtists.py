@@ -13,6 +13,7 @@ from tidalrr.database import *
 from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
+from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 
 def scanQueuedArtists():
     artists = getTidalArtists()
@@ -31,6 +32,7 @@ def start_artist(obj: Artist):
                 existing = getTidalAlbum(album.id)
                 if existing is None:
                     print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
+                    addTidalAlbum(album)
                     if obj.queued:
                         album.queued = True
-                    addTidalAlbum(album)
+                        scanQueuedAlbums()

@@ -13,6 +13,7 @@ from tidalrr.database import *
 from tidalrr.settings import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
+from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 
 def scanQueuedAlbums():
     albums = getTidalAlbums()
@@ -25,18 +26,19 @@ def scanQueuedAlbums():
 
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
-    for i, track in enumerate(tracks):
-        existing = getTidalTrack(track.id)
-        if existing is None:
-            print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
-            if obj.queued:
-                track.queued = True
-            addTidalTrack(track)
     if obj.queued:
         if SETTINGS.saveAlbumInfo:
             writeAlbumInfo(obj, tracks)
         if SETTINGS.saveCovers and obj.cover is not None:
             scanCover(obj)
+    for i, track in enumerate(tracks):
+        existing = getTidalTrack(track.id)
+        if existing is None:
+            print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
+            addTidalTrack(track)
+            if obj.queued:
+                track.queued = True
+                scanQueuedTracks()
 
 def scanCover(album):
     cover = getFileById(album.id)
