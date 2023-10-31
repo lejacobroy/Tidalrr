@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Run Downloads</h1>
+    
+    <a href="/run-downloads" class="btn">Run Downloads</a>
+    <br/>
+    <h2>Logs</h2>
+    <pre>
+        {{ log_content|safe }}
+    </pre>
+{% endblock %}

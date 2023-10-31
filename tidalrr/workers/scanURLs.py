@@ -21,6 +21,7 @@ def readFile(val):
     for i, line in enumerate(Lines):
         print("Url #{}: {}".format(i, line.strip()))
         start(line.strip())
+    print("Done import URLs from file.")
 
 def start(string):
     strings = string.split(" ")

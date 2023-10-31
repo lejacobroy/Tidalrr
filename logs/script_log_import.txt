@@ -1,0 +1,2 @@
+Using file list: /Users/jacobroy/GitLab/Tidalrr/import/urls.txt
+Url #0: https://tidal.com/browse/artist/3643740

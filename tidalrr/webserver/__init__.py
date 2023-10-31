@@ -1,14 +1,33 @@
 #!/usr/bin/env python3
 import os
+import subprocess
+import sys
 
-from flask import Flask, jsonify, render_template, redirect, url_for
+from flask import Flask, jsonify, render_template, redirect, url_for, request, flash
 from flask_cors import CORS
 from flask_bootstrap import Bootstrap5
 from tidalrr.database import *
 from tidalrr.workers import *
+from routes.main_routes import main_bp
+from routes.tidal_routes import tidal_bp
+from routes.action_routes import actions_bp
 
 def tidalrrWeb(config=None):
     app = Flask(__name__)
+    # Specify the directory where uploaded files will be stored
+    UPLOAD_FOLDER = 'import'
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+    # Ensure the upload directory exists
+    LOG_FOLDER = 'logs'
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(LOG_FOLDER, exist_ok=True)
+    ALLOWED_EXTENSIONS = {'txt'}
+    app.secret_key = 'tidalrr_secret_key'  # Set a secret key for flashing messages
+
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
     bootstrap = Bootstrap5(app)
     # See http://flask.pocoo.org/docs/latest/config/
     app.config.update(dict(DEBUG=True))
@@ -18,77 +37,78 @@ def tidalrrWeb(config=None):
     # https://flask-cors.readthedocs.io/en/latest/
     CORS(app)
 
-    # Definition of the routes. Put them into their own file. See also
-    # Flask Blueprints: http://flask.pocoo.org/docs/latest/blueprints
-    """ 
-        Usefull routes:
-        homepage
-            - settings/config
-            - tidal login
-            - list tidal playlists, artists, albums, tracks, mixes
-                - downlaod all
-                - downlaod selected
-                - filter by state (online|downloaded|plex)
-                - sync to plex
-            - interactive search
-            - sync lidarr
-                - interactive match with search
-            - inject spark
-            - maintenance
-                - albums with master or max available to upgrade
-                - incomplete albums
-                - missing covers
-                - missing lyrics
-
-    """
-    @app.route("/")
-    def hello_world():
-        return render_template("content.html")
-    
-    @app.route("/config")
-    def config():
-        settings = getSettings()
-        return render_template("config.html", settings = settings)
-    
-    @app.route("/stats")
-    def stats():
-        rows = getStats()
-        return render_template("stats.html", rows = rows)
-    
-    @app.route("/tidal/artists")
-    def tidalArtists():
-        rows = getTidalArtists()
-        return render_template("artists.html", rows = rows)
-    
-    @app.route("/tidal/albums")
-    def tidalAlbums():
-        rows = getTidalAlbums()
-        return render_template("albums.html", rows = rows)
-    
-    @app.route("/tidal/playlists")
-    def tidalPlaylists():
-        rows = getTidalPlaylists()
-        return render_template("playlists.html", rows = rows)
-    
-    @app.route("/tidal/tracks")
-    def tidalTracks():
-        rows = getTidalTracks()
-        return render_template("tracks.html", rows = rows)
-    
-    @app.route("/download/queue")
-    def tidalQueues():
-        rows = getTidalQueues('')
-        return render_template("queues.html", rows = rows)
-    
-    @app.route("/files")
-    def files():
-        rows = getFiles()
-        return render_template("files.html", rows = rows)
+    # Register the blueprints
+    app.register_blueprint(main_bp)
+    app.register_blueprint(tidal_bp, url_prefix='/tidal')  # Prefix for upload routes
+    app.register_blueprint(actions_bp, url_prefix='/actions')  # Prefix for script-related routes
 
     """     @app.route("/foo/<someId>")
             def foo_url_arg(someId):
             return jsonify({"echo": someId}) """
+        
+    @app.route('/upload', methods=['POST'])
+    def upload_file():
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
 
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            # Save the uploaded file to the specified directory
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'urls.txt'))
+            flash('File uploaded successfully')
+            return redirect('/')
+
+        flash('Invalid file format. Only .txt files are allowed.')
+        return redirect(request.url)
+    
+    @app.route('/run-import')
+    def run_import():
+        try:
+            # Replace 'your_script.py' with the name of the script you want to run
+            log_filename = f"script_log_import.txt"
+            log_path = os.path.join(LOG_FOLDER, log_filename)
+
+            # Use Popen to run the script and redirect its output to the log file
+            with open(log_path, 'w') as log_file:
+                process = subprocess.Popen([sys.executable, 'runImportURLs.py'], stdout=log_file, stderr=log_file)
+            return redirect('/actions/run-import')
+        except subprocess.CalledProcessError as e:
+            return f"Script execution failed: {e.output}"
+        
+    @app.route('/run-scans')
+    def run_scans():
+        try:
+            # Replace 'your_script.py' with the name of the script you want to run
+            log_filename = f"script_log_scans.txt"
+            log_path = os.path.join(LOG_FOLDER, log_filename)
+
+            # Use Popen to run the script and redirect its output to the log file
+            with open(log_path, 'w') as log_file:
+                process = subprocess.Popen([sys.executable, 'runScansNow.py'], stdout=log_file, stderr=log_file)
+            return redirect('/actions/run-scans')
+        except subprocess.CalledProcessError as e:
+            return f"Script execution failed: {e.output}"
+        
+    @app.route('/run-downloads')
+    def run_downloads():
+        try:
+            # Replace 'your_script.py' with the name of the script you want to run
+            log_filename = f"script_log_downloads.txt"
+            log_path = os.path.join(LOG_FOLDER, log_filename)
+
+            # Use Popen to run the script and redirect its output to the log file
+            with open(log_path, 'w') as log_file:
+                process = subprocess.Popen([sys.executable, 'runDownloadsNow.py'], stdout=log_file, stderr=log_file)
+            return redirect('/actions/run-downloads')
+        except subprocess.CalledProcessError as e:
+            return f"Script execution failed: {e.output}"
+        
     return app
 
 def webServer():
