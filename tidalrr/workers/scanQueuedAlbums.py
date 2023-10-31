@@ -67,7 +67,7 @@ def writeAlbumInfo(album:Album, tracks: [Track]):
         return
 
     path = getAlbumPath(album)
-    if path is not None:
+    if path is not None and not exists(path+'/AlbumInfo.txt'):
         aigpy.path.mkdirs(path)
 
         path += '/AlbumInfo.txt'
