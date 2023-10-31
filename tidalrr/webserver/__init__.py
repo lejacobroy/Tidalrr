@@ -8,9 +8,9 @@ from flask_cors import CORS
 from flask_bootstrap import Bootstrap5
 from tidalrr.database import *
 from tidalrr.workers import *
-from routes.main_routes import main_bp
-from routes.tidal_routes import tidal_bp
-from routes.action_routes import actions_bp
+from tidalrr.webserver.routes.main_routes import main_bp
+from tidalrr.webserver.routes.tidal_routes import tidal_bp
+from tidalrr.webserver.routes.action_routes import actions_bp
 
 def tidalrrWeb(config=None):
     app = Flask(__name__)

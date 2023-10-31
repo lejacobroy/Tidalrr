@@ -27,6 +27,7 @@
         - sync to plex
     - sync lidarr
         - interactive match with search
+    -- sync user playlists
     - inject spark
     - maintenance
         - albums with master or max available to upgrade
