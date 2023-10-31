@@ -13,23 +13,23 @@ def view_log(log_filename):
     else:
         return 'Log file not found'
 
-@actions_bp.route("/actions/uploadUrlsFile")
+@actions_bp.route("/uploadUrlsFile")
 def uploadUrlsfile():
     return render_template("actions/uploadUrlsFile.html")
 
-@actions_bp.route("/actions/run-import")
+@actions_bp.route("/run-import")
 def actionsRunImport():
     log_filename = f"script_log_import.txt"
     log_content = view_log(log_filename)
     return render_template("actions/run-import.html", log_content=log_content)
 
-@actions_bp.route("/actions/run-scans")
+@actions_bp.route("/run-scans")
 def actionsRunScans():
     log_filename = f"script_log_scans.txt"
     log_content = view_log(log_filename)
     return render_template("actions/run-scans.html", log_content=log_content)
 
-@actions_bp.route("/actions/run-downloads")
+@actions_bp.route("/run-downloads")
 def actionsRunDownloads():
     log_filename = f"script_log_downloads.txt"
     log_content = view_log(log_filename)
