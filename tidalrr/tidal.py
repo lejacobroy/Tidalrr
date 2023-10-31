@@ -52,7 +52,7 @@ def changeApiKey():
     return False
 
 
-def __displayTime__(seconds, granularity=2):
+def displayTime(seconds, granularity=2):
     if seconds <= 0:
         return "unknown"
 
@@ -80,10 +80,29 @@ def loginByWeb():
         #print(LANG.select.AUTH_START_LOGIN)
         # get device code
         url = TIDAL_API.getDeviceCode()
-        print(__displayTime__(TIDAL_API.key.authCheckTimeout), " " + url)
+        print(displayTime(TIDAL_API.key.authCheckTimeout), " " + url)
         """ print(LANG.select.AUTH_NEXT_STEP.format(
             aigpy.cmd.green(url),
-            aigpy.cmd.yellow(__displayTime__(TIDAL_API.key.authCheckTimeout))))
+            aigpy.cmd.yellow(displayTime(TIDAL_API.key.authCheckTimeout))))
+        print(LANG.select.AUTH_WAITING) """
+
+        return waitForAuth()
+
+        raise Exception()
+    except Exception as e:
+        print(f"Login failed.{str(e)}")
+        return False
+
+
+def waitForAuth():
+    try:
+        #print(LANG.select.AUTH_START_LOGIN)
+        # get device code
+        """ url = TIDAL_API.getDeviceCode()
+        print(displayTime(TIDAL_API.key.authCheckTimeout), " " + url) """
+        """ print(LANG.select.AUTH_NEXT_STEP.format(
+            aigpy.cmd.green(url),
+            aigpy.cmd.yellow(displayTime(TIDAL_API.key.authCheckTimeout))))
         print(LANG.select.AUTH_WAITING) """
 
         start = time.time()
@@ -95,7 +114,7 @@ def loginByWeb():
                 continue
 
             """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TIDAL_API.key.expiresIn)))) """
+                displayTime(int(TIDAL_API.key.expiresIn)))) """
 
             TOKEN.userid = TIDAL_API.key.userId
             TOKEN.countryCode = TIDAL_API.key.countryCode
@@ -110,7 +129,6 @@ def loginByWeb():
         print(f"Login failed.{str(e)}")
         return False
 
-
 def loginByConfig():
     try:
         if TOKEN.accessToken is None:
@@ -118,7 +136,7 @@ def loginByConfig():
 
         if TIDAL_API.verifyAccessToken(TOKEN.accessToken):
             """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TOKEN.expiresAfter - time.time())))) """
+                displayTime(int(TOKEN.expiresAfter - time.time())))) """
 
             TIDAL_API.key.countryCode = TOKEN.countryCode
             TIDAL_API.key.userId = TOKEN.userid
@@ -127,7 +145,7 @@ def loginByConfig():
 
         if TIDAL_API.refreshAccessToken(TOKEN.refreshToken):
             """ print(LANG.select.MSG_VALID_ACCESSTOKEN.format(
-                __displayTime__(int(TIDAL_API.key.expiresIn)))) """
+                displayTime(int(TIDAL_API.key.expiresIn)))) """
 
             TOKEN.userid = TIDAL_API.key.userId
             TOKEN.countryCode = TIDAL_API.key.countryCode

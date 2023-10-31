@@ -1,58 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Config</h1>
-<table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col">albumFolderFormat</th>
-        <th scope="col">apiKeyIndex</th>
-        <th scope="col">audioQuality</th>
-        <th scope="col">checkExist</th>
-        <th scope="col">downloadDelay</th>
-        <th scope="col">downloadPath</th>
-        <th scope="col">includeEP</th>
-        <th scope="col">language</th>
-        <th scope="col">lyricFile</th>
-        <th scope="col">multiThread</th>
-        <th scope="col">playlistFolderFormat</th>
-        <th scope="col">saveAlbumInfo</th>
-        <th scope="col">saveCovers</th>
-        <th scope="col">showProgress</th>
-        <th scope="col">showTrackInfo</th>
-        <th scope="col">trackFileFormat</th>
-        <th scope="col">usePlaylistFolder</th>
-        <th scope="col">lidarrUrl</th>
-        <th scope="col">lidarrApi</th>
-        <th scope="col">tidalToken</th>
-        <th scope="col">plexUrl</th>
-        <th scope="col">plexToken</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{ settings['albumFolderFormat'] }}</td>
-            <td>{{ settings['apiKeyIndex'] }}</td>
-            <td>{{ settings['audioQuality'] }}</td>
-            <td>{{ settings['checkExist'] }}</td>
-            <td>{{ settings['downloadDelay'] }}</td>
-            <td>{{ settings['downloadPath'] }}</td>
-            <td>{{ settings['includeEP'] }}</td>
-            <td>{{ settings['language'] }}</td>
-            <td>{{ settings['lyricFile'] }}</td>
-            <td>{{ settings['multiThread'] }}</td>
-            <td>{{ settings['playlistFolderFormat'] }}</td>
-            <td>{{ settings['saveAlbumInfo'] }}</td>
-            <td>{{ settings['saveCovers'] }}</td>
-            <td>{{ settings['showProgress'] }}</td>
-            <td>{{ settings['showTrackInfo'] }}</td>
-            <td>{{ settings['trackFileFormat'] }}</td>
-            <td>{{ settings['usePlaylistFolder'] }}</td>
-            <td>{{ settings['lidarrUrl'] }}</td>
-            <td>{{ settings['lidarrApi'] }}</td>
-            <td>{{ settings['tidalToken'] }}</td>
-            <td>{{ settings['plexUrl'] }}</td>
-            <td>{{ settings['plexToken'] }}</td>
-        </tr>
-    </tbody>
-  </table>
+<h1>Settings</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.apiKeyIndex.label(class="form-label") }}
+            {{ form.apiKeyIndex(class="form-select") }}
+        </div>
+        <div class="form-group">
+            {{ form.audioQuality.label(class="form-label") }}
+            {{ form.audioQuality(class="form-select") }}
+        </div>
+        <div class="form-group">
+            {{ form.downloadPath.label(class="form-label") }}
+            {{ form.downloadPath(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.albumFolderFormat.label(class="form-label") }}
+            {{ form.albumFolderFormat(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.includeEP.label(class="form-check-label") }}
+                {{ form.includeEP(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.saveAlbumInfo.label(class="form-check-label") }}
+                {{ form.saveAlbumInfo(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.saveCovers.label(class="form-check-label") }}
+                {{ form.saveCovers(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.usePlaylistFolder.label(class="form-check-label") }}
+                {{ form.usePlaylistFolder(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.playlistFolderFormat.label(class="form-label") }}
+            {{ form.playlistFolderFormat(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.trackFileFormat.label(class="form-label") }}
+            {{ form.trackFileFormat(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.lyricFile.label(class="form-check-label") }}
+                {{ form.lyricFile(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form.lidarrUrl.label(class="form-label") }}
+            {{ form.lidarrUrl(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.lidarrApi.label(class="form-label") }}
+            {{ form.lidarrApi(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.plexUrl.label(class="form-label") }}
+            {{ form.plexUrl(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.plexToken.label(class="form-label") }}
+            {{ form.plexToken(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.tidalToken.label(class="form-label") }}
+            {{ form.tidalToken(class="form-control") }}
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    </form>
 {% endblock %}

@@ -17,7 +17,6 @@
     - settings.py
     - model.py
 - create an api webserver and control center
-    - change settings
     - login into Tidal to catch token
     - add urls to the queue from tidal search or urls
     - list tidal playlists, artists, albums, tracks, mixes

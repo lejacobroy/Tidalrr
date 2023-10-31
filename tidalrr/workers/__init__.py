@@ -11,7 +11,6 @@
 
 from tidalrr.tidal import *
 from tidalrr.settings import *
-from tidalrr.tidal import *
 
 def tidalrrStart():
     createTables()
@@ -24,11 +23,11 @@ def tidalrrStart():
         print(SETTINGS.downloadPath)
         return
 
-    if not isItemValid(SETTINGS.apiKeyIndex):
+    """ if not isItemValid(SETTINGS.apiKeyIndex):
         changeApiKey()
         loginByWeb()
     elif not loginByConfig():
-        loginByWeb()
+        loginByWeb() """
 
 def parseContributors(roleType, Contributors):
     if Contributors is None:
