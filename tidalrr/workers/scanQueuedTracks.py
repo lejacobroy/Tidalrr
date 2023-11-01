@@ -20,9 +20,10 @@ def scanQueuedTracks():
             if hasattr(track, 'id') and track.queued:
                 if track.queued:
                     print('Scanning track '+ str(i)+'/'+str(len(tracks))+' '+track.title)
-                    start_track(track)
-                    track.queued = False
-                    updateTidalTrack(track)
+                    result = start_track(track)
+                    if result:
+                        track.queued = False
+                        updateTidalTrack(track)
 
 def start_track(obj: Track):
     settings = getSettings()
@@ -32,14 +33,15 @@ def start_track(obj: Track):
     file = getFileById(obj.id)
     queue = getTidalQueueById(obj.id)
     if file is None and queue is None:
-        scanTrack(obj, album, settings.audioQuality)
+        return scanTrack(obj, album, settings.audioQuality)
     else:
         print('File Exists, skipping')
+        return True
 
 def scanTrack(track: Track, album=Album, audioQuality='Normal', playlist=None):
     stream = TIDAL_API.getStreamUrl(track.id, audioQuality)
     artist = getTidalArtist(track.artist)
-    if artist is not None:
+    if artist is not None and stream is not None:
         path = getTrackPath(track, stream, artist, album, playlist)
 
         queue = Queue(
@@ -53,6 +55,8 @@ def scanTrack(track: Track, album=Album, audioQuality='Normal', playlist=None):
 
         addTidalQueue(queue)
         print('Adding track to queue '+track.title)
+        return True
     else:
-        print('Track '+str(track.id)+' Unknown artist '+ str(track.artist)+' '+ track.artists)
+        print('Track '+str(track.id)+' Unknown artist or url'+ str(track.artist)+' '+ track.artists)
         # maybe add the artist and re-run
+        return False
