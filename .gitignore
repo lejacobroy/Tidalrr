@@ -19,3 +19,4 @@ urls.txt
 .vscode/settings.json
 one_urls.txt
 tidalrr/config/*
+logs/*
