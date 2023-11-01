@@ -42,28 +42,6 @@ def start_album(obj: Album):
                 track.queued = True
                 scanQueuedTracks()
 
-def scanCover(album):
-    cover = getFileById(album.id)
-    if cover is None:
-        if album is None:
-            return
-        path = getAlbumPath(album) 
-        if path is not None:
-            path = path + '/cover.jpg'
-            url = TIDAL_API.getCoverUrl(album.cover)
-
-            queue = Queue(
-                type='Cover',
-                login=False,
-                id=album.id,
-                path=path,
-                url=url,
-                encryptionKey=''
-            )
-
-            addTidalQueue(queue)
-            #aigpy.net.downloadFile(url, path)
-
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:
         return

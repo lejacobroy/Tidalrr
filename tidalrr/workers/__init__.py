@@ -89,3 +89,25 @@ def isSkip(finalpath, url):
             return True
     netSize = aigpy.net.getSize(url)
     return curSize >= netSize
+
+def scanCover(album):
+    cover = getFileById(album.id)
+    if cover is None:
+        if album is None:
+            return
+        path = getAlbumPath(album) 
+        if path is not None:
+            path = path + '/cover.jpg'
+            url = TIDAL_API.getCoverUrl(album.cover)
+
+            queue = Queue(
+                type='Cover',
+                login=False,
+                id=album.id,
+                path=path,
+                url=url,
+                encryptionKey=''
+            )
+
+            addTidalQueue(queue)
+            #aigpy.net.downloadFile(url, path)
