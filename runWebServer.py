@@ -12,4 +12,4 @@
 from tidalrr.webserver import *
 
 if __name__ == '__main__':
-    webServer()
+    webServer(False)

@@ -110,9 +110,9 @@ def tidalrrWeb(config=None):
         
     return app
 
-def webServer():
+def webServer(debug=True):
     createTables()
     tidalrrStart()
     print("Starting web server")
     app = tidalrrWeb()
-    app.run(host="0.0.0.0", port=3001, debug=True)
+    app.run(host="0.0.0.0", port=3001, debug=debug)
