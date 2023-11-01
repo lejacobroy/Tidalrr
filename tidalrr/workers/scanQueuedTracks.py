@@ -22,6 +22,8 @@ def scanQueuedTracks():
                 if track.queued:
                     print('Scanning track '+ str(i)+'/'+str(len(tracks))+' '+track.title)
                     start_track(track)
+                    track.queued = False
+                    updateTidalTrack(track)
 
 def start_track(obj: Track):
     settings = getSettings()

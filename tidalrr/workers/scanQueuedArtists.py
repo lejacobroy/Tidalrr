@@ -22,6 +22,8 @@ def scanQueuedArtists():
                 if artist.queued :
                     print('Scanning artist '+ str(i)+'/'+str(len(artists))+' '+artist.name)
                     start_artist(artist)
+                    artist.queued = False
+                    updateTidalArtist(artist)
 
 def start_artist(obj: Artist):
     settings = getSettings()

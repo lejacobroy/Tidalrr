@@ -22,6 +22,8 @@ def scanQueuedAlbums():
                 if album.queued:
                     print('Scanning album '+ str(i)+'/'+str(len(albums))+' '+album.title)
                     start_album(album)
+                    album.queued = False
+                    updateTidalAlbum(album)
 
 def start_album(obj: Album):
     tracks = TIDAL_API.getItems(obj.id, Type.Album)
