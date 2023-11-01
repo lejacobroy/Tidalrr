@@ -30,7 +30,6 @@ def tidalrrWeb(config=None):
 
     bootstrap = Bootstrap5(app)
     # See http://flask.pocoo.org/docs/latest/config/
-    app.config.update(dict(DEBUG=True))
     app.config.update(config or {})
 
     # Setup cors headers to allow all domains
@@ -115,6 +114,5 @@ def webServer():
     createTables()
     tidalrrStart()
     print("Starting web server")
-    port = int(os.environ.get("PORT", 3001))
     app = tidalrrWeb()
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=3001, debug=True)
