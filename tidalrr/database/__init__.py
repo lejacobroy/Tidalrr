@@ -179,6 +179,7 @@ def setTidalKey(key=LoginKey):
     connection.close()
 
 def getStats():
+    print(DB_PATH)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
