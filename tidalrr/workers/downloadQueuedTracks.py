@@ -31,52 +31,54 @@ def isNeedRefresh(url):
 
 def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
     album = getTidalAlbum(track.album)
-    settings = getSettings()
-    if queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
-        print('Refreshing URL '+ track.title)
-        temp = refreshStreamURL(queue.id, settings.audioQuality)
-        queue.url = temp.url
-        queue.encryptionKey = temp.encryptionKey
+    artist = getTidalArtist(album.artist)
+    if album is not None and artist is not None:
+        settings = getSettings()
+        if queue.login and isNeedRefresh(queue.url) and queue.type == 'Track':
+            print('Refreshing URL '+ track.title)
+            temp = refreshStreamURL(queue.id, settings.audioQuality)
+            queue.url = temp.url
+            queue.encryptionKey = temp.encryptionKey
 
-    # check exist
-    if not isSkip(queue.path, queue.url):
-        # download
-        #logging.info("[DL Track] name=" + aigpy.path.getFileName(queue.path) + "\nurl=" + queue.url)
-        if settings.downloadDelay:
-            sleep_time = random.randint(500, 5000) / 1000
-            #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
-            time.sleep(sleep_time)
+        # check exist
+        if not isSkip(queue.path, queue.url):
+            # download
+            #logging.info("[DL Track] name=" + aigpy.path.getFileName(queue.path) + "\nurl=" + queue.url)
+            if settings.downloadDelay:
+                sleep_time = random.randint(500, 5000) / 1000
+                #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+                time.sleep(sleep_time)
 
-        tool = aigpy.download.DownloadTool(queue.path + '.part', [queue.url])
-        tool.setPartSize(partSize)
-        check, err = tool.start(False,1)
-        if not check:
-            print(f"DL Track[{track.title}] failed.{str(err)}")
-            return False, str(err)
+            tool = aigpy.download.DownloadTool(queue.path + '.part', [queue.url])
+            tool.setPartSize(partSize)
+            check, err = tool.start(False,1)
+            if not check:
+                print(f"DL Track[{track.title}] failed.{str(err)}")
+                return False, str(err)
 
-        # encrypted -> decrypt and remove encrypted file
-        encrypted(queue.encryptionKey, queue.path + '.part', queue.path)
+            # encrypted -> decrypt and remove encrypted file
+            encrypted(queue.encryptionKey, queue.path + '.part', queue.path)
 
-        # contributors
-        try:
-            contributors = TIDAL_API.getTrackContributors(track.id)
-        except:
-            contributors = None
+            # contributors
+            try:
+                contributors = TIDAL_API.getTrackContributors(track.id)
+            except:
+                contributors = None
 
-        # lyrics
-        try:
-            lyrics = TIDAL_API.getLyrics(track.id).subtitles
-            if settings.lyricFile:
-                lrcPath = queue.path.rsplit(".", 1)[0] + '.lrc'
-                aigpy.file.write(lrcPath, lyrics, 'w')
-        except:
-            lyrics = ''
-        metadataArtist = [str((getTidalArtist(album.artist).name))]
-        metadataArtists = [str(album.artists)]
+            # lyrics
+            try:
+                lyrics = TIDAL_API.getLyrics(track.id).subtitles
+                if settings.lyricFile:
+                    lrcPath = queue.path.rsplit(".", 1)[0] + '.lrc'
+                    aigpy.file.write(lrcPath, lyrics, 'w')
+            except:
+                lyrics = ''
+            metadataArtist = [str(artist.name)]
+            metadataArtists = [str(album.artists)]
 
-        setMetaData(track, album, metadataArtist, metadataArtists, queue.path, contributors, lyrics)
-        #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
-        #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
+            setMetaData(track, album, metadataArtist, metadataArtists, queue.path, contributors, lyrics)
+            #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
+            #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
 
 
 def downloadQueuedTracks():
