@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   tidalrr:
-    container_name: tidalrr
+    container_name: jacobroyquebec:tidalrr
     image: tidalrr
     restart: unless-stopped
     environment:
