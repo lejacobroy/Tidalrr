@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.7'
 services:
   tidalrr:
     container_name: tidalrr
@@ -9,9 +9,9 @@ services:
       - PUID=1000
       - PGID=1000
     ports:
-      - host_port:8000
+      - 8587:8000
     volumes:
-      - /path/to/config/folder:/app/config
+      - ./tidalrr/config:/app/config
       - /path/to/download/folder:/app/download
-      - /path/to/import/folder:/app/import
+      - ./import:/app/import
       - /path/to/lidarr/folders:/path/to/lidarr/folders
