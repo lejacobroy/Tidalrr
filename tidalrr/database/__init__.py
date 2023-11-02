@@ -9,7 +9,6 @@
 @Desc    :   
 '''
 import sqlite3
-import os
 from tidalrr.model import *
 from tidalrr.database.artists import *
 from tidalrr.database.albums import *
@@ -17,18 +16,16 @@ from tidalrr.database.tracks import *
 from tidalrr.database.queues import *
 from tidalrr.database.files import *
 from tidalrr.database.playlists import *
-
-database_path = os.path.abspath(os.path.dirname(__file__))+'/../../config/database.db'
-schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
+from tidalrr.definitions import DB_PATH, SCHEMA_PATH
 
 def createTables():
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     settings = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings';").fetchone()
     conn.close()
     if settings is None:
-        connection = sqlite3.connect(database_path)
-        with open(schema_path) as f:
+        connection = sqlite3.connect(DB_PATH)
+        with open(SCHEMA_PATH) as f:
             connection.executescript(f.read())
         cur = connection.cursor()
         cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -76,7 +73,7 @@ def createTables():
         connection.close()
 
 def getSettings() -> Settings:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     settings = conn.execute('SELECT * FROM settings').fetchone()
     conn.close()
@@ -85,7 +82,7 @@ def getSettings() -> Settings:
     return settings
 
 def getTidalKey() -> LoginKey:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     key = conn.execute('SELECT * FROM tidal_key').fetchone()
     conn.close()
@@ -94,7 +91,7 @@ def getTidalKey() -> LoginKey:
     return key
 
 def setSettings(settings=Settings):
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("UPDATE settings SET \
                 albumFolderFormat = ?,\
@@ -147,7 +144,7 @@ def setSettings(settings=Settings):
     connection.close()
 
 def setTidalKey(key=LoginKey):
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("UPDATE tidal_key SET \
                 deviceCode = ?,\
@@ -182,7 +179,7 @@ def setTidalKey(key=LoginKey):
     connection.close()
 
 def getStats():
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
                         UNION\

@@ -9,14 +9,11 @@
 @Desc    :   
 '''
 import sqlite3
-import os
+from tidalrr.definitions import DB_PATH
 from tidalrr.model import *
 
-database_path = os.path.abspath(os.path.dirname(__file__))+'/../../config/database.db'
-schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
-
 def addTidalQueue(queue=Queue):
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("INSERT OR IGNORE INTO tidal_queue VALUES (?, ?, ?, ?, ?, ?)",
                 (
@@ -31,7 +28,7 @@ def addTidalQueue(queue=Queue):
     connection.close()
 
 def getTidalQueues(type=str) -> [Queue]:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     if type == '':
         rows = conn.execute('SELECT * FROM tidal_queue').fetchall()
@@ -45,7 +42,7 @@ def getTidalQueues(type=str) -> [Queue]:
     return queues
 
 def getTidalQueueById(id= int) -> Queue:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM tidal_queue WHERE id = ?', (id,)).fetchone()
     conn.close()
@@ -55,7 +52,7 @@ def getTidalQueueById(id= int) -> Queue:
     return queue
 
 def delTidalQueue(path=str):
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     cur.execute('DELETE FROM tidal_queue WHERE path = ?', (path,))
     conn.commit()

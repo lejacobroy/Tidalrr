@@ -10,14 +10,11 @@
 '''
 
 import sqlite3
-import os
 from tidalrr.model import *
-
-database_path = os.path.abspath(os.path.dirname(__file__))+'/../../config/database.db'
-schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
+from tidalrr.definitions import DB_PATH
 
 def addTidalArtist(artist=Artist):
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("INSERT OR IGNORE INTO tidal_artists VALUES (?, ?, ?, ?, ?, ?)",
                 (artist.id, artist.name, artist.url, artist.path, artist.queued, artist.downloaded))
@@ -25,7 +22,7 @@ def addTidalArtist(artist=Artist):
     connection.close()
 
 def updateTidalArtist(artist=Artist):
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("UPDATE tidal_artists SET queued = ?, downloaded = ? WHERE id = ?",
                 (artist.queued, artist.downloaded, artist.id))
@@ -33,7 +30,7 @@ def updateTidalArtist(artist=Artist):
     connection.close()
 
 def updateTidalArtistsDownloaded():
-    connection = sqlite3.connect(database_path)
+    connection = sqlite3.connect(DB_PATH)
     cur = connection.cursor()
     cur.execute("UPDATE tidal_artists SET queued = 0, downloaded = 1 WHERE id IN (\
                     SELECT tidal_artists.id\
@@ -46,7 +43,7 @@ def updateTidalArtistsDownloaded():
     connection.close()
 
 def getTidalArtists() -> [Artist]:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL').fetchall()
     conn.close()
@@ -57,7 +54,7 @@ def getTidalArtists() -> [Artist]:
     return new_rows
 
 def getTidalArtist(id=int) -> Artist:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM tidal_artists WHERE id = ?', (id,)).fetchone()
     conn.close()
