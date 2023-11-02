@@ -13,10 +13,11 @@ __pycache__
 .DS_Store
 tidalrr.spec
 tidalrr/dist/*
-
-
 urls.txt
 .vscode/settings.json
 one_urls.txt
 tidalrr/config/*
 logs/*
+docker-compose.yml
+.vscode
+urls.txt

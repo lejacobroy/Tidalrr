@@ -6,7 +6,6 @@
 __pycache__
 clean.sh
 .history/
-.gitignore
 /build/build
 /build
 /build/*
@@ -27,3 +26,8 @@ tidalrr/config/tidalrr.json
 tidalrr/config/tidalrr.token.json
 config/tidalrr.json
 config/tidalrr.token.json
+.git
+tidalrr/config*
+logs/*
+urls.txt
+.vscode
