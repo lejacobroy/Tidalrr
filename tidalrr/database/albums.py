@@ -11,10 +11,12 @@
 import sqlite3
 from tidalrr.model import *
 import json
-from tidalrr.definitions import DB_PATH
+from pathlib import Path
+
+db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 
 def addTidalAlbum(album=Album):
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(db_path)
     cur = connection.cursor()
     cur.execute("INSERT OR IGNORE INTO tidal_albums VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
@@ -41,7 +43,7 @@ def addTidalAlbum(album=Album):
     connection.close()
 
 def updateTidalAlbum(album=Album):
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(db_path)
     cur = connection.cursor()
     cur.execute("UPDATE tidal_albums SET queued = ?, downloaded = ? WHERE id = ?",
                 (album.queued, album.downloaded, album.id))
@@ -49,7 +51,7 @@ def updateTidalAlbum(album=Album):
     connection.close()
 
 def updateTidalAlbumsDownloaded():
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(db_path)
     cur = connection.cursor()
     cur.execute("UPDATE tidal_albums SET queued = 0, downloaded = 1 WHERE id IN (\
                     SELECT tidal_albums.id\
@@ -68,7 +70,7 @@ def getArtistsNameJSON(artists):
         return ", ".join(array)
 
 def getTidalAlbums() -> [Album]:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_albums WHERE title <> ""').fetchall()
     new_rows = [Album]
@@ -81,7 +83,7 @@ def getTidalAlbums() -> [Album]:
     return new_rows
 
 def getTidalAlbum(id=int) -> Album:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM tidal_albums WHERE id = ?', (id,)).fetchone()
     conn.close()

@@ -9,11 +9,13 @@
 @Desc    :   
 '''
 import sqlite3
-from tidalrr.definitions import DB_PATH
 from tidalrr.model import *
+from pathlib import Path
+
+db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 
 def addFiles(file=File):
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(db_path)
     cur = connection.cursor()
     cur.execute("INSERT OR IGNORE INTO files VALUES (?, ?, ?, ?)",
                 (
@@ -26,7 +28,7 @@ def addFiles(file=File):
     connection.close()
 
 def getFiles() -> [File]:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM files').fetchall()
     conn.close()
@@ -37,7 +39,7 @@ def getFiles() -> [File]:
     return files
 
 def getFileById(id= int) -> File:
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     row = conn.execute('SELECT * FROM files WHERE id = ?', (id,)).fetchone()
     conn.close()
