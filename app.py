@@ -8,10 +8,26 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-import subprocess
-import sys
+from multiprocessing import Process
+from runWebServer import *
+from runScans import *
+from runDownloads import *
+
+def main():
+    print("Starting tidalrr app", flush=True)
+    processes = []
+
+    process1 = Process(target=webServer(False))
+    process2 = Process(target=mainScansSchedule)
+    process3 = Process(target=mainDownloadsSchedule)
+
+    processes.extend([process1, process2, process3])
+
+    for process in processes:
+        process.start()
+
+    for process in processes:
+        process.join()
 
 if __name__ == '__main__':
-    subprocess.Popen([sys.executable, "runWebServer.py"])
-    subprocess.Popen([sys.executable, "runScans.py"])
-    subprocess.Popen([sys.executable, "runDownloads.py"])
+    main()

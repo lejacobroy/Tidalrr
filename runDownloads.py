@@ -57,7 +57,7 @@ def forkDownloads():
         # Cleanup
         p.join()
 
-def mainSchedule():
+def mainDownloadsSchedule():
     schedule.every().day.at("23:00").do(forkDownloads)
     while True:
         schedule.run_pending()
@@ -66,4 +66,4 @@ def mainSchedule():
 if __name__ == '__main__':
     #startDownloads()
     #main()
-    mainSchedule()
+    mainDownloadsSchedule()

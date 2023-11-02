@@ -21,3 +21,4 @@ logs/*
 docker-compose.yml
 .vscode
 urls.txt
+config*

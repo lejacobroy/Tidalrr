@@ -1,12 +1,14 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-slim-buster
-COPY ./ /app
+FROM python:3.11
+
 WORKDIR /app
+COPY requirements.txt ./
 
-RUN apt-get update && apt-get -y install gcc python3-dev
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN ./build.sh
-# tidalrr should be installed in /app/dist/tidalrr
+COPY . .
 
-CMD ["python3", "app.py"]
+ENTRYPOINT ["python3"]
+
+CMD ["app.py"]

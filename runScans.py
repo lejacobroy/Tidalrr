@@ -66,7 +66,7 @@ def forkScans():
         # Cleanup
         p.join()
 
-def mainSchedule():
+def mainScansSchedule():
     schedule.every().day.at("23:00").do(forkScans)
     while True:
         schedule.run_pending()
@@ -75,4 +75,4 @@ def mainSchedule():
 if __name__ == '__main__':
     #startScans()
     #main()
-    mainSchedule()
+    mainScansSchedule()

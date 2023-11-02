@@ -13,7 +13,7 @@ import os
 from tidalrr.model import *
 import json
 
-database_path = os.path.abspath(os.path.dirname(__file__))+'/../config/database.db'
+database_path = os.path.abspath(os.path.dirname(__file__))+'/../../config/database.db'
 schema_path = os.path.abspath(os.path.dirname(__file__))+'/schema.sql'
 
 def addTidalAlbum(album=Album):
