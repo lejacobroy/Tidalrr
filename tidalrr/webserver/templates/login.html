@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tidalrr</h1>
+{% if timeout != '' %}
+    Please login: <a href="{{ url }}" target="_blank">{{ url }}</a>
+    <br/>
+    <p>Link valid for {{ timeout }}</p>
+{% endif %}
+{% endblock %}

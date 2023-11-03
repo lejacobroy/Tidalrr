@@ -75,7 +75,7 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
                 lyrics = ''
             metadataArtist = [str(artist.name)]
             metadataArtists = [str(album.artists)]
-
+            print('Downloaded file', track.title, track.audioQuality, queue.url)
             setMetaData(track, album, metadataArtist, metadataArtists, queue.path, contributors, lyrics)
             #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
             #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")

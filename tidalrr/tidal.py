@@ -87,9 +87,11 @@ def waitForAuth():
             elapsed = time.time() - start
             if not checkAuthStatus():
                 time.sleep(int(key.authCheckInterval) + 1)
+                print('Waiting for Auth')
                 continue
             #key.expiresAfter = time.time() + int(key.expiresIn)
             #setTidalKey(key)
+            print('Auth is good')
             return True
 
         raise Exception()

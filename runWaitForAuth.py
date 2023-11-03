@@ -12,4 +12,5 @@
 from tidalrr.tidal import *
 
 if __name__ == '__main__':
+    print('run waitForAuth')
     waitForAuth()

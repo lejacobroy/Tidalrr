@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 import aigpy
-
+from os.path import exists
 from tidalrr.paths import *
 from tidalrr.decryption import *
 from tidalrr.tidal import *

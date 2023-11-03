@@ -38,6 +38,7 @@ def startWaitForAuth():
         process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
     except subprocess.CalledProcessError as e:
         return f"Script execution failed: {e.output}"
+    print(url, timeout)
     return url, timeout
 
 @main_bp.route("/")
@@ -51,8 +52,8 @@ def hello_world():
         
     elif not loginByConfig():
         url, timeout = startWaitForAuth()
-
-    return render_template("content.html", url=url, timeout=timeout)
+    print(url,timeout)
+    return render_template("login.html", url=url, timeout=timeout)
 
 @main_bp.route('/settings', methods=['GET', 'POST'])
 def settingsPage():
