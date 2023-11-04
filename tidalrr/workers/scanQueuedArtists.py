@@ -34,7 +34,7 @@ def start_artist(obj: Artist):
                 existing = getTidalAlbum(album.id)
                 if existing is None:
                     print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
-                    addTidalAlbum(album)
                     if obj.queued:
                         album.queued = True
-                        scanQueuedAlbums()
+                    addTidalAlbum(album)
+                    scanQueuedAlbums()

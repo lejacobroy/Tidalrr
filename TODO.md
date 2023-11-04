@@ -23,6 +23,9 @@
         - download selected
         - filter by state (online|downloaded|plex)
         - sync to plex
+    - edit db
+        - remove queued content
+        - queue/unqueue items and childs
     - sync lidarr
         - interactive match with search
     -- sync user playlists

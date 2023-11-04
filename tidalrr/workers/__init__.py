@@ -8,23 +8,41 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-
+import subprocess
+import sys
 from tidalrr.tidal import *
 
 def tidalrrStart():
     createTables()
-    settings = getSettings()
-    #Printf.logo()
-    #Printf.settings()
-    if not aigpy.path.mkdirs(settings.downloadPath):
-        print(settings.downloadPath)
-        return
+    tidalLogin()
 
-    """ if not isItemValid(settings.apiKeyIndex):
+def tidalLogin():
+    url = ''
+    timeout = ''
+    settings = getSettings()
+    key = getTidalKey()
+    loginByAccessToken(key.accessToken, key.userId)
+    if not isItemValid(settings.apiKeyIndex):
         changeApiKey()
-        loginByWeb()
+        url, timeout = startWaitForAuth()
+        
     elif not loginByConfig():
-        loginByWeb() """
+        url, timeout = startWaitForAuth()
+    if url != '':
+        print (url, timeout)
+    return url, timeout
+
+def startWaitForAuth():
+    url = getDeviceCode()
+    key = getTidalKey()
+    timeout = displayTime(int(key.authCheckTimeout))
+    # start subprocess to waitFroAuth()
+    try:
+        process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
+    except subprocess.CalledProcessError as e:
+        return f"Script execution failed: {e.output}"
+    print(url, timeout)
+    return url, timeout
 
 def parseContributors(roleType, Contributors):
     if Contributors is None:
@@ -106,7 +124,8 @@ def scanCover(album):
                 id=album.id,
                 path=path,
                 url=url,
-                encryptionKey=''
+                encryptionKey='',
+                urls = [url]
             )
 
             addTidalQueue(queue)

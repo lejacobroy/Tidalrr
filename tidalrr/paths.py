@@ -38,6 +38,8 @@ def __getExtension__(stream: StreamUrl):
         if 'ac4' in stream.codec or 'mha1' in stream.codec:
             return '.mp4'
         elif 'flac' in stream.codec:
+            if 'DASH' in stream.codec:
+                return '.mp4'
             return '.flac'
         return '.m4a'
     return '.m4a'

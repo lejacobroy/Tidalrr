@@ -9,8 +9,8 @@
 @Desc    :   
 '''
 import sqlite3
+import json
 from tidalrr.model import *
-
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -18,14 +18,15 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalQueue(queue=Queue):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_queue VALUES (?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_queue VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (
                     queue.url,
                     queue.type,
                     queue.login,
                     queue.id,
                     queue.path,
-                    queue.encryptionKey
+                    queue.encryptionKey,
+                    json.dumps(queue.urls)
                 ))
     connection.commit()
     connection.close()

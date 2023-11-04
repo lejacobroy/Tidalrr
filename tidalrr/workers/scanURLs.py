@@ -33,27 +33,30 @@ def start(string):
             print(str(e) + " [" + item + "]")
             return
         try:
-            obj.queued = True
             # add files in queued state, to download them later
             if etype == Type.Artist:
                 dbArtist = getTidalArtist(obj.id)
                 if dbArtist is None:
+                    obj.queued = True
                     addTidalArtist(obj)
                     print('Added artist to DB:', obj.name)
                     #scanQueuedArtists()
             elif etype == Type.Album:
                 dbAlbum = getTidalAlbum(obj.id)
                 if dbAlbum is None:
+                    obj.queued = True
                     addTidalAlbum(obj)
                     print('Added album to DB:', obj.title)
                     #scanQueuedAlbums()
             elif etype == Type.Track:
                 dbTrack = getTidalTrack(obj.id)
                 if dbTrack is None:
+                    obj.queued = True
                     addTidalTrack(obj)
                     print('addTidalTrack')
                     #scanQueuedTracks()
             elif etype == Type.Playlist:
+                obj.queued = True
                 addTidalPlaylist(obj)
                 print('addTidalPlaylist')
                 #scanQueuedPlaylists()

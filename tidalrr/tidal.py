@@ -83,6 +83,8 @@ def waitForAuth():
         start = time.time()
         elapsed = 0
         key = getTidalKey()
+        if key.deviceCode == '':
+            getDeviceCode()
         while elapsed < int(key.authCheckTimeout):
             elapsed = time.time() - start
             if not checkAuthStatus():
@@ -101,6 +103,8 @@ def waitForAuth():
 
 def loginByConfig():
     key = getTidalKey()
+    if key.deviceCode == '':
+            getDeviceCode()
     try:
         if key.accessToken is None:
             return False
@@ -125,7 +129,7 @@ def getDeviceCode() -> str:
     result = post('/device_authorization', data)
     if 'status' in result and result['status'] != 200:
         raise Exception("Device authorization failed. Please choose another apikey.")
-
+    #print('deviceCode', result)
     key.deviceCode = result['deviceCode']
     key.userCode = result['userCode']
     key.verificationUrl = result['verificationUri']
@@ -153,6 +157,7 @@ def checkAuthStatus() -> bool:
     }
     auth = (key.clientId, key.clientSecret)
     result = post('/token', data, auth)
+    #print(data, result)
     if 'status' in result and result['status'] != 200:
         if result['status'] == 400 and result['sub_status'] == 1002:
             return False
@@ -170,8 +175,12 @@ def checkAuthStatus() -> bool:
 def verifyAccessToken(accessToken) -> bool:
     header = {'authorization': 'Bearer {}'.format(accessToken)}
     result = requests.get('https://api.tidal.com/v1/sessions', headers=header).json()
+    #print('verify',result)
     if 'status' in result and result['status'] != 200:
         return False
+    """    # Set tidalapi session.
+    self.session = tidalapi.session.Session()
+    self.session.load_oauth_session("Bearer", accessToken) """
     return True
 
 def refreshAccessToken(refreshToken) -> bool:
@@ -187,6 +196,7 @@ def refreshAccessToken(refreshToken) -> bool:
     if 'status' in result and result['status'] != 200:
         return False
     # if auth is successful:
+    #print('refresh',result)
     key.userId = result['user']['userId']
     key.countryCode = result['user']['countryCode']
     key.accessToken = result['access_token']
@@ -204,13 +214,28 @@ def loginByAccessToken(accessToken, userid=None):
     if not aigpy.string.isNull(userid):
         if str(result['userId']) != str(userid):
             raise Exception("User mismatch! Please use your own accesstoken.",)
-
+    #print('login',result)
     key.userId = result['userId']
     key.countryCode = result['countryCode']
     key.accessToken = accessToken
     setTidalKey(key)
     return
-    
+
+def setLowerQuality():
+    settings = getSettings()
+    if settings.audioQuality == 'Max':
+        settings.audioQuality = 'Master'
+    elif settings.audioQuality == 'Master':
+        settings.audioQuality = 'HiFi'
+    elif settings.audioQuality == 'HiFi':
+        settings.audioQuality = 'High'
+    elif settings.audioQuality == 'High':
+        settings.audioQuality = 'Normal'
+    elif settings.audioQuality == 'Normal':
+        print('User cannot stream, you must have an active subscription')
+    setSettings(settings)
+
+
 class TidalAPI(object):
     def __init__(self):
         self.key = getTidalKey()
@@ -223,38 +248,41 @@ class TidalAPI(object):
         header = {'authorization': f'Bearer {self.key.accessToken}'}
         params['countryCode'] = self.key.countryCode
         errmsg = "Get operation err!"
+        for index in range(0, 3):
+            try:
+                respond = requests.get(urlpre + path, headers=header, params=params)
+                if respond.url.find("playbackinfopostpaywall") != -1 :
+                    # random sleep between 0.5 and 5 seconds and print it
+                    sleep_time = random.randint(500, 2000) / 1000
+                    #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
+                    time.sleep(sleep_time)
 
-        #print(urlpre + path, header, params)
-        respond = requests.get(urlpre + path, headers=header, params=params)
-        #print(respond)
-        settings = getSettings()
-        if respond.url.find("playbackinfopostpaywall") != -1 and settings.downloadDelay is not False:
-            # random sleep between 0.5 and 5 seconds and print it
-            sleep_time = random.randint(500, 2000) / 1000
-            #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
-            time.sleep(sleep_time)
+                if respond.status_code == 429:
+                    print('Too many requests, waiting for 20 seconds...')
+                    # Loop countdown 20 seconds and print the remaining time
+                    for i in range(20, 0, -1):
+                        time.sleep(1)
+                        #print(i, end=' ')
+                    #print('')
+                    continue
+                    
+                result = json.loads(respond.text)
+                if 'status' not in result:
+                    return result
 
-        if respond.status_code == 429:
-            print('Too many requests, waiting for 20 seconds...')
-            # Loop countdown 20 seconds and print the remaining time
-            for i in range(20, 0, -1):
-                time.sleep(1)
-                #print(i, end=' ')
-            #print('')
-            
+                if 'userMessage' in result and result['userMessage'] is not None:
+                    errmsg += result['userMessage']
+                    if result['userMessage'] == "Requested quality is not allowed in user's subscription":
+                        #set lower quality
+                        print('setting lower quality')
+                        setLowerQuality()
+                break
+            except Exception as e:
+                if index >= 3:
+                    errmsg += respond.text
 
-        result = json.loads(respond.text)
-        if 'status' not in result:
-            #print(result)
-            """ if result["totalNumberOfItems"] > 0:
-                print('TEST')
-                print('TEST',result["items"][0])
-                return result.items[0] """
-            return result
+        raise Exception(errmsg)
 
-        if 'userMessage' in result and result['userMessage'] is not None:
-            errmsg += result['userMessage']
-        
 
     def __getItems__(self, path, params={}):
         params['limit'] = 50
@@ -517,46 +545,45 @@ class TidalAPI(object):
         return tracks
 
     def getStreamUrl(self, id, quality: AudioQuality):
-        squality = "HI_RES"
-        if quality == AudioQuality.Normal:
+        squality = ""
+        if quality == 'Normal':
             squality = "LOW"
-        elif quality == AudioQuality.High:
+        elif quality == 'High':
             squality = "HIGH"
-        elif quality == AudioQuality.HiFi:
+        elif quality == 'HiFi':
             squality = "LOSSLESS"
-        elif quality == AudioQuality.Max:
+        elif quality == 'Master':
+            squality = "HI_RES"
+        elif quality == 'Max':
             squality = "HI_RES_LOSSLESS"
-
         paras = {"audioquality": squality, "playbackmode": "STREAM", "assetpresentation": "FULL"}
         data = self.__get__(f'tracks/{str(id)}/playbackinfopostpaywall', paras)
         resp = aigpy.model.dictToModel(data, StreamRespond())
-        if hasattr(resp, 'manifestMimeType'):
-            if "vnd.tidal.bt" in resp.manifestMimeType:
-                manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
-                ret = StreamUrl()
-                ret.trackid = resp.trackid
-                ret.soundQuality = resp.audioQuality
-                ret.codec = manifest['codecs']
-                ret.encryptionKey = manifest['keyId'] if 'keyId' in manifest else ""
-                ret.url = manifest['urls'][0]
-                ret.urls = [ret.url]
-                return ret
-            elif "dash+xml" in resp.manifestMimeType:
-                xmldata = base64.b64decode(resp.manifest).decode('utf-8')
-                ret = StreamUrl()
-                ret.trackid = resp.trackid
-                ret.soundQuality = resp.audioQuality
-                ret.codec = aigpy.string.getSub(xmldata, 'codecs="', '"')
-                ret.encryptionKey = ""#manifest['keyId'] if 'keyId' in manifest else ""
-                ret.urls = self.parse_mpd(xmldata)[0]
-                if len(ret.urls) > 0:
-                    ret.url = ret.urls[0]
-                return ret
-        else:
-            print("Can't get the streamUrl, resp is None")
-        # else:
-        #     manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
-        #raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType)
+
+        if "vnd.tidal.bt" in resp.manifestMimeType:
+            manifest = json.loads(base64.b64decode(resp.manifest).decode('utf-8'))
+            ret = StreamUrl()
+            ret.trackid = resp.trackid
+            ret.soundQuality = resp.audioQuality
+            ret.codec = manifest['codecs']
+            ret.encryptionKey = manifest['keyId'] if 'keyId' in manifest else ""
+            ret.url = manifest['urls'][0]
+            ret.urls = [ret.url]
+            return ret
+        elif "dash+xml" in resp.manifestMimeType:
+            xmldata = base64.b64decode(resp.manifest).decode('utf-8')
+            ret = StreamUrl()
+            ret.trackid = resp.trackid
+            ret.soundQuality = resp.audioQuality
+            ret.codec = "DASH-"+aigpy.string.getSub(xmldata, 'codecs="', '"')
+            ret.encryptionKey = ""  # manifest['keyId'] if 'keyId' in manifest else ""
+            ret.urls = self.parse_mpd(xmldata)[0]
+            if len(ret.urls) > 0:
+                ret.url = ret.urls[0]
+            return ret
+
+        raise Exception("Can't get the streamUrl, type is " + resp.manifestMimeType)
+
 
     def getTrackContributors(self, id):
         return self.__get__(f'tracks/{str(id)}/contributors')

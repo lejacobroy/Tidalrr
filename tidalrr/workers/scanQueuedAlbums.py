@@ -37,10 +37,10 @@ def start_album(obj: Album):
         existing = getTidalTrack(track.id)
         if existing is None:
             print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
-            addTidalTrack(track)
             if obj.queued:
                 track.queued = True
-                scanQueuedTracks()
+            addTidalTrack(track)
+            scanQueuedTracks()
 
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:

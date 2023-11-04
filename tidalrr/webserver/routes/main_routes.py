@@ -1,5 +1,3 @@
-import subprocess
-import sys
 from flask import Blueprint, render_template, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
@@ -7,6 +5,7 @@ from wtforms import StringField, SelectField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 from tidalrr.database import *
 from tidalrr.tidal import *
+from tidalrr.workers import *
 main_bp = Blueprint('main', __name__)
 
 # Define a UserSettingsForm
@@ -29,30 +28,10 @@ class UserSettingsForm(FlaskForm):
     tidalToken = StringField('tidalToken')
     submit = SubmitField('Save Settings')
 
-def startWaitForAuth():
-    url = getDeviceCode()
-    key = getTidalKey()
-    timeout = displayTime(int(key.authCheckTimeout))
-    # start subprocess to waitFroAuth()
-    try:
-        process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
-    except subprocess.CalledProcessError as e:
-        return f"Script execution failed: {e.output}"
-    print(url, timeout)
-    return url, timeout
-
 @main_bp.route("/")
 def hello_world():
-    url = ''
-    timeout = ''
-    settings = getSettings()
-    if not isItemValid(settings.apiKeyIndex):
-        changeApiKey()
-        url, timeout = startWaitForAuth()
-        
-    elif not loginByConfig():
-        url, timeout = startWaitForAuth()
-    print(url,timeout)
+    url, timeout = tidalLogin()
+    print(url, timeout)
     return render_template("login.html", url=url, timeout=timeout)
 
 @main_bp.route('/settings', methods=['GET', 'POST'])

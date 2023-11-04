@@ -46,6 +46,7 @@ class Queue:
     id : int
     path : str
     encryptionKey: str
+    urls: str
 
 def convertToQueue(queue) -> Queue:
     queueType = Queue(
@@ -54,7 +55,8 @@ def convertToQueue(queue) -> Queue:
         type= queue['type'],
         path= queue['path'],
         url= queue['url'],
-        encryptionKey= queue['encryptionKey']
+        encryptionKey= queue['encryptionKey'],
+        urls= queue['urls']
     )
     return queueType
 
