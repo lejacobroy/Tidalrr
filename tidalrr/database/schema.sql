@@ -58,7 +58,7 @@ CREATE TABLE tidal_albums (
 
 DROP TABLE IF EXISTS tidal_playlists;
 CREATE TABLE tidal_playlists (
-    id INTEGER NOT NULL PRIMARY KEY,
+    uuid INTEGER NOT NULL PRIMARY KEY,
     title TEXT,
     duration INTEGER,
     numberOfTracks INTEGER,

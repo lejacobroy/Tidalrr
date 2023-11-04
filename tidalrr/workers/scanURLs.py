@@ -56,9 +56,11 @@ def start(string):
                     print('addTidalTrack')
                     #scanQueuedTracks()
             elif etype == Type.Playlist:
-                obj.queued = True
-                addTidalPlaylist(obj)
-                print('addTidalPlaylist')
+                dbPlaylist = getTidalPlaylist(obj.uuid)
+                if dbPlaylist is None:
+                    obj.queued = True
+                    addTidalPlaylist(obj)
+                    print('Added playlist to DB:', obj.title)
                 #scanQueuedPlaylists()
             #elif etype == Type.Mix:
                 #start_mix(obj)

@@ -345,7 +345,7 @@ class TidalAPI(object):
     def getPlaylistsAndFavorites(self, userId=None) -> Playlist:
         # Transform json input to python objects
         input_dict = self.__get__(str(self.key.userId)+'/playlistsAndFavoritePlaylists', {}, 'https://api.tidalhifi.com/v1/users/')["items"]
-        playlists = [Playlist()]
+        playlists = [Playlist]
         if len(input_dict) == 0:
             print('no playlists')
             return
@@ -355,7 +355,12 @@ class TidalAPI(object):
 
 
     def getPlaylist(self, id) -> Playlist:
-        return Playlist(*self.__get__('playlists/' + str(id)))
+        settings = getSettings()
+        playlist = self.__get__('playlists/' + str(id))
+        playlist['path'] = f"{settings.downloadPath}/Playlists/{fixPath(playlist['title'])}"
+        playlist['queued'] = False
+        playlist['downloaded'] = False
+        return convertToPlaylist(playlist)
     
     def getArtist(self, id) -> Artist:
         settings = getSettings()

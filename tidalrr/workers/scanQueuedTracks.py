@@ -38,13 +38,18 @@ def start_track(obj: Track):
         print('File Exists, skipping')
         return True
 
-def scanTrack(track: Track, album=Album, playlist=None):
+def scanTrackPath(track=Track, album=Album, playlist=Playlist):
+    path = ''
     settings = getSettings()
     stream = TIDAL_API.getStreamUrl(track.id, settings.audioQuality)
     artist = getTidalArtist(track.artist)
     if artist is not None and stream is not None:
         path = getTrackPath(track, stream, artist, album, playlist)
+    return stream, path
 
+def scanTrack(track: Track, album=Album, playlist=None):
+    stream, path = scanTrackPath(track, album, playlist)
+    if path != '':
         queue = Queue(
             type='Track',
             login=True,

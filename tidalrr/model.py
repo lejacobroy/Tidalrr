@@ -154,6 +154,22 @@ class Playlist:
     numberOfTracks : int = 0
     duration : int = 0
 
+def convertToPlaylist(playlist) -> Playlist:
+    playlistType = Playlist(
+        uuid= playlist['uuid'],
+        title= playlist['title'],
+        description= playlist['description'],
+        image= playlist['image'],
+        squareImage= playlist['squareImage'],
+        url= playlist['url'],
+        path= playlist['path'],
+        queued= playlist['queued'],
+        downloaded= playlist['downloaded'],
+        numberOfTracks=  playlist['numberOfTracks'],
+        duration= playlist['duration']
+    )
+    return playlistType
+
 @dataclass
 class Track:
     id : int
