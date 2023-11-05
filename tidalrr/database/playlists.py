@@ -58,7 +58,7 @@ def getTidalPlaylist(id=str) -> Playlist:
 def updateTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ? WHERE id = ?",
-                (playlist.queued, playlist.downloaded, playlist.id))
+    cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ? WHERE uuid = ?",
+                (playlist.queued, playlist.downloaded, playlist.uuid))
     connection.commit()
     connection.close()

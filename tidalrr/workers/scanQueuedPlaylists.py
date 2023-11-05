@@ -21,26 +21,31 @@ def scanQueuedPlaylists():
         for i,playlist in enumerate(playlists):
             if hasattr(playlist, 'uuid'):
                 if playlist.queued:
-                    print('Scanning album '+ str(i)+'/'+str(len(playlists))+' '+playlist.title)
+                    print('Scanning playlist '+ str(i)+'/'+str(len(playlists))+' '+playlist.title)
                     start_playlist(playlist)
                     playlist.queued = False
                     updateTidalPlaylist(playlist)
 
 def start_playlist(obj: Playlist):
-    print(obj)
-    # here we have the playlist object, we can export it to json
-    #print(aigpy.model.modelToDict(obj))
     # save this to playlist.json
-    data = aigpy.model.modelToDict(obj)
-
     #path = getPlaylistPath(obj)
+    settings = getSettings()
+    aigpy.path.mkdirs(settings.downloadPath+'/Playlists')
 
-    aigpy.file.write(obj.path+'.json', json.dumps(data), 'w+')
+    aigpy.file.write(obj.path+'.json', json.dumps(obj, default=lambda x: x.__dict__), 'w+')
 
     print('Saved playlist json info to : '+obj.path+'.json')
 
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
     for track in tracks:
+        #check if artist exists
+        if not hasattr(getTidalArtist(track.artist), 'id'):
+            # insert artist in db
+            addTidalArtist(TIDAL_API.getArtist(track.artist))
+        #same for album
+        if not hasattr(getTidalAlbum(track.album), 'id'):
+            # insert artist in db
+            addTidalAlbum(TIDAL_API.getAlbum(track.album))
         track.queued = True
         addTidalTrack(track)
     paths = []
@@ -52,21 +57,20 @@ def start_playlist(obj: Playlist):
         if path != '':
             paths.append(path)
 
-    with open(obj.path+'.m3u', 'w') as f:
+    with open(obj.path+'.m3u', 'w+') as f:
         #f.write('#EXTM3U\n')
         for i,item in enumerate(paths, start=1):
-            f.write(item.path+'\n')
+            f.write(item+'\n')
     print('Done generating m3u playlist file: '+obj.path+'.m3u')
 
     # Generate the playlist file
-    with open(obj.path+'.m3u8', 'w') as f:
+    with open(obj.path+'.m3u8', 'w+') as f:
         f.write('#EXTM3U\n')
-        for i,item in enumerate(aigpy.model.modelListToDictList(tracks), start=1):
-            track = Track(*item)
-            track.trackNumberOnPlaylist = i
-            f.write(f'#EXTINF:{item["duration"]},{item["artist"]["name"]} - {item["title"]}\n')
+        for i,item in enumerate(tracks, start=1):
+            artist = getTidalArtist(item.artist)
+            f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
             f.write(item.path+'\n') 
-    print('Done generating m3u8 playlist file: '+obj.path+'.m3u')
+    print('Done generating m3u8 playlist file: '+obj.path+'.m3u8')
     scanQueuedTracks()
 
 def start_playlist_sync(UserId=None):

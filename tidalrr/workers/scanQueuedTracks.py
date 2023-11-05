@@ -27,6 +27,13 @@ def scanQueuedTracks():
 
 def start_track(obj: Track):
     settings = getSettings()
+    if not hasattr(getTidalArtist(obj.artist), 'id'):
+            # insert artist in db
+            addTidalArtist(TIDAL_API.getArtist(obj.artist))
+        #same for album
+    if not hasattr(getTidalAlbum(obj.album), 'id'):
+        # insert artist in db
+        addTidalAlbum(TIDAL_API.getAlbum(obj.album))
     album = getTidalAlbum(obj.album)
     if settings.saveCovers:
         scanCover(album)

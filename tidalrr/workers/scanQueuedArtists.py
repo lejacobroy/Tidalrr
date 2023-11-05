@@ -33,6 +33,9 @@ def start_artist(obj: Artist):
             if hasattr(album, 'id'):
                 existing = getTidalAlbum(album.id)
                 if existing is None:
+                    if not hasattr(getTidalArtist(album.artist), 'id'):
+                        # insert artist in db
+                        addTidalArtist(TIDAL_API.getArtist(album.artist))
                     print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
                     if obj.queued:
                         album.queued = True

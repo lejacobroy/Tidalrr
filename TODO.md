@@ -6,6 +6,7 @@
 - local ai matching pattern
 - more work on the Queues
     - scan files
+    - matching table of playlist.uuid/track.id
     - if album's artist is not in db, add it queued=false
         - same for albums
 - replace and select Masters albums/track
@@ -16,7 +17,6 @@
     - tidal.py --ongoing
     - model.py
 - create an api webserver and control center
-    - login into Tidal to catch token
     - add urls to the queue from tidal search or urls
     - list tidal playlists, artists, albums, tracks, mixes
         - download all
@@ -36,3 +36,7 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
+    - settings:
+        - add sync user playlist toggle
+        - set schedule start and stop times
+        - remove usued settings
