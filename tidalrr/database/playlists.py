@@ -34,6 +34,17 @@ def addTidalPlaylist(playlist=Playlist):
     connection.commit()
     connection.close()
 
+def addTidalPlaylistTrack(playlistTrack=PlaylistTrack):
+    connection = sqlite3.connect(db_path)
+    cur = connection.cursor()
+    cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks VALUES (?, ?)",
+                (
+                    playlistTrack.uuid,
+                    playlistTrack.track
+                ))
+    connection.commit()
+    connection.close()
+
 def getTidalPlaylists() -> [Playlist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -54,6 +65,19 @@ def getTidalPlaylist(id=str) -> Playlist:
     if row is not None:
         playlist = convertToPlaylist(row)
     return playlist
+
+def getTidalPlaylistTracks(id=str) -> [Track]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_tracks\
+                       inner join tidal_playlist_tracks ON tidal_playlist_tracks.track = tidal_tracks.id \
+                       WHERE tidal_playlist_tracks.uuid = ?', (id,)).fetchall()
+    conn.close()
+    new_rows = [Track]
+    if len(rows) > 0 :
+        for item in rows:
+            new_rows.append(convertToTrack(item))
+    return new_rows
 
 def updateTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)

@@ -1,32 +1,25 @@
 ## Todo:
-- migrate to SQLAlchemy to remove complexity
-- replace the aigpy library
 - create and sync Plex Playlist from Tidal Playlists
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
 - local ai matching pattern
 - more work on the Queues
     - scan files
-    - matching table of playlist.uuid/track.id
 - replace and select Masters albums/track
     - store matching information in db for future use (superseeded)
     - when scanning a track, look if it's album is superseeded, then scan the corresponding track
     - superseeded table? - for albums and tracks
-- replace classes with functions as it's not needed and makes the code less readable
-    - tidal.py --ongoing
-    - model.py
 - create an api webserver and control center
     - add urls to the queue from tidal search or urls
     - list tidal playlists, artists, albums, tracks, mixes
-        - download all
-        - download selected
-        - filter by state (online|downloaded|plex)
+        - queue all
+        - queue selected
+        - filter by state (queued|downloaded|plex)
         - sync to plex
     - edit db
         - remove queued content
         - queue/unqueue items and childs
     - sync lidarr
         - interactive match with search
-    -- sync user playlists
     - inject spark
     - maintenance
         - albums with master or max available to upgrade
@@ -35,6 +28,5 @@
         - missing lyrics
         - migrate paths in queues and files
     - settings:
-        - add sync user playlist toggle
         - set schedule start and stop times
         - remove usued settings

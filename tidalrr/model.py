@@ -332,3 +332,15 @@ class Settings:
     tidalToken: str
     plexUrl: str
     plexToken: str
+
+@dataclass
+class PlaylistTrack:
+    uuid: str
+    track: int
+
+def convertToPlaylistTrack(playlistTrack) -> PlaylistTrack:
+    playlistTrackType = PlaylistTrack(
+        uuid= playlistTrack['uuid'],
+        track= playlistTrack['track']
+    )
+    return playlistTrackType

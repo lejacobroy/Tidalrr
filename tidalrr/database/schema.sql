@@ -129,3 +129,9 @@ CREATE TABLE tidal_key (
     clientId TEXT,
     clientSecret TEXT
 );
+
+DROP TABLE IF EXISTS tidal_playlist_tracks;
+CREATE TABLE tidal_playlist_tracks (
+    uuid TEXT NOT NULL PRIMARY KEY,
+    track INT
+);

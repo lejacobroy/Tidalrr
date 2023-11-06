@@ -37,7 +37,12 @@ def start_playlist(obj: Playlist):
     print('Saved playlist json info to : '+obj.path+'.json')
     paths = []
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
+    savedTracks = getTidalPlaylistTracks(obj.uui)
     for index,track in enumerate(tracks):
+        for i, savedTrack in enumerate(savedTracks):
+            if track.id == savedTrack.id:
+                paths.append(savedTrack.path)
+                break # skip the outer loop
         #check if artist exists
         if not hasattr(getTidalArtist(track.artist), 'id'):
             # insert artist in db
@@ -51,8 +56,10 @@ def start_playlist(obj: Playlist):
         if not hasattr(getTidalAlbum(track.album), 'id'):
             # insert artist in db
             addTidalAlbum(TIDAL_API.getAlbum(track.album))
+
         track.queued = True
         addTidalTrack(track)
+        addTidalPlaylistTrack(obj.uuid, track.id)
 
         itemAlbum = getTidalAlbum(track.album)
         if itemAlbum is None:
