@@ -69,7 +69,7 @@ This will download all the scanned urls.
 - [PPP](https://github.com/XDGFX/PPP)
 - [tidal-m3u](https://github.com/jocap/tidal-m3u/blob/master/m3u.py)
 - [bootstrap-flask](https://github.com/helloflask/bootstrap-flask)
-- [plexPlaylistImporter](https://github.com/willowmck/plexPlaylistImporter)
+- [plexPlaylistImporter](https://github.com/willowmck/plexPlaylistImporter)
 
 ## 📜 Disclaimer
 - Private use only.

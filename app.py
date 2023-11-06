@@ -17,7 +17,7 @@ def main():
     print("Starting tidalrr app", flush=True)
     processes = []
 
-    process1 = Process(target=webServer(False))
+    process1 = Process(target=webServer, args=(False,))
     process2 = Process(target=mainScansSchedule)
     process3 = Process(target=mainDownloadsSchedule)
 
