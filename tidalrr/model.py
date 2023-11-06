@@ -332,6 +332,7 @@ class Settings:
     tidalToken: str
     plexUrl: str
     plexToken: str
+    plexHomePath: str
 
 @dataclass
 class PlaylistTrack:

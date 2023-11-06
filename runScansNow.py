@@ -10,28 +10,14 @@
 '''
 
 import multiprocessing
-import time
-import functools
 from time import gmtime, strftime
 from tidalrr.database import *
-from tidalrr.workers import tidalrrStart
+from tidalrr.workers import print_elapsed_time, tidalrrStart
 from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 from tidalrr.workers.scanUserPlaylists import scanUserPlaylists
-
-# This decorator can be applied to any job function to log the elapsed time of each job
-def print_elapsed_time(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_timestamp = time.time()
-        print('LOG: Running job "%s"' % func.__name__)
-        result = func(*args, **kwargs)
-        print('LOG: Job "%s" completed in %d seconds' % (func.__name__, time.time() - start_timestamp))
-        return result
-
-    return wrapper
 
 @print_elapsed_time
 def startScans():
@@ -57,11 +43,7 @@ def forkScans():
     p = multiprocessing.Process(target=startScans)
     p.start()
 
-    # Wait a maximum of 10 seconds for foo
-    # Usage: join([timeout in seconds])
-    hours = 6
-    seconds = hours * 60 * 60
-    p.join(seconds)
+    p.join()
 
     # If thread is active
     if p.is_alive():

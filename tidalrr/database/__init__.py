@@ -31,7 +31,7 @@ def createTables():
         with open(schema_path) as f:
             connection.executescript(f.read())
         cur = connection.cursor()
-        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
                     4,
                     'Max',
@@ -50,6 +50,7 @@ def createTables():
                     '{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}',
                     False,
                     False,
+                    '',
                     '',
                     '',
                     '',
@@ -120,7 +121,8 @@ def setSettings(settings=Settings):
                 lidarrApi = ?,\
                 tidalToken = ?,\
                 plexUrl = ?,\
-                plexToken = ?\
+                plexToken = ?,\
+                plexHomePath = ?\
                 ",(
                     settings.albumFolderFormat,
                     settings.apiKeyIndex,
@@ -144,7 +146,8 @@ def setSettings(settings=Settings):
                     settings.lidarrApi,
                     settings.tidalToken,
                     settings.plexUrl,
-                    settings.plexToken
+                    settings.plexToken,
+                    settings.plexHomePath
                     ))
     connection.commit()
     connection.close()

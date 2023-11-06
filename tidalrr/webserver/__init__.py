@@ -61,7 +61,7 @@ def tidalrrWeb(config=None):
             # Save the uploaded file to the specified directory
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'urls.txt'))
             flash('File uploaded successfully')
-            return redirect('/')
+            return redirect('/run-import')
 
         flash('Invalid file format. Only .txt files are allowed.')
         return redirect(request.url)

@@ -22,7 +22,8 @@ CREATE TABLE settings (
     lidarrApi TEXT,
     tidalToken BLOB,
     plexUrl TEXT,
-    plexToken TEXT
+    plexToken TEXT,
+    plexHomePath TEXT
 );
 
 DROP TABLE IF EXISTS tidal_artists;

@@ -34,13 +34,13 @@ def addTidalPlaylist(playlist=Playlist):
     connection.commit()
     connection.close()
 
-def addTidalPlaylistTrack(playlistTrack=PlaylistTrack):
+def addTidalPlaylistTrack(uuid=str, track=int):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
     cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks VALUES (?, ?)",
                 (
-                    playlistTrack.uuid,
-                    playlistTrack.track
+                    uuid,
+                    track
                 ))
     connection.commit()
     connection.close()
@@ -66,6 +66,17 @@ def getTidalPlaylist(id=str) -> Playlist:
         playlist = convertToPlaylist(row)
     return playlist
 
+def getTidalPlaylistDownloaded() -> [Playlist]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_playlists WHERE downloaded = 1').fetchall()
+    conn.close()
+    new_rows = [Playlist]
+    if len(rows) > 0 :
+        for item in rows:
+            new_rows.append(convertToPlaylist(item))
+    return new_rows
+
 def getTidalPlaylistTracks(id=str) -> [Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -84,5 +95,19 @@ def updateTidalPlaylist(playlist=Playlist):
     cur = connection.cursor()
     cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ? WHERE uuid = ?",
                 (playlist.queued, playlist.downloaded, playlist.uuid))
+    connection.commit()
+    connection.close()
+
+def updateTidalPlaylistsDownloaded():
+    connection = sqlite3.connect(db_path)
+    cur = connection.cursor()
+    cur.execute("UPDATE tidal_playlists SET queued = 0, downloaded = 1 WHERE uuid IN (\
+                    SELECT tidal_playlists.uuid\
+                    FROM tidal_playlists\
+                    inner join tidal_playlist_tracks ON tidal_playlist_tracks.uuid = tidal_playlists.uuid\
+                    LEFT JOIN tidal_tracks ON tidal_playlist_tracks.track = tidal_tracks.id\
+                    GROUP BY tidal_playlists.uuid\
+                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE THEN 1 ELSE 0 END)\
+                )")
     connection.commit()
     connection.close()

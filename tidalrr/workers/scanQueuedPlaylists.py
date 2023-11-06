@@ -8,7 +8,7 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-
+import pathlib
 from tidalrr.database import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
@@ -32,15 +32,12 @@ def start_playlist(obj: Playlist):
     settings = getSettings()
     aigpy.path.mkdirs(settings.downloadPath+'/Playlists')
 
-    aigpy.file.write(obj.path+'.json', json.dumps(obj, default=lambda x: x.__dict__), 'w+')
-
-    print('Saved playlist json info to : '+obj.path+'.json')
     paths = []
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
-    savedTracks = getTidalPlaylistTracks(obj.uui)
+    savedTracks = getTidalPlaylistTracks(obj.uuid)
     for index,track in enumerate(tracks):
         for i, savedTrack in enumerate(savedTracks):
-            if track.id == savedTrack.id:
+            if hasattr(savedTrack, 'id') and track.id == savedTrack.id:
                 paths.append(savedTrack.path)
                 break # skip the outer loop
         #check if artist exists
@@ -68,11 +65,17 @@ def start_playlist(obj: Playlist):
         if path != '':
             paths.append(path)
 
+    aigpy.file.write(obj.path+'.json', json.dumps(obj, default=lambda x: x.__dict__), 'w+')
+
+    print('Saved playlist json info to : '+obj.path+'.json')
+    homePath = pathlib.Path(__file__).parent()
+    if settings.plexToken != '' and settings.plexUrl != '' and settings.plexHomePath != '':
+        homePath = settings.plexHomePath
     with open(obj.path+'.m3u', 'w+') as f:
         #f.write('#EXTM3U\n')
         for i,item in enumerate(paths, start=1):
-            f.write(item+'\n')
-    print('Done generating m3u playlist file: '+obj.path+'.m3u')
+            f.write(os.path.join(homePath,item)+'\n')
+    print('Generated m3u playlist file: '+obj.path+'.m3u')
 
     # Generate the playlist file
     with open(obj.path+'.m3u8', 'w+') as f:
@@ -81,8 +84,8 @@ def start_playlist(obj: Playlist):
             artist = getTidalArtist(item.artist)
             if hasattr(artist, 'id'):
                 f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
-                f.write(item.path+'\n') 
-    print('Done generating m3u8 playlist file: '+obj.path+'.m3u8')
+                f.write(os.path.join(homePath,item.path)+'\n') 
+    print('Generated m3u8 playlist file: '+obj.path+'.m3u8')
     scanQueuedTracks()
 
 def writePlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):

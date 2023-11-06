@@ -42,11 +42,7 @@ def forkDownloads():
     p = multiprocessing.Process(target=startDownloads)
     p.start()
 
-    # Wait a maximum of 10 seconds for foo
-    # Usage: join([timeout in seconds])
-    hours = 6
-    seconds = hours * 60 * 60
-    p.join(seconds)
+    p.join()
 
     # If thread is active
     if p.is_alive():

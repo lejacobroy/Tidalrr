@@ -62,7 +62,7 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
             #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
             time.sleep(sleep_time)
 
-            tool = aigpy.download.DownloadTool(queue.path + '.part', queue.urls)
+            tool = aigpy.download.DownloadTool(queue.path + '.part', json.loads(queue.urls))
             tool.setPartSize(partSize)
             check, err = tool.start(False)
             if not check:
@@ -149,3 +149,4 @@ def downloadQueuedTracks():
     # update downloaded albums & artists
     updateTidalAlbumsDownloaded()
     updateTidalArtistsDownloaded()
+    updateTidalPlaylistsDownloaded()

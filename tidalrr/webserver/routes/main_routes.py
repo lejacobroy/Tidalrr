@@ -26,6 +26,7 @@ class UserSettingsForm(FlaskForm):
     lidarrApi = StringField('lidarrApi')
     plexUrl = StringField('plexUrl')
     plexToken = StringField('plexToken')
+    plexHomePath = StringField('plexHomePath')
     submit = SubmitField('Save Settings')
 
 @main_bp.route("/")
@@ -56,7 +57,8 @@ def settingsPage():
         lidarrUrl=settings.lidarrUrl,
         lidarrApi=settings.lidarrApi,
         plexUrl=settings.plexUrl,
-        plexToken=settings.plexToken
+        plexToken=settings.plexToken,
+        plexHomePath=settings.plexHomePath
         )
 
     if request.method == 'POST':
@@ -78,6 +80,7 @@ def settingsPage():
             settings.lidarrApi = form.lidarrApi.data
             settings.plexUrl = form.plexUrl.data
             settings.plexToken = form.plexToken.data
+            settings.plexHomePath = form.plexHomePath.data
             setSettings(settings)
             # You should save the updated user settings to your database here
 

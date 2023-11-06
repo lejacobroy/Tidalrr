@@ -170,18 +170,3 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
         return f"{retpath}{extension}"
     else:
         return f"{base}/{retpath}{extension}"
-
-def getTrueHomePath():
-    return os.path.join(os.path.dirname(__file__))
-
-def __getHomePath__():
-    return os.path.join(os.path.dirname(__file__))+"/config/"
-
-def getLogPath():
-    return __getHomePath__() + 'tidalrr.log'
-
-def getTokenPath():
-    return __getHomePath__() + 'tidalrr.token.json'
-
-def getProfilePath():
-    return __getHomePath__() + 'tidalrr.json'
