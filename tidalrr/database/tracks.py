@@ -18,7 +18,9 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalTrack(track=Track):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_tracks VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_tracks (id, title, duration, trackNumber, volumeNumber, trackNumberOnPLaylist, version, isrc,\
+                 explicit, audioQuality, audioModes, copyRight, artist, artists, album, url, path, queued, downloaded, plexUUID)\
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     track.id,
                     track.title,

@@ -18,7 +18,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalQueue(queue=Queue):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_queue VALUES (?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_queue (url, type, login, id, path, encryptionKey, urls) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (
                     queue.url,
                     queue.type,

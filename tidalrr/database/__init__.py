@@ -31,7 +31,9 @@ def createTables():
         with open(schema_path) as f:
             connection.executescript(f.read())
         cur = connection.cursor()
-        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cur.execute("INSERT INTO settings (albumFolderFormat, apiKeyindex, audioQuality, checkExists, downloadDelay, downloadPath, includeEP, language, lyricFile, multiThread,\
+                    playlistFolderFormat, saveAlbumInfo, saveCovers, showProgress, showTrackInfo, TrackFileFormat, unePlaylistFolder, scanUserPlaylists, lidarrUrl, lidarrApi, \
+                    tidalToken, plexUrl, plexToken, plexHomePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
                     4,
                     'Max',
@@ -58,7 +60,9 @@ def createTables():
                     ''
                     )
                     )
-        cur.execute("INSERT INTO tidal_key VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cur.execute("INSERT INTO tidal_key (deviceCode = ?,\
+                userCode, verificationUrl, authCheckTimeout ,authCheckInterval , userId, countryCode, accessToken = ?,\
+                refreshToken, expiresIn, token, clientId, clientSecret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('', 
                     '',
                     '',

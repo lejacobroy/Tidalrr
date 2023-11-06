@@ -17,7 +17,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_playlists VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_playlists (uuid, title, duration, numberOfTracks, description, image, squareimage, url, path, queued, downloaded, plexUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     playlist.uuid,
                     playlist.title,
@@ -30,6 +30,7 @@ def addTidalPlaylist(playlist=Playlist):
                     playlist.path,
                     playlist.queued,
                     playlist.downloaded,
+                    playlist.plexUUID
                 ))
     connection.commit()
     connection.close()
@@ -37,7 +38,7 @@ def addTidalPlaylist(playlist=Playlist):
 def addTidalPlaylistTrack(uuid=str, track=int):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks VALUES (?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks (uuid, track, puid) VALUES (?, ?, ?)",
                 (
                     uuid,
                     track,

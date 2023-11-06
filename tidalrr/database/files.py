@@ -17,7 +17,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addFiles(file=File):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO files VALUES (?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO files (description, type, id, path) VALUES (?, ?, ?, ?)",
                 (
                     file.description,
                     file.type,

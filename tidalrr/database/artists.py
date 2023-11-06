@@ -18,7 +18,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalArtist(artist=Artist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_artists VALUES (?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_artists (id, name, url, path, queued, downloaded) VALUES (?, ?, ?, ?, ?, ?)",
                 (artist.id, artist.name, artist.url, artist.path, artist.queued, artist.downloaded))
     connection.commit()
     connection.close()

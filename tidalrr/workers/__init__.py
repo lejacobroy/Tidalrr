@@ -35,7 +35,8 @@ def tidalLogin():
     timeout = ''
     settings = getSettings()
     key = getTidalKey()
-    loginByAccessToken(key.accessToken, key.userId)
+    if len(key.accessToken) > 0:
+        loginByAccessToken(key.accessToken, key.userId)
     if not isItemValid(settings.apiKeyIndex):
         changeApiKey()
         url, timeout = startWaitForAuth()

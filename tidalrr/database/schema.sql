@@ -60,7 +60,7 @@ CREATE TABLE tidal_albums (
 
 DROP TABLE IF EXISTS tidal_playlists;
 CREATE TABLE tidal_playlists (
-    uuid INTEGER NOT NULL PRIMARY KEY,
+    uuid TEXT NOT NULL PRIMARY KEY,
     title TEXT,
     duration INTEGER,
     numberOfTracks INTEGER,
@@ -105,7 +105,8 @@ CREATE TABLE tidal_queue (
     login BOOLEAN,
     id INTEGER,
     path TEXT,
-    encryptionKey TEXT
+    encryptionKey TEXT,
+    urls TEXT
 );
 
 DROP TABLE IF EXISTS files;

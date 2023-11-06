@@ -238,6 +238,7 @@ def setLowerQuality():
 
 class TidalAPI(object):
     def __init__(self):
+        createTables()
         self.key = getTidalKey()
         self.key.clientId = '7m7Ap0JC9j1cOM3n'
         self.key.clientSecret ='vRAdA108tlvkJpTsGZS8rGZ7xTlbJ0qaZ2K9saEzsgY='

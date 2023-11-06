@@ -18,7 +18,8 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalAlbum(album=Album):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_albums VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_albums (id, title, duration, numberOfTracks, numberofVolumes, releaseDate, type, version, cover, explicit, audioQuality, audioModes,artist, artists, url ,path, queued, downloaded)\
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     album.id,
                     album.title,
