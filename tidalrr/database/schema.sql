@@ -70,7 +70,8 @@ CREATE TABLE tidal_playlists (
     URL TEXT,
     path TEXT,
     queued BOOLEAN,
-    downloaded BOOLEAN
+    downloaded BOOLEAN,
+    plexUUID TEXT
 );
 
 DROP TABLE IF EXISTS tidal_tracks;
@@ -93,7 +94,8 @@ CREATE TABLE tidal_tracks (
     URL TEXT,
     path TEXT,
     queued BOOLEAN,
-    downloaded BOOLEAN
+    downloaded BOOLEAN,
+    plexUUID TEXT
 );
 
 DROP TABLE IF EXISTS tidal_queue;
@@ -133,6 +135,8 @@ CREATE TABLE tidal_key (
 
 DROP TABLE IF EXISTS tidal_playlist_tracks;
 CREATE TABLE tidal_playlist_tracks (
-    uuid TEXT NOT NULL PRIMARY KEY,
-    track INT
+    uuid TEXT NOT NULL,
+    track INT NOT NULL,
+    puid TEXT,
+    UNIQUE(uuid, track)
 );

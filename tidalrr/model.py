@@ -151,6 +151,7 @@ class Playlist:
     path : str
     queued: bool
     downloaded: bool
+    plexUUID: str
     numberOfTracks : int = 0
     duration : int = 0
 
@@ -165,6 +166,7 @@ def convertToPlaylist(playlist) -> Playlist:
         path= playlist['path'],
         queued= playlist['queued'],
         downloaded= playlist['downloaded'],
+        plexUUID = playlist['plexUUID'],
         numberOfTracks=  playlist['numberOfTracks'],
         duration= playlist['duration']
     )
@@ -193,6 +195,7 @@ class Track:
     path : str
     queued: bool
     downloaded: bool
+    plexUUID: str
 
 def convertToTrack(track) -> Track:
     trackType = Track(
@@ -216,7 +219,8 @@ def convertToTrack(track) -> Track:
         url= track['url'],
         path= track['path'],
         queued= track['queued'],
-        downloaded= track['downloaded']
+        downloaded= track['downloaded'],
+        plexUUID = track['plexUUID']
     )
     return trackType
 

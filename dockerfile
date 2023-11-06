@@ -6,6 +6,8 @@ WORKDIR /app
 COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN git clone https://github.com/willowmck/plexPlaylistImporter.git PPI
+RUN pip install --no-cache-dir -r PPI/requirements.txt
 
 COPY . .
 

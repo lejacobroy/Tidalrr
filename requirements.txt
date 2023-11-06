@@ -9,3 +9,4 @@ pycryptodome==3.17
 Requests==2.31.0
 schedule==1.2.1
 WTForms==3.0.1
+plexapi

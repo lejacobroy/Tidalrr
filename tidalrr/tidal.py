@@ -354,6 +354,7 @@ class TidalAPI(object):
             item["playlist"]['path'] = f"{settings.downloadPath}/Playlists/{fixPath(item['playlist']['title'])}"
             item["playlist"]['queued'] = False
             item["playlist"]['downloaded'] = False
+            item["playlist"]['plexUUID'] = ''
             playlists.append(convertToPlaylist(item["playlist"]))
         return playlists
 
@@ -364,6 +365,7 @@ class TidalAPI(object):
         playlist['path'] = f"{settings.downloadPath}/Playlists/{fixPath(playlist['title'])}"
         playlist['queued'] = False
         playlist['downloaded'] = False
+        playlist['plexUUID'] = ''
         return convertToPlaylist(playlist)
     
     def getArtist(self, id) -> Artist:
@@ -379,6 +381,7 @@ class TidalAPI(object):
         track['path'] = ''
         track['queued'] = False
         track['downloaded'] = False
+        track['plexUUID'] = ''
         return convertToTrack(track)
 
     def getMix(self, id) -> Mix:
@@ -445,6 +448,7 @@ class TidalAPI(object):
                 item['item']['album'] = item['item']['album']['id']
                 item['item']['audioModes'] = json.dumps(item['item']['audioModes'])
                 item['item']['artists'] = json.dumps(item['item']['artists'])
+                item['item']['plexUUID'] = ''
                 tracks.append(convertToTrack(item['item']))
         return tracks
 

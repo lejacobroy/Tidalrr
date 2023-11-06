@@ -15,9 +15,6 @@ The artists, albums and tracks are organized for an easy import in PlexAmp, so y
 The playlists are pushed to Plex, for offline plexAmp listening (providing that you have local access to the server running Plex)
 There is a webserver to watch progression and control the software.
 
-## to enable Plex playlist sync
-Clone [plexPlaylistImporter](https://github.com/willowmck/plexPlaylistImporter) into Tidalrr/PPI
-
 ### Start everything:
 `pip install -r requirements.txt``
 `python3 app.py` 
@@ -58,6 +55,7 @@ While it's available in a docker image, there's currently no way to execute the 
 - [PPP](https://github.com/XDGFX/PPP)
 - [tidal-m3u](https://github.com/jocap/tidal-m3u/blob/master/m3u.py)
 - [bootstrap-flask](https://github.com/helloflask/bootstrap-flask)
+- [plexPlaylistImporter](https://github.com/willowmck/plexPlaylistImporter)
 
 ## 📜 Disclaimer
 - Private use only.

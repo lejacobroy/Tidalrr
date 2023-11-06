@@ -37,10 +37,11 @@ def addTidalPlaylist(playlist=Playlist):
 def addTidalPlaylistTrack(uuid=str, track=int):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks VALUES (?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_playlist_tracks VALUES (?, ?, ?)",
                 (
                     uuid,
-                    track
+                    track,
+                    ''
                 ))
     connection.commit()
     connection.close()
@@ -77,12 +78,12 @@ def getTidalPlaylistDownloaded() -> [Playlist]:
             new_rows.append(convertToPlaylist(item))
     return new_rows
 
-def getTidalPlaylistTracks(id=str) -> [Track]:
+def getTidalPlaylistTracks(uuid=str) -> [Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_tracks\
+    rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
                        inner join tidal_playlist_tracks ON tidal_playlist_tracks.track = tidal_tracks.id \
-                       WHERE tidal_playlist_tracks.uuid = ?', (id,)).fetchall()
+                       WHERE tidal_playlist_tracks.uuid = ?', (uuid,)).fetchall()
     conn.close()
     new_rows = [Track]
     if len(rows) > 0 :
@@ -93,8 +94,16 @@ def getTidalPlaylistTracks(id=str) -> [Track]:
 def updateTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ? WHERE uuid = ?",
-                (playlist.queued, playlist.downloaded, playlist.uuid))
+    cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ?, plexUUID = ? WHERE uuid = ?",
+                (playlist.queued, playlist.downloaded, playlist.plexUUID, playlist.uuid))
+    connection.commit()
+    connection.close()
+
+def updateTidalPlaylistTrack(uuid:str, id:int, puid:str):
+    connection = sqlite3.connect(db_path)
+    cur = connection.cursor()
+    cur.execute("UPDATE tidal_playlist_tracks SET puid = ? WHERE uuid = ? AND track = ?",
+                (puid, uuid, id))
     connection.commit()
     connection.close()
 

@@ -1,5 +1,4 @@
 ## Todo:
-- create and sync Plex Playlist from Tidal Playlists
 - Inject Tidal playlist into Spark by Devialet (using spark.py it can inject in the DB, but spark does not recognise/use it yet)
 - local ai matching pattern
 - more work on the Queues
@@ -14,7 +13,6 @@
         - queue all
         - queue selected
         - filter by state (queued|downloaded|plex)
-        - sync to plex
     - edit db
         - remove queued content
         - queue/unqueue items and childs
@@ -27,6 +25,3 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
-    - settings:
-        - set schedule start and stop times
-        - remove usued settings
