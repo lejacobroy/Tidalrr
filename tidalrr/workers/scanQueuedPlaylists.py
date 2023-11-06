@@ -35,24 +35,28 @@ def start_playlist(obj: Playlist):
     aigpy.file.write(obj.path+'.json', json.dumps(obj, default=lambda x: x.__dict__), 'w+')
 
     print('Saved playlist json info to : '+obj.path+'.json')
-
+    paths = []
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
-    for track in tracks:
+    for index,track in enumerate(tracks):
         #check if artist exists
         if not hasattr(getTidalArtist(track.artist), 'id'):
             # insert artist in db
-            addTidalArtist(TIDAL_API.getArtist(track.artist))
+            try:
+                trackArtist = TIDAL_API.getArtist(track.artist)
+                addTidalArtist(trackArtist)
+            except:
+                print('Track artist dosent exist on Tidal, skipping track')
+                continue
         #same for album
         if not hasattr(getTidalAlbum(track.album), 'id'):
             # insert artist in db
             addTidalAlbum(TIDAL_API.getAlbum(track.album))
         track.queued = True
         addTidalTrack(track)
-    paths = []
-    for index, item in enumerate(tracks):
-        itemAlbum = getTidalAlbum(item.album)
+
+        itemAlbum = getTidalAlbum(track.album)
         if itemAlbum is None:
-            item.trackNumberOnPlaylist = index + 1
+            track.trackNumberOnPlaylist = index + 1
         path = scanTrackPath(track, itemAlbum, obj)[1]
         if path != '':
             paths.append(path)
@@ -68,16 +72,11 @@ def start_playlist(obj: Playlist):
         f.write('#EXTM3U\n')
         for i,item in enumerate(tracks, start=1):
             artist = getTidalArtist(item.artist)
-            f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
-            f.write(item.path+'\n') 
+            if hasattr(artist, 'id'):
+                f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
+                f.write(item.path+'\n') 
     print('Done generating m3u8 playlist file: '+obj.path+'.m3u8')
     scanQueuedTracks()
-
-def start_playlist_sync(UserId=None):
-    playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
-    for playlist in playlists:
-        if playlist.title is not None:
-            addTidalPlaylist(playlist)
 
 def writePlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
     def __getAlbum__(item: Track):

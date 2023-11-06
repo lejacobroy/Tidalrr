@@ -326,6 +326,7 @@ class Settings:
     showTrackInfo: bool
     trackFileFormat: str
     usePlaylistFolder: bool
+    scanUserPlaylists: bool
     lidarrUrl: str
     lidarrApi: str
     tidalToken: str

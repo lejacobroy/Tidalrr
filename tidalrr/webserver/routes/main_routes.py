@@ -18,6 +18,7 @@ class UserSettingsForm(FlaskForm):
     lyricFile = BooleanField('lyricFile')
     usePlaylistFolder = BooleanField('usePlaylistFolder')
     playlistFolderFormat = StringField('playlistFolderFormat', validators=[DataRequired()])
+    scanUserPlaylists = BooleanField('scanUserPlaylists')
     saveAlbumInfo = BooleanField('saveAlbumInfo')
     saveCovers = BooleanField('saveCovers')
     trackFileFormat = StringField('trackFileFormat', validators=[DataRequired()])
@@ -25,7 +26,6 @@ class UserSettingsForm(FlaskForm):
     lidarrApi = StringField('lidarrApi')
     plexUrl = StringField('plexUrl')
     plexToken = StringField('plexToken')
-    tidalToken = StringField('tidalToken')
     submit = SubmitField('Save Settings')
 
 @main_bp.route("/")
@@ -49,14 +49,14 @@ def settingsPage():
         lyricFile=settings.lyricFile,
         usePlaylistFolder=settings.usePlaylistFolder,
         playlistFolderFormat=settings.playlistFolderFormat,
+        scanUserPlaylists=settings.scanUserPlaylists,
         trackFileFormat=settings.trackFileFormat,
         saveAlbumInfo=settings.saveAlbumInfo,
         saveCovers=settings.saveCovers,
         lidarrUrl=settings.lidarrUrl,
         lidarrApi=settings.lidarrApi,
         plexUrl=settings.plexUrl,
-        plexToken=settings.plexToken,
-        tidalToken=settings.tidalToken
+        plexToken=settings.plexToken
         )
 
     if request.method == 'POST':
@@ -70,6 +70,7 @@ def settingsPage():
             settings.lyricFile = form.lyricFile.data
             settings.usePlaylistFolder = form.usePlaylistFolder.data
             settings.playlistFolderFormat = form.playlistFolderFormat.data
+            settings.scanUserPlaylists = form.scanUserPlaylists.data
             settings.trackFileFormat = form.trackFileFormat.data
             settings.saveAlbumInfo = form.saveAlbumInfo.data
             settings.saveCovers = form.saveCovers.data
@@ -77,7 +78,6 @@ def settingsPage():
             settings.lidarrApi = form.lidarrApi.data
             settings.plexUrl = form.plexUrl.data
             settings.plexToken = form.plexToken.data
-            settings.tidalToken = form.tidalToken.data
             setSettings(settings)
             # You should save the updated user settings to your database here
 

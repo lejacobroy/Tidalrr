@@ -13,11 +13,13 @@ import multiprocessing
 import time
 import functools
 from time import gmtime, strftime
+from tidalrr.database import *
 from tidalrr.workers import tidalrrStart
 from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
+from tidalrr.workers.scanUserPlaylists import scanUserPlaylists
 
 # This decorator can be applied to any job function to log the elapsed time of each job
 def print_elapsed_time(func):
@@ -33,6 +35,7 @@ def print_elapsed_time(func):
 
 @print_elapsed_time
 def startScans():
+    settings = getSettings()
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" startScans")
     tidalrrStart()
     print('tidalrrStart')
@@ -42,6 +45,9 @@ def startScans():
     print('Done scanning albums')
     scanQueuedTracks()
     print('scanQueuedTracks')
+    if settings.scanUserPlaylists:
+        scanUserPlaylists()
+        print('scanUserPlaylist')
     scanQueuedPlaylists()
     print('scanQueuedPlaylists')
     

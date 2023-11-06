@@ -17,6 +17,7 @@ CREATE TABLE settings (
     showTrackInfo BOOLEAN,
     trackFileFormat TEXT NOT NULL,
     usePlaylistFolder BOOLEAN,
+    scanUserPlaylists BOOLEAN,
     lidarrUrl TEXT,
     lidarrApi TEXT,
     tidalToken BLOB,

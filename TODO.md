@@ -7,8 +7,6 @@
 - more work on the Queues
     - scan files
     - matching table of playlist.uuid/track.id
-    - if album's artist is not in db, add it queued=false
-        - same for albums
 - replace and select Masters albums/track
     - store matching information in db for future use (superseeded)
     - when scanning a track, look if it's album is superseeded, then scan the corresponding track

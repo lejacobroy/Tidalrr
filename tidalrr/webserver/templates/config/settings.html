@@ -44,6 +44,12 @@
             </div>
         </div>
         <div class="form-group">
+            <div class="form-check">
+                {{ form.scanUserPlaylists.label(class="form-check-label") }}
+                {{ form.scanUserPlaylists(class="form-check-input") }}
+            </div>
+        </div>
+        <div class="form-group">
             {{ form.playlistFolderFormat.label(class="form-label") }}
             {{ form.playlistFolderFormat(class="form-control") }}
         </div>
@@ -72,10 +78,6 @@
         <div class="form-group">
             {{ form.plexToken.label(class="form-label") }}
             {{ form.plexToken(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.tidalToken.label(class="form-label") }}
-            {{ form.tidalToken(class="form-control") }}
         </div>
         <br/>
         <button type="submit" class="btn btn-primary">Save Settings</button>

@@ -31,7 +31,7 @@ def createTables():
         with open(schema_path) as f:
             connection.executescript(f.read())
         cur = connection.cursor()
-        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cur.execute("INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
                     4,
                     'Max',
@@ -48,6 +48,7 @@ def createTables():
                     True,
                     False,
                     '{TrackNumber} - {ArtistName} - {TrackTitle}{ExplicitFlag}',
+                    False,
                     False,
                     '',
                     '',
@@ -114,6 +115,7 @@ def setSettings(settings=Settings):
                 showTrackInfo = ?,\
                 trackFileFormat = ?,\
                 usePlaylistFolder = ?,\
+                scanUserPlaylists = ?,\
                 lidarrUrl = ?,\
                 lidarrApi = ?,\
                 tidalToken = ?,\
@@ -137,6 +139,7 @@ def setSettings(settings=Settings):
                     settings.showTrackInfo,
                     settings.trackFileFormat,
                     settings.usePlaylistFolder,
+                    settings.scanUserPlaylists,
                     settings.lidarrUrl,
                     settings.lidarrApi,
                     settings.tidalToken,
@@ -202,6 +205,12 @@ def getStats():
                         SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
                         UNION\
                         SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
+                        UNION\
+                        SELECT 'Playlists' as type, count(*) as count FROM tidal_playlists\
+                        UNION\
+                        SELECT 'Playlists Queued' as type, count(*) as count FROM tidal_playlists WHERE queued = TRUE\
+                        UNION\
+                        SELECT 'Playlists Downloaded' as type, count(*) as count FROM tidal_playlists WHERE downloaded = TRUE\
                         UNION\
                         SELECT 'Download Queue' as type, count(*) as count FROM tidal_queue\
                         UNION\

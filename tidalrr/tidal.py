@@ -343,6 +343,7 @@ class TidalAPI(object):
         return convertToAlbum(output_dict[0])
     
     def getPlaylistsAndFavorites(self, userId=None) -> Playlist:
+        settings = getSettings()
         # Transform json input to python objects
         input_dict = self.__get__(str(self.key.userId)+'/playlistsAndFavoritePlaylists', {}, 'https://api.tidalhifi.com/v1/users/')["items"]
         playlists = [Playlist]
@@ -350,7 +351,10 @@ class TidalAPI(object):
             print('no playlists')
             return
         for item in input_dict:
-            playlists.append(Playlist(*item["playlist"]))
+            item["playlist"]['path'] = f"{settings.downloadPath}/Playlists/{fixPath(item['playlist']['title'])}"
+            item["playlist"]['queued'] = False
+            item["playlist"]['downloaded'] = False
+            playlists.append(convertToPlaylist(item["playlist"]))
         return playlists
 
 

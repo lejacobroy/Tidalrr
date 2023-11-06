@@ -28,8 +28,8 @@ def scanQueuedTracks():
 def start_track(obj: Track):
     settings = getSettings()
     if not hasattr(getTidalArtist(obj.artist), 'id'):
-            # insert artist in db
-            addTidalArtist(TIDAL_API.getArtist(obj.artist))
+        # insert artist in db
+        addTidalArtist(TIDAL_API.getArtist(obj.artist))
         #same for album
     if not hasattr(getTidalAlbum(obj.album), 'id'):
         # insert artist in db
@@ -50,6 +50,13 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     settings = getSettings()
     stream = TIDAL_API.getStreamUrl(track.id, settings.audioQuality)
     artist = getTidalArtist(track.artist)
+    if artist is None:
+        artist = TIDAL_API.getArtist(track.artist)
+        addTidalArtist(artist)
+    albumArtist = getTidalArtist(album.artist)
+    if albumArtist is None:
+        albumArtist = TIDAL_API.getArtist(album.artist)
+        addTidalArtist(albumArtist)
     if artist is not None and stream is not None:
         path = getTrackPath(track, stream, artist, album, playlist)
     return stream, path
