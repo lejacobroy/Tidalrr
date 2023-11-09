@@ -14,38 +14,50 @@ from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 
+import logging
+
+logger = logging.getLogger(__name__) 
+
 def scanQueuedAlbums():
     albums = getTidalAlbums()
-    if len(albums) > 0 :
-        for i,album in enumerate(albums):
-            if hasattr(album, 'id'):
-                if album.queued:
-                    print('Scanning album '+ str(i)+'/'+str(len(albums))+' '+album.title)
+    if len(albums) > 0:
+        for i, album in enumerate(albums):
+            try:
+                if hasattr(album, 'id') and album.queued:
+                    logger.info('Scanning album %s/%s %s', str(i), str(len(albums)), album.title)
                     start_album(album)
                     album.queued = False
                     updateTidalAlbum(album)
+            except Exception as e:
+                logger.error("Error scanning album: %s", e)
 
 def start_album(obj: Album):
-    tracks = TIDAL_API.getItems(obj.id, Type.Album)
-    settings = getSettings()
-    if obj.queued:
-        if settings.saveAlbumInfo:
-            writeAlbumInfo(obj, tracks)
-        if settings.saveCovers and obj.cover is not None:
-            scanCover(obj)
-    for i, track in enumerate(tracks):
-        existing = getTidalTrack(track.id)
-        if existing is None:
-            if not hasattr(getTidalArtist(track.artist), 'id'):
-                # insert artist in db
-                addTidalArtist(TIDAL_API.getArtist(track.artist))
-            # insert artist in db
-            addTidalAlbum(TIDAL_API.getAlbum(track.album))
-            print('Adding track to DB '+ str(i)+'/'+str(len(tracks))+' '+track.title)
-            if obj.queued:
-                track.queued = True
-            addTidalTrack(track)
-            scanQueuedTracks()
+    try:
+        tracks = TIDAL_API.getItems(obj.id, Type.Album)
+        settings = getSettings()
+        if obj.queued:
+            if settings.saveAlbumInfo:
+                writeAlbumInfo(obj, tracks)
+            if settings.saveCovers and obj.cover is not None:
+                scanCover(obj)
+        for i, track in enumerate(tracks):
+            existing = getTidalTrack(track.id)
+            if existing is None:
+                try:
+                    if not hasattr(getTidalArtist(track.artist), 'id'):
+                        # insert artist in db
+                        addTidalArtist(TIDAL_API.getArtist(track.artist))
+                    # insert artist in db
+                    addTidalAlbum(TIDAL_API.getAlbum(track.album))
+                    logger.info('Adding track %d/%d to DB: %s', i, len(tracks), track.title)
+                    if obj.queued:
+                        track.queued = True
+                    addTidalTrack(track)
+                    scanQueuedTracks()
+                except Exception as e:
+                    logger.error("Error adding track: %s", e)
+    except Exception as e:
+        logger.error("Error scanning album: %s", e)
 
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:

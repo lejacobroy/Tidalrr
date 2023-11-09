@@ -14,16 +14,23 @@ from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def scanQueuedArtists():
     artists = getTidalArtists()
-    if len(artists) > 0 :
+    if len(artists) > 0:
         for i, artist in enumerate(artists):
-            if hasattr(artist, 'id'):
-                if artist.queued :
-                    print('Scanning artist '+ str(i)+'/'+str(len(artists))+' '+artist.name)
+            try:
+                if hasattr(artist, 'id') and artist.queued:
+                    logger.info('Scanning artist %s/%s %s', str(i), str(len(artists)), artist.name)
                     start_artist(artist)
                     artist.queued = False
                     updateTidalArtist(artist)
+            except Exception as e:
+                logger.error("Error scanning artist: %s", e)
+
 
 def start_artist(obj: Artist):
     settings = getSettings()

@@ -8,7 +8,7 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-import aigpy
+#import aigpy
 import time
 import ffmpeg
 from os.path import exists
@@ -19,6 +19,9 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedTracks import scanTrack
+import logging
+
+logger = logging.getLogger(__name__)
 
 def refreshStreamURL(id=int, audioQuality=str):
     return TIDAL_API.getStreamUrl(id, audioQuality)
@@ -27,7 +30,7 @@ def isNeedRefresh(url):
     #extract the 'expire' key from the url
     parsed_url = urlparse(url)
     if not hasattr(parse_qs(parsed_url.query), 'Expires'):
-        return False
+        return True
     else:
         captured_value = parse_qs(parsed_url.query)['Expires'][0]
         if int(captured_value) > int( time.time() ):
@@ -46,8 +49,8 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
             if hasattr(temp, 'url'):
                 queue.url = temp.url
                 queue.encryptionKey = temp.encryptionKey
-                queue.urls = temp.urls
-                print('Refreshed URL', temp.url, temp.encryptionKey)
+                queue.urls = json.dumps(temp.urls)
+                print('Refreshed URL '+ track.title)
             else:
                 print('Cant get URL', temp)
                 #completeURL refresh
@@ -62,15 +65,17 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
             #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
             time.sleep(sleep_time)
 
-            tool = aigpy.download.DownloadTool(queue.path + '.part', json.loads(queue.urls))
-            tool.setPartSize(partSize)
-            check, err = tool.start(False)
+            #tool = aigpy.download.DownloadTool(queue.path + '.part', json.loads(queue.urls))
+            #tool.setPartSize(partSize)
+            #check, err = tool.start(False)
+            check, err = download_and_combine(queue.path, json.loads(queue.urls))
             if not check:
-                print(f"DL Track[{track.title}] failed.{str(err)}")
+                print(f"DL Track[{track.title}] failed.")
+                print(json.dumps(err))
                 result = False
             if result and check:
                 # encrypted -> decrypt and remove encrypted file
-                encrypted(queue.encryptionKey, queue.path + '.part', queue.path)
+                encrypted(queue.encryptionKey, queue.path, queue.path)
 
                 if '.mp4' in queue.path:
                     # convert .mp4 back to .flac
@@ -119,34 +124,98 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
 
 
 def downloadQueuedTracks():
-    tidalrrStart()
-    queue_items = getTidalQueues('Track')
-    for i, queue in enumerate(queue_items):
-        file = getFileById(queue.id)
-        track = getTidalTrack(queue.id)
-        if file is None:
-            if not exists(track.path):
-                print('Downloading track file '+str(i)+'/'+str(len(queue_items))+' '+track.title)
-                track.downloaded = workDownloadTrack(queue, track)
-            if track.downloaded:
-                # save file in db
-                file = File(
-                    description=track.title,
-                    type='Track',
-                    id=track.id,
-                    path=queue.path
-                )
-                addFiles(file)
+    try:
+        tidalrrStart()
+        
+        queue_items = getTidalQueues('Track')
+        for i, queue in enumerate(queue_items):
+            try:
+                file = getFileById(queue.id)
+                track = getTidalTrack(queue.id)
+                
+                if file is None:
+                    if not exists(track.path):
+                        logger.info('Downloading track file %s/%s %s', str(i), str(len(queue_items)), track.title)
+                        track.downloaded = workDownloadTrack(queue, track)
+                        
+                    if track.downloaded:
+                        # save file in db
+                        file = File(
+                            description=track.title,
+                            type='Track',
+                            id=track.id,
+                            path=queue.path
+                        )
+                        addFiles(file)
 
-                # remove queue in db
-                delTidalQueue(queue.path)
+                        # remove queue in db
+                        delTidalQueue(queue.path)
 
-                # update track row
-                track.path = queue.path
-                track.queued = False
-                updateTidalTrack(track)
+                        # update track row
+                        track.path = queue.path
+                        track.queued = False
+                        updateTidalTrack(track)
+            except Exception as e:
+                logger.error("Error downloading track %s: %s", track.title, e)
 
-    # update downloaded albums & artists
-    updateTidalAlbumsDownloaded()
-    updateTidalArtistsDownloaded()
-    updateTidalPlaylistsDownloaded()
+        # update downloaded albums & artists
+        updateTidalAlbumsDownloaded()
+        updateTidalArtistsDownloaded()
+        updateTidalPlaylistsDownloaded()
+        
+    except Exception as e:
+        logger.error("Error in downloadQueuedTracks: %s", e)
+
+def download_file_part(path, url, part_number):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check for HTTP errors
+
+        file_name = f'{path}_{part_number}.part'
+
+        with open(file_name, 'wb') as file:
+            file.write(response.content)
+
+        logging.info(f'Downloaded part {part_number} from')
+        return file_name, None
+
+    except requests.RequestException as e:
+        logging.error(f'Error downloading part {part_number} from : {e}')
+        return False, str(e)
+
+def combine_file_parts(output_file, *file_parts):
+    try:
+        with open(output_file, 'wb') as output:
+            for part in file_parts:
+                with open(part, 'rb') as file_part:
+                    output.write(file_part.read())
+
+        logging.info(f'Combined file saved as {output_file}')
+
+    except Exception as e:
+        logging.error(f'Error combining file parts: {e}')
+        return False, str(e)
+
+def download_and_combine(path, urls):
+    file_parts = []
+    err = None
+    for i, url in enumerate(urls):
+        part_number = i + 1
+        file_part, err = download_file_part(path, url, part_number)
+
+        if file_part:
+            file_parts.append(file_part)
+        else:
+            # Skip to the next URL if there's an error downloading a part
+            continue
+
+    combine_file_parts(path, *file_parts)
+    # Clean up: delete individual file parts
+    for file_part in file_parts:
+        try:
+            os.remove(file_part)
+            logging.info(f'Deleted file part: {file_part}')
+        except Exception as e:
+            logging.error(f'Error deleting file part {file_part}: {e}')
+            return False, str(e)
+    return True, err

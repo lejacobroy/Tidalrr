@@ -15,16 +15,27 @@ from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import *
 from tidalrr.workers.scanQueuedTracks import *
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def scanQueuedPlaylists():
-    playlists = getTidalPlaylists()
-    if len(playlists) > 0 :
-        for i,playlist in enumerate(playlists):
-            if hasattr(playlist, 'uuid'):
-                if playlist.queued:
-                    print('Scanning playlist '+ str(i)+'/'+str(len(playlists))+' '+playlist.title)
-                    start_playlist(playlist)
-                    playlist.queued = False
-                    updateTidalPlaylist(playlist)
+    try:
+        playlists = getTidalPlaylists()
+        if len(playlists) > 0:
+            for i, playlist in enumerate(playlists):
+                try:
+                    if hasattr(playlist, 'uuid'):
+                        if playlist.queued:
+                            logger.info('Scanning playlist %s/%s %s', str(i), str(len(playlists)), playlist.title)
+                            start_playlist(playlist)
+                            playlist.queued = False
+                            updateTidalPlaylist(playlist)
+                except Exception as e:
+                    logger.error("Error scanning playlist: %s", e)
+    except Exception as e:
+        logger.error("Error getting playlists: %s", e)
+
 
 def start_playlist(obj: Playlist):
     # save this to playlist.json
