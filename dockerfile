@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN apt update && apt upgrade -y && apt install ffmpeg -y
+
 ENTRYPOINT ["python3"]
 
 CMD ["app.py"]

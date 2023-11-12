@@ -89,7 +89,8 @@ def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
                         queue.path = final_path
                     except:
                         print('FFmpeg is not installed or working! Using fallback, may have errors')
-
+                        result = False
+                        return result
 
                 # contributors
                 try:
