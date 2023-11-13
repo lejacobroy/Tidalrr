@@ -565,9 +565,9 @@ class TidalAPI(object):
         elif quality == 'High':
             squality = "HIGH"
         elif quality == 'HiFi':
-            squality = "LOSSLESS"
-        elif quality == 'Master':
             squality = "HI_RES"
+        elif quality == 'Master':
+            squality = "LOSSLESS"
         elif quality == 'Max':
             squality = "HI_RES_LOSSLESS"
         paras = {"audioquality": squality, "playbackmode": "STREAM", "assetpresentation": "FULL"}
