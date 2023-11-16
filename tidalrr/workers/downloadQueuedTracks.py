@@ -155,6 +155,7 @@ def downloadQueuedTracks():
                         # update track row
                         track.path = queue.path
                         track.queued = False
+                        track.downloaded = True
                         updateTidalTrack(track)
             except Exception as e:
                 logger.error("Error downloading track %s: %s", track.title, e)
