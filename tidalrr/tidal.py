@@ -12,6 +12,8 @@ import json
 import random
 import re
 import time
+import subprocess
+import sys
 import aigpy
 import base64
 import requests
@@ -25,6 +27,40 @@ from tidalrr.apiKey import *
 # SSL Warnings | retry number
 requests.packages.urllib3.disable_warnings()
 requests.adapters.DEFAULT_RETRIES = 5
+
+def tidalLogin():
+    url = ''
+    timeout = ''
+    settings = getSettings()
+    key = getTidalKey()
+    if len(key.accessToken) > 0:
+        try:
+            loginByAccessToken(key.accessToken, key.userId)
+        except:
+            print('Login failed')
+            key.accessToken = ''
+            setTidalKey(key)
+    if not isItemValid(settings.apiKeyIndex):
+        changeApiKey()
+        url, timeout = startWaitForAuth()
+        
+    elif not loginByConfig():
+        url, timeout = startWaitForAuth()
+    if url != '':
+        print (url, timeout)
+    return url, timeout
+
+def startWaitForAuth():
+    url = getDeviceCode()
+    key = getTidalKey()
+    timeout = displayTime(int(key.authCheckTimeout))
+    # start subprocess to waitFroAuth()
+    try:
+        process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
+    except subprocess.CalledProcessError as e:
+        return f"Script execution failed: {e.output}"
+    print(url, timeout)
+    return url, timeout
 
 def changeApiKey():
     settings = getSettings()
@@ -252,6 +288,10 @@ class TidalAPI(object):
         for index in range(0, 3):
             try:
                 respond = requests.get(urlpre + path, headers=header, params=params)
+                if respond.text == 'The token has expired. (Expired on time)':
+                    # need to reauth user
+                    tidalLogin()
+                    continue
                 if respond.url.find("playbackinfopostpaywall") != -1 :
                     # random sleep between 0.5 and 5 seconds and print it
                     sleep_time = random.randint(500, 2000) / 1000

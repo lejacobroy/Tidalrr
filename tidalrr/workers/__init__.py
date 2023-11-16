@@ -8,8 +8,6 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-import subprocess
-import sys
 import time
 import functools
 from tidalrr.tidal import *
@@ -29,40 +27,6 @@ def print_elapsed_time(func):
 def tidalrrStart():
     createTables()
     tidalLogin()
-
-def tidalLogin():
-    url = ''
-    timeout = ''
-    settings = getSettings()
-    key = getTidalKey()
-    if len(key.accessToken) > 0:
-        try:
-            loginByAccessToken(key.accessToken, key.userId)
-        except:
-            print('Login failed')
-            key.accessToken = ''
-            setTidalKey(key)
-    if not isItemValid(settings.apiKeyIndex):
-        changeApiKey()
-        url, timeout = startWaitForAuth()
-        
-    elif not loginByConfig():
-        url, timeout = startWaitForAuth()
-    if url != '':
-        print (url, timeout)
-    return url, timeout
-
-def startWaitForAuth():
-    url = getDeviceCode()
-    key = getTidalKey()
-    timeout = displayTime(int(key.authCheckTimeout))
-    # start subprocess to waitFroAuth()
-    try:
-        process = subprocess.Popen([sys.executable, 'runWaitForAuth.py'])
-    except subprocess.CalledProcessError as e:
-        return f"Script execution failed: {e.output}"
-    print(url, timeout)
-    return url, timeout
 
 def parseContributors(roleType, Contributors):
     if Contributors is None:
