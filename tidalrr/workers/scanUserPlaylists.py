@@ -17,12 +17,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 def scanUserPlaylists(UserId=None):
-  logger.info("Starting scan of user playlists")
+  print("Starting scan of user playlists")
   
   try:
     playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
   except Exception as e:
-    logger.error("Error getting playlists: %s", e)
+    print("Error getting playlists: %s", e)
     raise
 
   for i,playlist in enumerate(playlists):
@@ -30,12 +30,12 @@ def scanUserPlaylists(UserId=None):
       if hasattr(playlist, 'title'):
         playlist.queued = True
         addTidalPlaylist(playlist)
-        logger.info('Added playlist %s to DB', playlist.title) 
+        print('Added playlist %s to DB', playlist.title) 
     except Exception as e:
-      logger.error("Error adding playlist: %s", e)
+      print("Error adding playlist: %s", e)
 
   try:  
     scanQueuedPlaylists()
-    logger.info("Completed scan of user playlists")
+    print("Completed scan of user playlists")
   except Exception as e:
-    logger.error("Error scanning queued playlists: %s", e)
+    print("Error scanning queued playlists: %s", e)

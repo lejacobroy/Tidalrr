@@ -24,12 +24,12 @@ def scanQueuedArtists():
         for i, artist in enumerate(artists):
             try:
                 if hasattr(artist, 'id') and artist.queued:
-                    logger.info('Scanning artist %s/%s %s', str(i), str(len(artists)), artist.name)
+                    print('Scanning artist %s/%s %s', str(i), str(len(artists)), artist.name)
                     start_artist(artist)
                     artist.queued = False
                     updateTidalArtist(artist)
             except Exception as e:
-                logger.error("Error scanning artist: %s", e)
+                print("Error scanning artist: %s", e)
 
 
 def start_artist(obj: Artist):

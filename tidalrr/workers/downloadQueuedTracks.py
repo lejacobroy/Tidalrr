@@ -136,7 +136,7 @@ def downloadQueuedTracks():
                 
                 if file is None:
                     if not exists(track.path):
-                        logger.info('Downloading track file %s/%s %s', str(i), str(len(queue_items)), track.title)
+                        print('Downloading track file %s/%s %s', str(i), str(len(queue_items)), track.title)
                         track.downloaded = workDownloadTrack(queue, track)
                         
                     if track.downloaded:
@@ -158,7 +158,7 @@ def downloadQueuedTracks():
                         track.downloaded = True
                         updateTidalTrack(track)
             except Exception as e:
-                logger.error("Error downloading track %s: %s", track.title, e)
+                print("Error downloading track %s: %s", track.title, e)
 
         # update downloaded albums & artists
         updateTidalAlbumsDownloaded()
@@ -166,7 +166,7 @@ def downloadQueuedTracks():
         updateTidalPlaylistsDownloaded()
         
     except Exception as e:
-        logger.error("Error in downloadQueuedTracks: %s", e)
+        print("Error in downloadQueuedTracks: %s", e)
 
 def download_file_part(path, url, part_number):
     try:

@@ -24,12 +24,12 @@ def scanQueuedAlbums():
         for i, album in enumerate(albums):
             try:
                 if hasattr(album, 'id') and album.queued:
-                    logger.info('Scanning album %s/%s %s', str(i), str(len(albums)), album.title)
+                    print('Scanning album %s/%s %s', str(i), str(len(albums)), album.title)
                     start_album(album)
                     album.queued = False
                     updateTidalAlbum(album)
             except Exception as e:
-                logger.error("Error scanning album: %s", e)
+                print("Error scanning album: %s", e)
 
 def start_album(obj: Album):
     try:
@@ -49,15 +49,15 @@ def start_album(obj: Album):
                         addTidalArtist(TIDAL_API.getArtist(track.artist))
                     # insert artist in db
                     addTidalAlbum(TIDAL_API.getAlbum(track.album))
-                    logger.info('Adding track %d/%d to DB: %s', i, len(tracks), track.title)
+                    print('Adding track %d/%d to DB: %s', i, len(tracks), track.title)
                     if obj.queued:
                         track.queued = True
                     addTidalTrack(track)
                     scanQueuedTracks()
                 except Exception as e:
-                    logger.error("Error adding track: %s", e)
+                    print("Error adding track: %s", e)
     except Exception as e:
-        logger.error("Error scanning album: %s", e)
+        print("Error scanning album: %s", e)
 
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:
