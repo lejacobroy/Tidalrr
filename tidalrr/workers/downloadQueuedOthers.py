@@ -23,7 +23,7 @@ def downloadQueuedCovers():
     try:
         covers = getTidalQueues('Cover')
     except Exception as e:
-        print("Error getting cover queues: %s", e)
+        print("Error getting cover queues: ", e)
         return
     
     for i, cover in enumerate(covers):
@@ -34,7 +34,7 @@ def downloadQueuedCovers():
                 try:
                     album = getTidalAlbum(cover.id)
                 except Exception as e:
-                    print("Error getting album %s: %s", cover.id, e)
+                    print("Error getting album : ", cover.id, e)
                     continue
 
                 # check existing path
@@ -42,10 +42,10 @@ def downloadQueuedCovers():
                     try:
                         aigpy.net.downloadFile(cover.url, cover.path)
                     except Exception as e:
-                        print("Error downloading %s: %s", cover.url, e)
+                        print("Error downloading : ", cover.url, e)
                         continue
                     
-                    print("Downloaded album cover %s/%s %s", str(i), str(len(covers)), album.title)
+                    print("Downloaded album cover / ", str(i), str(len(covers)), album.title)
                 
                 file = File(
                     description=album.title,
@@ -56,13 +56,13 @@ def downloadQueuedCovers():
                 try:
                     addFiles(file)
                 except Exception as e:
-                    print("Error adding file %s: %s", file.id, e)
+                    print("Error adding file : ", file.id, e)
                     continue
 
             try:
                 delTidalQueue(cover.path)
             except Exception as e:
-                print("Error deleting queue %s: %s", cover.path, e)
+                print("Error deleting queue : ", cover.path, e)
 
         except Exception as e:
-            print("Error processing cover %s: %s", cover.id, e)
+            print("Error processing cover : ", cover.id, e)

@@ -41,7 +41,7 @@ def forkScans():
 
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
-    hours = 6
+    hours = 4
     seconds = hours * 60 * 60
     p.join(seconds)
 

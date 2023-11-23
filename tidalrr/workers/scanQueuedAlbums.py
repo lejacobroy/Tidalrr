@@ -24,12 +24,12 @@ def scanQueuedAlbums():
         for i, album in enumerate(albums):
             try:
                 if hasattr(album, 'id') and album.queued:
-                    print('Scanning album %s/%s %s', str(i), str(len(albums)), album.title)
+                    print('Scanning album / ', str(i), str(len(albums)), album.title)
                     start_album(album)
                     album.queued = False
                     updateTidalAlbum(album)
             except Exception as e:
-                print("Error scanning album: %s", e)
+                print("Error scanning album: ", e)
 
 def start_album(obj: Album):
     try:
@@ -49,15 +49,15 @@ def start_album(obj: Album):
                         addTidalArtist(TIDAL_API.getArtist(track.artist))
                     # insert artist in db
                     addTidalAlbum(TIDAL_API.getAlbum(track.album))
-                    print('Adding track %d/%d to DB: %s', i, len(tracks), track.title)
+                    print('Adding track %d/%d to DB: ', i, len(tracks), track.title)
                     if obj.queued:
                         track.queued = True
                     addTidalTrack(track)
                     scanQueuedTracks()
                 except Exception as e:
-                    print("Error adding track: %s", e)
+                    print("Error adding track: ", e)
     except Exception as e:
-        print("Error scanning album: %s", e)
+        print("Error scanning album: ", e)
 
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:
@@ -69,12 +69,12 @@ def writeAlbumInfo(album:Album, tracks: [Track]):
 
         path += '/AlbumInfo.txt'
         infos = ""
-        infos += "[ID]          %s\n" % (str(album.id))
-        infos += "[Title]       %s\n" % (str(album.title))
-        infos += "[Artists]     %s\n" % (str(album.artists))
-        infos += "[ReleaseDate] %s\n" % (str(album.releaseDate))
-        infos += "[SongNum]     %s\n" % (str(album.numberOfTracks))
-        infos += "[Duration]    %s\n" % (str(album.duration))
+        infos += "[ID]          \n" % (str(album.id))
+        infos += "[Title]       \n" % (str(album.title))
+        infos += "[Artists]     \n" % (str(album.artists))
+        infos += "[ReleaseDate] \n" % (str(album.releaseDate))
+        infos += "[SongNum]     \n" % (str(album.numberOfTracks))
+        infos += "[Duration]    \n" % (str(album.duration))
         infos += '\n'
 
         for index in range(0, album.numberOfVolumes):
@@ -84,5 +84,5 @@ def writeAlbumInfo(album:Album, tracks: [Track]):
                 if item.volumeNumber != volumeNumber:
                     continue
                 infos += '{:<8}'.format("[%d]" % item.trackNumber)
-                infos += "%s\n" % item.title
+                infos += "\n" % item.title
         aigpy.file.write(path, infos, "w+")

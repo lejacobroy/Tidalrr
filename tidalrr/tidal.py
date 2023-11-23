@@ -34,6 +34,7 @@ def tidalLogin():
     settings = getSettings()
     key = getTidalKey()
     if len(key.accessToken) > 0:
+        print('Non-Empty Access Token, logging in')
         try:
             loginByAccessToken(key.accessToken, key.userId)
         except:
@@ -41,12 +42,15 @@ def tidalLogin():
             key.accessToken = ''
             setTidalKey(key)
     if not isItemValid(settings.apiKeyIndex):
+        print('API Key invalid')
         changeApiKey()
         url, timeout = startWaitForAuth()
         
     elif not loginByConfig():
+        print('Login By Config failed')
         url, timeout = startWaitForAuth()
     if url != '':
+        print('Login URL was set, Waiting for Auth...')
         print (url, timeout)
     return url, timeout
 
@@ -290,15 +294,19 @@ class TidalAPI(object):
                 respond = requests.get(urlpre + path, headers=header, params=params)
                 if respond.text == 'The token has expired. (Expired on time)':
                     # need to reauth user
-                    tidalLogin()
-                    continue
+                    if loginByConfig():
+                        print('loginByConfig returned true')
+                        self.__get__(self, path, params, urlpre)
+                        continue
+                    else: 
+                        break
                 if respond.url.find("playbackinfopostpaywall") != -1 :
                     # random sleep between 0.5 and 5 seconds and print it
                     sleep_time = random.randint(500, 2000) / 1000
                     #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
                     time.sleep(sleep_time)
 
-                if respond.status_code == 429:
+                if respond.status_code == 429 or respond.text == 'Asset is not ready for playback':
                     print('Too many requests, waiting for 20 seconds...')
                     # Loop countdown 20 seconds and print the remaining time
                     for i in range(20, 0, -1):

@@ -22,7 +22,7 @@ def scanUserPlaylists(UserId=None):
   try:
     playlists = TIDAL_API.getPlaylistsAndFavorites(UserId)
   except Exception as e:
-    print("Error getting playlists: %s", e)
+    print("Error getting playlists: ", e)
     raise
 
   for i,playlist in enumerate(playlists):
@@ -30,12 +30,12 @@ def scanUserPlaylists(UserId=None):
       if hasattr(playlist, 'title'):
         playlist.queued = True
         addTidalPlaylist(playlist)
-        print('Added playlist %s to DB', playlist.title) 
+        print('Added playlist  to DB', playlist.title) 
     except Exception as e:
-      print("Error adding playlist: %s", e)
+      print("Error adding playlist: ", e)
 
   try:  
     scanQueuedPlaylists()
     print("Completed scan of user playlists")
   except Exception as e:
-    print("Error scanning queued playlists: %s", e)
+    print("Error scanning queued playlists: ", e)

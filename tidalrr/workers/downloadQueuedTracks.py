@@ -37,7 +37,7 @@ def isNeedRefresh(url):
             return False
         return True
 
-def workDownloadTrack(queue = Queue, track=Track, partSize=1048576):
+def workDownloadTrack(queue = Queue, track=Track):
     album = getTidalAlbum(track.album)
     artist = getTidalArtist(album.artist)
     result = True
@@ -136,7 +136,7 @@ def downloadQueuedTracks():
                 
                 if file is None:
                     if not exists(track.path):
-                        print('Downloading track file %s/%s %s', str(i), str(len(queue_items)), track.title)
+                        print('Downloading track file', str(i)," / ", str(len(queue_items)), track.title)
                         track.downloaded = workDownloadTrack(queue, track)
                         
                     if track.downloaded:
@@ -158,7 +158,7 @@ def downloadQueuedTracks():
                         track.downloaded = True
                         updateTidalTrack(track)
             except Exception as e:
-                print("Error downloading track %s: %s", track.title, e)
+                print("Error downloading track : ", track.title, e)
 
         # update downloaded albums & artists
         updateTidalAlbumsDownloaded()
@@ -166,7 +166,7 @@ def downloadQueuedTracks():
         updateTidalPlaylistsDownloaded()
         
     except Exception as e:
-        print("Error in downloadQueuedTracks: %s", e)
+        print("Error in downloadQueuedTracks: ", e)
 
 def download_file_part(path, url, part_number):
     try:
@@ -201,6 +201,12 @@ def combine_file_parts(output_file, *file_parts):
 def download_and_combine(path, urls):
     file_parts = []
     err = None
+    # Extract the directory path from the file path
+    directory_path = os.path.dirname(path)
+
+    # Create the directory structure if it doesn't exist
+    os.makedirs(directory_path, exist_ok=True)
+
     for i, url in enumerate(urls):
         part_number = i + 1
         file_part, err = download_file_part(path, url, part_number)

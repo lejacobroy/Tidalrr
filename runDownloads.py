@@ -31,7 +31,7 @@ def forkDownloads():
 
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
-    hours = 6
+    hours = 11
     seconds = hours * 60 * 60
     p.join(seconds)
 
@@ -44,7 +44,7 @@ def forkDownloads():
         p.join()
 
 def mainDownloadsSchedule():
-    schedule.every().day.at("23:00").do(forkDownloads)
+    schedule.every().day.at("03:00").do(forkDownloads)
     while True:
         schedule.run_pending()
         time.sleep(1)

@@ -25,15 +25,17 @@ def scanQueuedTracks():
                 try:
                     if hasattr(track, 'id') and track.queued:
                         if track.queued:
-                            print('Scanning track %s/%s %s', str(i), str(len(tracks)), track.title)
+                            print('Scanning track / ', str(i), str(len(tracks)), track.title)
                             result = start_track(track)
                             if result:
                                 track.queued = False
                                 updateTidalTrack(track)
                 except Exception as e:
-                    print("Error scanning track: %s", e)
+                    print("Error scanning track: ", e)
+                    track.queued = False
+                    updateTidalTrack(track)
     except Exception as e:
-        print("Error getting tracks: %s", e)
+        print("Error getting tracks: ", e)
 
 def start_track(obj: Track):
     try:
@@ -43,7 +45,7 @@ def start_track(obj: Track):
                 # insert artist in db
                 addTidalArtist(TIDAL_API.getArtist(obj.artist))
         except Exception as e:
-            print("Error adding artist: %s", e)
+            print("Error adding artist: ", e)
             
         try:    
             #same for album
@@ -51,14 +53,14 @@ def start_track(obj: Track):
                 # insert artist in db
                 addTidalAlbum(TIDAL_API.getAlbum(obj.album))
         except Exception as e:
-            print("Error adding album: %s", e)
+            print("Error adding album: ", e)
 
         try:
             album = getTidalAlbum(obj.album)
             if settings.saveCovers:
                 scanCover(album)
         except Exception as e:
-            print("Error getting album: %s", e)
+            print("Error getting album: ", e)
 
         try:
             file = getFileById(obj.id)
@@ -69,21 +71,21 @@ def start_track(obj: Track):
                 print('File exists, skipping')
                 return True
         except Exception as e:
-            print("Error scanning track: %s", e)
+            print("Error scanning track: ", e)
     except Exception as e:
-        print("Error in scan queued tracks: %s", e)
+        print("Error in scan queued tracks: ", e)
 
 def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     path = ''
     try:
         settings = getSettings()
     except Exception as e:
-        print("Error getting settings: %s", e)
+        print("Error getting settings: ", e)
 
     try:
         stream = TIDAL_API.getStreamUrl(track.id, settings.audioQuality) 
     except Exception as e:
-        print("Error getting stream URL: %s", e)
+        print("Error getting stream URL: ", e)
 
     try:
         artist = getTidalArtist(track.artist)
@@ -92,9 +94,9 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
                 artist = TIDAL_API.getArtist(track.artist)
                 addTidalArtist(artist)
             except Exception as e:
-                print("Error getting artist: %s", e)
+                print("Error getting artist: ", e)
     except Exception as e:
-        print("Error getting tidal artist: %s", e)
+        print("Error getting tidal artist: ", e)
 
     try:
         albumArtist = getTidalArtist(album.artist)
@@ -103,15 +105,15 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
                 albumArtist = TIDAL_API.getArtist(album.artist)
                 addTidalArtist(albumArtist)
             except Exception as e:
-                print("Error getting album artist: %s", e)
+                print("Error getting album artist: ", e)
     except Exception as e:
-        print("Error getting tidal album artist: %s", e)
+        print("Error getting tidal album artist: ", e)
 
     if artist is not None and stream is not None:
         try:
             path = getTrackPath(track, stream, artist, album, playlist)
         except Exception as e:
-            print("Error getting track path: %s", e)
+            print("Error getting track path: ", e)
 
     return stream, path
 

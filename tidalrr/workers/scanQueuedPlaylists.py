@@ -27,14 +27,14 @@ def scanQueuedPlaylists():
                 try:
                     if hasattr(playlist, 'uuid'):
                         if playlist.queued:
-                            print('Scanning playlist %s/%s %s', str(i), str(len(playlists)), playlist.title)
+                            print('Scanning playlist / ', str(i), str(len(playlists)), playlist.title)
                             start_playlist(playlist)
                             playlist.queued = False
                             updateTidalPlaylist(playlist)
                 except Exception as e:
-                    print("Error scanning playlist: %s", e)
+                    print("Error scanning playlist: ", e)
     except Exception as e:
-        print("Error getting playlists: %s", e)
+        print("Error getting playlists: ", e)
 
 
 def start_playlist(obj: Playlist):
