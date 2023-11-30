@@ -292,6 +292,7 @@ class TidalAPI(object):
         for index in range(0, 3):
             try:
                 respond = requests.get(urlpre + path, headers=header, params=params)
+                print(respond.text)
                 if respond.text == 'The token has expired. (Expired on time)':
                     # need to reauth user
                     if loginByConfig():
@@ -299,6 +300,7 @@ class TidalAPI(object):
                         self.__get__(self, path, params, urlpre)
                         continue
                     else: 
+                        print('loginByConfig returned false, breaking loop')
                         break
                 if respond.url.find("playbackinfopostpaywall") != -1 :
                     # random sleep between 0.5 and 5 seconds and print it

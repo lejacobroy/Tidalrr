@@ -31,7 +31,7 @@ def forkDownloads():
 
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
-    hours = 11
+    hours = 9
     seconds = hours * 60 * 60
     p.join(seconds)
 
