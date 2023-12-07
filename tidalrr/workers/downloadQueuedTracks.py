@@ -44,13 +44,13 @@ def workDownloadTrack(queue = Queue, track=Track):
     if album is not None and artist is not None:
         settings = getSettings()
         if queue.login and isNeedRefresh(queue.url):
-            print('Refreshing URL '+ track.title)
+            #print('Refreshing URL '+ track.title)
             temp = refreshStreamURL(queue.id, settings.audioQuality)
             if hasattr(temp, 'url'):
                 queue.url = temp.url
                 queue.encryptionKey = temp.encryptionKey
                 queue.urls = json.dumps(temp.urls)
-                print('Refreshed URL '+ track.title)
+                #print('Refreshed URL '+ track.title)
             else:
                 print('Cant get URL', temp)
                 #completeURL refresh
@@ -80,7 +80,7 @@ def workDownloadTrack(queue = Queue, track=Track):
                 if '.mp4' in queue.path:
                     # convert .mp4 back to .flac
                     final_path = queue.path.rsplit(".", 1)[0] + '.flac'
-                    print(final_path)
+                    #print(final_path)
                     try:
                         ffmpeg.input(queue.path, hide_banner=None, y=None).output(final_path, acodec='copy',
                                                                                             loglevel='error').run()
@@ -150,20 +150,20 @@ def downloadQueuedTracks():
                         addFiles(file)
 
                         # remove queue in db
-                        delTidalQueue(queue.path)
+                        delTidalQueue(queue.id)
 
                         # update track row
                         track.path = queue.path
                         track.queued = False
                         track.downloaded = True
                         updateTidalTrack(track)
+
+                        # update downloaded albums & artists
+                        updateTidalAlbumsDownloaded()
+                        updateTidalArtistsDownloaded()
+                        updateTidalPlaylistsDownloaded()
             except Exception as e:
                 print("Error downloading track : ", track.title, e)
-
-        # update downloaded albums & artists
-        updateTidalAlbumsDownloaded()
-        updateTidalArtistsDownloaded()
-        updateTidalPlaylistsDownloaded()
         
     except Exception as e:
         print("Error in downloadQueuedTracks: ", e)

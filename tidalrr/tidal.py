@@ -292,7 +292,7 @@ class TidalAPI(object):
         for index in range(0, 3):
             try:
                 respond = requests.get(urlpre + path, headers=header, params=params)
-                print(respond.text)
+                #print(respond.text)
                 if respond.text == 'The token has expired. (Expired on time)':
                     # need to reauth user
                     if loginByConfig():

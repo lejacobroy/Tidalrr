@@ -55,9 +55,9 @@ def getTidalQueueById(id= int) -> Queue:
         queue = convertToQueue(row)
     return queue
 
-def delTidalQueue(path=str):
+def delTidalQueue(id=str):
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
-    cur.execute('DELETE FROM tidal_queue WHERE path = ?', (path,))
+    cur.execute('DELETE FROM tidal_queue WHERE id = ?', (id,))
     conn.commit()
     conn.close()

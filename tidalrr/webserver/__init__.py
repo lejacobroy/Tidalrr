@@ -112,6 +112,7 @@ def tidalrrWeb(config=None):
 
 def webServer(debug=True):
     createTables()
+    housekeeping()
     tidalrrStart()
     print("Starting web server")
     app = tidalrrWeb()

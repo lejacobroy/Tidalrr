@@ -20,6 +20,7 @@ from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 schema_path = Path(__file__).parent.joinpath('schema.sql').absolute()
+housekeeping_path = Path(__file__).parent.joinpath('housekeeping.sql').absolute()
 
 def createTables():
     conn = sqlite3.connect(db_path)
@@ -80,6 +81,17 @@ def createTables():
                     )
         connection.commit()
         connection.close()
+
+def housekeeping():
+    conn = sqlite3.connect(db_path)
+    with open(housekeeping_path) as f:
+        conn.executescript(f.read())
+    conn.commit()
+    conn.close()
+    # update downloaded albums & artists
+    updateTidalAlbumsDownloaded()
+    updateTidalArtistsDownloaded()
+    updateTidalPlaylistsDownloaded()
 
 def getSettings() -> Settings:
     conn = sqlite3.connect(db_path)
