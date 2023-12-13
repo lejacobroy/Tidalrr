@@ -75,7 +75,7 @@ def getTidalAlbums() -> [Album]:
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
                         inner join tidal_artists on tidal_artists.id = tidal_albums.artist \
-                        WHERE title <> ""\
+                        WHERE tidal_albums.title <> ""\
                         ORDER BY tidal_artist.name, tidal_albums.title').fetchall()
     new_rows = [Album]
     conn.close()

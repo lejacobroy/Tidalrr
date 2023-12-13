@@ -41,13 +41,13 @@ def getTidalQueues(type=str) -> [Queue]:
                             inner join tidal_tracks on tidal_tracks.id = tidal_queue.id\
                             inner join tidal_albums on tidal_albums.id = tidal_tracks.album\
                             inner join tidal_artists on tidal_artists.id = tidal_albums.artist\
-                            WHERE id IS NOT NULL AND type = "Track" \
+                            WHERE tidal_queue.id IS NOT NULL AND tidal_queue.type = "Track" \
                             ORDER BY tidal_artists.name, tidal_album.title, tidal_tracks.volumeNumber, tidal_tracks.trackNumber').fetchall()
     elif type == 'Cover':
         rows = conn.execute('SELECT tidal_queue.* FROM tidal_queue \
                             inner join tidal_albums on tidal_albums.id = tidal_queue.id\
                             inner join tidal_artists on tidal_artists.id = tidal_albums.artist\
-                            WHERE id IS NOT NULL AND type = "Cover" \
+                            WHERE tidal_queue.id IS NOT NULL AND tidal_queue.type = "Cover" \
                             ORDER BY tidal_artists.name, tidal_album.title').fetchall()
     conn.close()
     queues = []
