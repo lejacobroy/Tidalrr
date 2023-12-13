@@ -61,7 +61,7 @@ def getTidalTracks() -> [Track]:
                         inner join tidal_albums on tidal_albums.id = tidal_tracks.album\
                         inner join tidal_artists on tidal_artists.id = tidal_albums.artist\
                          WHERE tidal_tracks.id IS NOT NULL\
-                        ORDER BY tidal_artists.name, tidal_album.title, tidal_tracks.volumeNumber, tidal_tracks.trackNumber').fetchall()
+                        ORDER BY tidal_artists.name, tidal_albums.title, tidal_tracks.volumeNumber, tidal_tracks.trackNumber').fetchall()
     conn.close()
     new_rows = []
     if len(rows) > 0:
