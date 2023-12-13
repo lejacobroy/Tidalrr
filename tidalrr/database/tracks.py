@@ -57,7 +57,11 @@ def updateTidalTrack(track=Track):
 def getTidalTracks() -> [Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_tracks WHERE id IS NOT NULL').fetchall()
+    rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
+                        inner join tidal_albums on tidal_albums.id = tidal_tracks.album\
+                        inner join tidal_artists on tidal_artists.id = tidal_albums.artist\
+                         WHERE id IS NOT NULL\
+                        ORDER BY tidal_artists.name, tidal_album.title, tidal_tracks.volumeNumber, tidal_tracks.trackNumber').fetchall()
     conn.close()
     new_rows = []
     if len(rows) > 0:

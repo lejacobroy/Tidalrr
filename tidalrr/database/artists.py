@@ -47,7 +47,7 @@ def updateTidalArtistsDownloaded():
 def getTidalArtists() -> [Artist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL ORDER BY name').fetchall()
     conn.close()
     new_rows = [Artist]
     if len(rows) > 0 :
