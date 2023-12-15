@@ -26,14 +26,12 @@ def createTables():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     settings = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings';").fetchone()
-    conn.close()
     if settings is None:
-        connection = sqlite3.connect(db_path)
         with open(schema_path) as f:
-            connection.executescript(f.read())
-        cur = connection.cursor()
-        cur.execute("INSERT INTO settings (albumFolderFormat, apiKeyindex, audioQuality, checkExists, downloadDelay, downloadPath, includeEP, language, lyricFile, multiThread,\
-                    playlistFolderFormat, saveAlbumInfo, saveCovers, showProgress, showTrackInfo, TrackFileFormat, unePlaylistFolder, scanUserPlaylists, lidarrUrl, lidarrApi, \
+            conn.executescript(f.read())
+        cur = conn.cursor()
+        cur.execute("INSERT INTO settings (albumFolderFormat, apiKeyindex, audioQuality, checkExist, downloadDelay, downloadPath, includeEP, language, lyricFile, multiThread,\
+                    playlistFolderFormat, saveAlbumInfo, saveCovers, showProgress, showTrackInfo, TrackFileFormat, usePlaylistFolder, scanUserPlaylists, lidarrUrl, lidarrApi, \
                     tidalToken, plexUrl, plexToken, plexHomePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
                     4,
@@ -61,8 +59,8 @@ def createTables():
                     ''
                     )
                     )
-        cur.execute("INSERT INTO tidal_key (deviceCode = ?,\
-                userCode, verificationUrl, authCheckTimeout ,authCheckInterval , userId, countryCode, accessToken = ?,\
+        cur.execute("INSERT INTO tidal_key (deviceCode,\
+                userCode, verificationUrl, authCheckTimeout ,authCheckInterval , userId, countryCode, accessToken,\
                 refreshToken, expiresIn, token, clientId, clientSecret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     ('', 
                     '',
@@ -79,8 +77,8 @@ def createTables():
                     ''
                     )
                     )
-        connection.commit()
-        connection.close()
+        conn.commit()
+    conn.close()
 
 def housekeeping():
     conn = sqlite3.connect(db_path)
