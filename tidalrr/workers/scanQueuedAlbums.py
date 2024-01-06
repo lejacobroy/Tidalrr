@@ -24,12 +24,15 @@ def scanQueuedAlbums():
         for i, album in enumerate(albums):
             try:
                 if hasattr(album, 'id') and album.queued:
-                    print('Scanning album / ', str(i), str(len(albums)), album.title)
+                    print('Scanning album ', str(i), ' / ', str(len(albums)), album.title)
                     start_album(album)
                     album.queued = False
                     updateTidalAlbum(album)
             except Exception as e:
                 print("Error scanning album: ", e)
+                if "Album" in str(e) and "not found" in str(e):
+                    album.queued = False
+                    updateTidalAlbum(album)
 
 def start_album(obj: Album):
     try:

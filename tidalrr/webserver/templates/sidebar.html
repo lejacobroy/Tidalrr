@@ -9,11 +9,12 @@
     </a>
     <ul class="list-unstyled ps-0">
       <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
           Actions
         </button>
-        <div class="collapse" id="home-collapse">
+        <div class="collapse show" id="home-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li><a href="/actions/addFromUrl" class="link-dark rounded">Add from URL</a></li>
             <li><a href="/actions/uploadUrlsFile" class="link-dark rounded">Upload</a></li>
             <li><a href="/actions/run-scans" class="link-dark rounded">Scans</a></li>
             <li><a href="/actions/run-downloads" class="link-dark rounded">Downloads</a></li>
@@ -21,20 +22,20 @@
         </div>
       </li>
       <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="true">
           Library
         </button>
-        <div class="collapse" id="dashboard-collapse">
+        <div class="collapse show" id="dashboard-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="/tidal/playlists" class="link-dark rounded">Playlists</a></li>
             <li><a href="/tidal/artists" class="link-dark rounded">Artists</a></li>
             <li><a href="/tidal/albums" class="link-dark rounded">Albums</a></li>
-            <li><a href="/tidal/tracks" class="link-dark rounded">Tracks</a></li>
+            <!-- <li><a href="/tidal/tracks/1" class="link-dark rounded">Tracks</a></li> -->
           </ul>
         </div>
       </li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+      <!-- <li class="mb-1">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
           Search
         </button>
         <div class="collapse" id="orders-collapse">
@@ -45,13 +46,13 @@
             <li><a href="#" class="link-dark rounded">Returned</a></li>
           </ul>
         </div>
-      </li>
+      </li> -->
       <li class="border-top my-3"></li>
       <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
           Maintenance
         </button>
-        <div class="collapse" id="account-collapse">
+        <div class="collapse show" id="account-collapse">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li><a href="/download/queue" class="link-dark rounded">Queue</a></li>
             <li><a href="/files" class="link-dark rounded">Files</a></li>

@@ -71,6 +71,23 @@ def getTidalTracks() -> [Track]:
             new_rows.append(t)
     return new_rows
 
+def getTracksForAlbum(albumId) -> [Track]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
+                        inner join tidal_albums on tidal_albums.id = tidal_tracks.album\
+                        inner join tidal_artists on tidal_artists.id = tidal_albums.artist\
+                         WHERE tidal_tracks.id IS NOT NULL AND tidal_tracks.album = ?\
+                        ORDER BY tidal_artists.name, tidal_albums.title, tidal_tracks.volumeNumber, tidal_tracks.trackNumber', (albumId,)).fetchall()
+    conn.close()
+    new_rows = []
+    if len(rows) > 0:
+        for track in rows:
+            t = convertToTrack(track)
+            t.artists = getArtistsNameJSON(t.artists)
+            new_rows.append(t)
+    return new_rows
+
 def getTidalTrack(id=int) -> Track:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row

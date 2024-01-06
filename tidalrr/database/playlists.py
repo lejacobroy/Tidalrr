@@ -52,7 +52,7 @@ def getTidalPlaylists() -> [Playlist]:
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL').fetchall()
     conn.close()
-    new_rows = [Playlist]
+    new_rows = []
     if len(rows) > 0 :
         for item in rows:
             new_rows.append(convertToPlaylist(item))
@@ -68,17 +68,6 @@ def getTidalPlaylist(id=str) -> Playlist:
         playlist = convertToPlaylist(row)
     return playlist
 
-def getTidalPlaylistDownloaded() -> [Playlist]:
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_playlists WHERE downloaded = 1').fetchall()
-    conn.close()
-    new_rows = [Playlist]
-    if len(rows) > 0 :
-        for item in rows:
-            new_rows.append(convertToPlaylist(item))
-    return new_rows
-
 def getTidalPlaylistTracks(uuid=str) -> [Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -86,11 +75,14 @@ def getTidalPlaylistTracks(uuid=str) -> [Track]:
                        inner join tidal_playlist_tracks ON tidal_playlist_tracks.track = tidal_tracks.id \
                        WHERE tidal_playlist_tracks.uuid = ?', (uuid,)).fetchall()
     conn.close()
-    new_rows = [Track]
+    new_rows = []
     if len(rows) > 0 :
         for item in rows:
-            new_rows.append(convertToTrack(item))
+            a = convertToTrack(item)
+            a.artists = getArtistsNameJSON(a.artists)
+            new_rows.append(a)
     return new_rows
+
 
 def updateTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
@@ -121,3 +113,12 @@ def updateTidalPlaylistsDownloaded():
                 )")
     connection.commit()
     connection.close()
+
+def getNumDownloadedPlaylistTracks(PlaylistUUID):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT COUNT(tidal_tracks.id) FROM tidal_tracks\
+                       inner join tidal_playlist_tracks ON tidal_playlist_tracks.track = tidal_tracks.id \
+                       WHERE tidal_playlist_tracks.uuid = ? and tidal_tracks.downloaded = 1', (PlaylistUUID,)).fetchone()
+    conn.close()
+    return row[0]

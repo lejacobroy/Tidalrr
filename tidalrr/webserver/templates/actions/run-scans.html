@@ -1,11 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Run Scans</h1>
-    
+<h2>Run Scans</h2>
+    <p>Manually run the scans for queued content, to extract the stream URL for a later download.<br>
+    This operation is run every day between 23:00 and 04:00</p>
     <a href="/run-scans" class="btn"><button type="button" class="btn btn-primary">Start scans</button></a>
     <br/>
-    <h2>Logs</h2>
-    <pre>
+    <h3>Logs</h3>
+    <pre id="log">
         {{ log_content|safe }}
     </pre>
+    <script>
+        const log = document.getElementById('log');
+      
+        function updateLog() {
+          fetch('/actions/log-scans-data')
+            .then(response => response.text())
+            .then(data => {
+              log.textContent = data;
+            });
+        }
+      
+        setInterval(updateLog, 1000);
+      </script>
 {% endblock %}

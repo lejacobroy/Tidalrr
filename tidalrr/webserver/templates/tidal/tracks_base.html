@@ -1,0 +1,56 @@
+
+{% block content %}
+<br/>
+<span>Queued tracks will be scanned and added to the download queue</span><br/>
+
+<table class="table table-striped" id="table">
+
+<thead>
+<tr>
+  <th>Title</th>
+  <th>Duration</th>
+  <th>Artists</th>
+  <th>Album</th>
+  <th>Quality</th>
+  <th>Actions</th>
+  <th>PlexUUID</th>
+</tr>  
+</thead>
+
+<tbody>
+{% for track in tracks %}
+<tr>
+  <td>
+    <a href="/tidal/track/{{ track['id'] }}">{{ track['title'] }}</a>
+    <a href="{{ track['url'] }}" target="_blank" class="btn btn-sm btn-outline-info">Tidal page</a>
+  </td>
+  <td>{{ track['duration'] }}</td>
+  <td><a href="/tidal/artist/{{ track['artist'] }}">{{ track['artists'] }}</a></td>
+  <td><a href="/tidal/album/{{ track['album'] }}">{{ track['albumTitle'] }}</a></td>
+  <td>{{ track['audioQuality'] }}</td>
+
+  <td>
+    {% if track['queued'] or track['inQueue'] %}
+      <button class="btn btn-sm btn-outline-warning" onclick="unqueueTrack({{ track['id'] }})">
+        Unqueue
+      </button>
+    {% elif track['downloaded'] %}
+      <button class="btn btn-sm btn-outline-success" onclick="downloadTrack({{ track['id'] }})">
+        Re-Download
+      </button>
+    {% else %}
+      <button class="btn btn-sm btn-outline-primary" onclick="queueTrack({{ track['id'] }})">
+        Queue
+      </button>
+    {% endif %}
+
+  </td>
+  <td>{{ track['plexUUID'] }}</td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+<br/>
+{% endblock %}

@@ -18,11 +18,21 @@ def view_log(log_filename):
 def uploadUrlsfile():
     return render_template("actions/uploadUrlsFile.html")
 
+@actions_bp.route("/addFromUrl")
+def addFromUrl():
+    return render_template("actions/addFromUrl.html")
+
 @actions_bp.route("/run-import")
 def actionsRunImport():
     log_filename = f"script_log_import.txt"
     log_content = view_log(log_filename)
     return render_template("actions/run-import.html", log_content=log_content)
+
+@actions_bp.route("/log-import-data")
+def actionslogImport():
+    log_filename = f"script_log_import.txt"
+    log_content = view_log(log_filename)
+    return log_content
 
 @actions_bp.route("/run-scans")
 def actionsRunScans():
@@ -30,8 +40,20 @@ def actionsRunScans():
     log_content = view_log(log_filename)
     return render_template("actions/run-scans.html", log_content=log_content)
 
+@actions_bp.route("/log-scans-data")
+def actionslogScans():
+    log_filename = f"script_log_scans.txt"
+    log_content = view_log(log_filename)
+    return log_content
+
 @actions_bp.route("/run-downloads")
 def actionsRunDownloads():
     log_filename = f"script_log_downloads.txt"
     log_content = view_log(log_filename)
     return render_template("actions/run-downloads.html", log_content=log_content)
+
+@actions_bp.route("/log-downloads-data")
+def actionslogDownloads():
+    log_filename = f"script_log_downloads.txt"
+    log_content = view_log(log_filename)
+    return log_content

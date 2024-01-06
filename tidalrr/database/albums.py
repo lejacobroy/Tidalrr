@@ -10,7 +10,6 @@
 '''
 import sqlite3
 from tidalrr.model import *
-import json
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -64,20 +63,30 @@ def updateTidalAlbumsDownloaded():
     connection.commit()
     connection.close()
 
-def getArtistsNameJSON(artists):
-        array = []
-        for item in json.loads(artists):
-            array.append(item["name"])
-        return ", ".join(array)
-
 def getTidalAlbums() -> [Album]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
                         inner join tidal_artists on tidal_artists.id = tidal_albums.artist \
                         WHERE tidal_albums.title <> ""\
-                        ORDER BY tidal_artist.name, tidal_albums.title').fetchall()
-    new_rows = [Album]
+                        ORDER BY tidal_artists.name, tidal_albums.title').fetchall()
+    new_rows = []
+    conn.close()
+    if len(rows) > 0 :
+        for album in rows:
+            a = convertToAlbum(album)
+            a.artists = getArtistsNameJSON(a.artists)
+            new_rows.append(a)
+    return new_rows
+
+def getAlbumsForArtist(artistId) -> [Album]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
+                        inner join tidal_artists on tidal_artists.id = tidal_albums.artist \
+                        WHERE tidal_albums.title <> "" AND tidal_albums.artist = ? \
+                        ORDER BY tidal_artists.name, tidal_albums.title', (artistId,)).fetchall()
+    new_rows = []
     conn.close()
     if len(rows) > 0 :
         for album in rows:
@@ -96,3 +105,10 @@ def getTidalAlbum(id=int) -> Album:
         album = convertToAlbum(row)
         album.artists = getArtistsNameJSON(album.artists)
     return album
+
+def getNumDownloadedAlbumTracks(albumId):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT COUNT(*) FROM tidal_tracks WHERE album = ? and downloaded = 1', (albumId,)).fetchone()
+    conn.close()
+    return row[0]

@@ -1,0 +1,13 @@
+{% if playlist['queued'] or playlist['inQueue'] %}
+      <button class="btn btn-sm btn-outline-warning" onclick="unqueuePlaylist({{ playlist['id'] }})">
+        Unqueue
+      </button>
+      {% elif playlist['downloaded'] %}
+      <button class="btn btn-sm btn-outline-success" onclick="downloadPlaylist({{ playlist['id'] }})">
+        Re-Download
+      </button>
+    {% else %}
+      <button class="btn btn-sm btn-outline-primary" onclick="queuePlaylist({{ playlist['id'] }})">
+        Queue
+      </button>
+    {% endif %}

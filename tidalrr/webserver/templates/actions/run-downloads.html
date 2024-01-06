@@ -1,11 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Run Downloads</h1>
-    
+<h2>Run Downloads</h2>
+<p>Manually start the download of items in the download queue. Old links and tokens will be refreshed.<br>
+    This operation is run every day between 03:00 and 09:00</p>
     <a href="/run-downloads" class="btn"><button type="button" class="btn btn-primary">Start downloads</button></a>
     <br/>
-    <h2>Logs</h2>
-    <pre>
+    <h3>Logs</h3>
+    <pre id="log">
         {{ log_content|safe }}
     </pre>
+    <script>
+        const log = document.getElementById('log');
+      
+        function updateLog() {
+          fetch('/actions/log-downloads-data')
+            .then(response => response.text())
+            .then(data => {
+              log.textContent = data;
+            });
+        }
+      
+        setInterval(updateLog, 1000);
+      </script>
 {% endblock %}

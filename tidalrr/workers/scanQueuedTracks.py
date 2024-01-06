@@ -25,15 +25,19 @@ def scanQueuedTracks():
                 try:
                     if hasattr(track, 'id') and track.queued:
                         if track.queued:
-                            print('Scanning track / ', str(i), str(len(tracks)), track.title)
+                            print('Scanning track ', str(i), ' / ',str(len(tracks)), track.title)
                             result = start_track(track)
                             if result:
                                 track.queued = False
                                 updateTidalTrack(track)
                 except Exception as e:
                     print("Error scanning track: ", e)
-                    track.queued = False
-                    updateTidalTrack(track)
+                    if "Track" in str(e) and "not found" in str(e):
+                        track.queued = False
+                        updateTidalTrack(track)
+                    if "Asset is not ready for playback" == str(e):
+                        track.queued = False
+                        updateTidalTrack(track)
     except Exception as e:
         print("Error getting tracks: ", e)
 
@@ -81,11 +85,13 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
         settings = getSettings()
     except Exception as e:
         print("Error getting settings: ", e)
-
+    stream = StreamUrl()
     try:
         stream = TIDAL_API.getStreamUrl(track.id, settings.audioQuality) 
     except Exception as e:
         print("Error getting stream URL: ", e)
+        if str(e) == "Asset is not ready for playback":
+            return None, None
 
     try:
         artist = getTidalArtist(track.artist)
@@ -109,7 +115,7 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     except Exception as e:
         print("Error getting tidal album artist: ", e)
 
-    if artist is not None and stream is not None:
+    if artist is not None and stream is not None and stream.url is not None:
         try:
             path = getTrackPath(track, stream, artist, album, playlist)
         except Exception as e:
@@ -119,7 +125,7 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
 
 def scanTrack(track: Track, album=Album, playlist=None):
     stream, path = scanTrackPath(track, album, playlist)
-    if path != '':
+    if path != '' and stream is not None and stream.url is not None:
         queue = Queue(
             type='Track',
             login=True,
@@ -134,6 +140,8 @@ def scanTrack(track: Track, album=Album, playlist=None):
         print('Adding track to queue '+track.title)
         return True
     else:
-        print('Track '+str(track.id)+' Unknown artist or url'+ str(track.artist)+' '+ track.artists)
+        print('Track '+str(track.id)+' Unknown artist or url '+ str(track.artist)+' '+ track.artists)
         # maybe add the artist and re-run
+        track.queued = False
+        updateTidalTrack(track)
         return False

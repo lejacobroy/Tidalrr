@@ -66,6 +66,12 @@ def getTidalQueueById(id= int) -> Queue:
         queue = convertToQueue(row)
     return queue
 
+def isIdInQueue(id=int) -> bool:
+    inQueue = False
+    if getTidalQueueById(id) is not None:
+        inQueue = True
+    return inQueue
+
 def delTidalQueue(id=str):
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()

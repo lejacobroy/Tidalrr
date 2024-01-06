@@ -1,11 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Run Import</h1>
+<h2>Importing</h2>
     
-    <a href="/run-import" class="btn">Run Import</a>
-    <br/>
-    <h2>Logs</h2>
-    <pre>
+<!--     <a href="/run-import" class="btn">Run Import</a>-->
+    <br/> 
+    <h3>Logs</h3>
+    <pre id="log">
         {{ log_content|safe }}
     </pre>
+
+    <script>
+        const log = document.getElementById('log');
+      
+        function updateLog() {
+          fetch('/actions/log-import-data')
+            .then(response => response.text())
+            .then(data => {
+              log.textContent = data;
+            });
+        }
+      
+        setInterval(updateLog, 1000);
+      </script>
 {% endblock %}

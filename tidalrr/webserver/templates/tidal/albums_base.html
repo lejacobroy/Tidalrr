@@ -1,0 +1,73 @@
+
+{% block content %}
+
+<br/>
+<span>Queued albums will be scanned and all tracks will be added to the download queue</span><br/>
+
+<table class="table table-striped" id="table">
+
+<thead>
+<tr>
+  <th>Title</th>
+  <th>Artists</th>
+  <th>Release Date</th>
+  <th>Quality</th>
+  <th>Tracks</th>
+  <th>Actions</th>
+  <th>Completion</th>
+</tr>  
+</thead>
+
+<tbody>
+{% for album in albums %}
+<tr>
+  <td>
+    <a href="/tidal/album/{{ album['id'] }}">{{ album['title'] }}</a>
+    <a href="{{ album['url'] }}" target="_blank" class="btn btn-sm btn-outline-info">Tidal page</a>
+  </td>
+
+  <td><a href="/tidal/artist/{{ album['artist'] }}">{{ album['artists'] }}</a></td>
+  <td>{{ album['releaseDate'] }}</td>
+  <td>{{ album['audioQuality'] }}</td>
+
+  <td>{{ album['numberOfTracks'] }}</td>
+
+  <td>
+    {% include 'tidal/album_tag.html' with context %}
+  </td>
+
+  <td>
+    <div class="progress">
+      {% if album['numberOfTracks'] > 0 %}
+        <div
+          class="progress-bar"
+          role="progressbar"
+          style="width: {{ (album['numDownloadedTracks'] / album['numberOfTracks']) * 100 }}%;"
+          aria-valuenow="{{ (album['numDownloadedTracks'] / album['numberOfTracks']) * 100 }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          {{ (album['numDownloadedTracks'] / album['numberOfTracks']) * 100 }}%
+        </div>
+      {% else %}
+        <div
+          class="progress-bar"
+          role="progressbar"
+          style="width: 0%"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          0%
+        </div>
+      {% endif %}
+    </div>
+  </td>
+
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+<br/>
+{% endblock %}

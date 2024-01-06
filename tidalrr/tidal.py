@@ -429,6 +429,10 @@ class TidalAPI(object):
 
     def getTrack(self, id) -> Track:
         track = self.__get__('tracks/' + str(id))
+        track['audioModes'] = json.dumps(track['audioModes'])
+        track['artists'] = json.dumps(track['artists'])
+        track['artist'] = track['artist']['id']
+        track['album'] = track['album']['id']
         track['path'] = ''
         track['queued'] = False
         track['downloaded'] = False

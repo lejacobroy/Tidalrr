@@ -11,7 +11,7 @@
 import aigpy
 from dataclasses import dataclass
 from enum import Enum
-
+import json
 
 class AudioQuality(Enum):
     Normal = 0
@@ -116,6 +116,7 @@ class Album:
     numberOfTracks : int = 0
     numberOfVolumes : int = 0
     version : int = 0
+    numDownloadedTracks : int = 0
 
 def convertToAlbum(album) -> Album:
     albumType = Album(
@@ -140,6 +141,12 @@ def convertToAlbum(album) -> Album:
     )
     return albumType
 
+def getArtistsNameJSON(artists):
+        array = []
+        for item in json.loads(artists):
+            array.append(item["name"])
+        return ", ".join(array)
+
 @dataclass
 class Playlist:
     uuid : str
@@ -154,6 +161,7 @@ class Playlist:
     plexUUID: str
     numberOfTracks : int = 0
     duration : int = 0
+    numDownloadedTracks: int = 0
 
 def convertToPlaylist(playlist) -> Playlist:
     playlistType = Playlist(

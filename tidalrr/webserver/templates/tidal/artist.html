@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ artist.name }}</h2>
+<!-- <div>
+  <img src="{{ artist.image }}" alt="{{ artist.name }}">
+</div>
+
+<p>{{ artist.bio }}</p> -->
+<a href="{{artist['url']}}" target="_blank" class="btn btn-sm btn-outline-info">Tidal page</a>
+{% include 'tidal/artist_tag.html' with context %}
+<h3>Albums</h3>
+{% include 'tidal/albums_base.html' with context %}
+
+{% endblock %}

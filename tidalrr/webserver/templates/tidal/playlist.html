@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ playlist.title }}</h2>
+
+
+<a href="{{ playlist['url'] }}" target="_blank" class="btn btn-sm btn-outline-info">Tidal page</a>
+{% include 'tidal/playlist_tag.html' with context %}
+<h3>Tracks</h3>
+{% include 'tidal/tracks_base.html' with context %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add from URL</h2>
+    <p>Paste a Tidal URL in the box below.<br>
+    The page will be scanned and added to the download queue.<br>
+    For example, if the url is a playlist's page, all it's tracks will be queued for download.</p>
+    <form method="POST" action="/add" enctype="multipart/form-data">
+        <input type="text" name="url" placeholder="Enter Tidal URL">
+        <button type="submit" class="btn btn-primary" value="add">Add to database</button>
+    </form>
+{% endblock %}

@@ -49,7 +49,7 @@ def getTidalArtists() -> [Artist]:
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL ORDER BY name').fetchall()
     conn.close()
-    new_rows = [Artist]
+    new_rows = []
     if len(rows) > 0 :
         for item in rows:
             new_rows.append(convertToArtist(item))
@@ -64,3 +64,17 @@ def getTidalArtist(id=int) -> Artist:
     if row is not None:
         artist = convertToArtist(row)
     return artist
+
+def getNumArtistAlbums(artistId):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT COUNT(*) FROM tidal_albums WHERE artist = ?', (artistId,)).fetchone()
+    conn.close()
+    return row[0]
+
+def getNumDownloadedArtistAlbums(artistId):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute('SELECT COUNT(*) FROM tidal_albums WHERE artist = ? and downloaded = 1', (artistId,)).fetchone()
+    conn.close()
+    return row[0]

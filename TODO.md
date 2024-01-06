@@ -8,14 +8,6 @@
     - when scanning a track, look if it's album is superseeded, then scan the corresponding track
     - superseeded table? - for albums and tracks
 - create an api webserver and control center
-    - add urls to the queue from tidal search or urls
-    - list tidal playlists, artists, albums, tracks, mixes
-        - queue all
-        - queue selected
-        - filter by state (queued|downloaded|plex)
-    - edit db
-        - remove queued content
-        - queue/unqueue items and childs
     - sync lidarr
         - interactive match with search
     - inject spark
@@ -25,3 +17,4 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
+- add watchtower to docker-compose for automatic updates

@@ -53,7 +53,7 @@ def start(string):
                 if dbTrack is None:
                     obj.queued = True
                     addTidalTrack(obj)
-                    print('addTidalTrack')
+                    print('Added track to DB:', obj.title)
                     #scanQueuedTracks()
             elif etype == Type.Playlist:
                 dbPlaylist = getTidalPlaylist(obj.uuid)
@@ -70,3 +70,8 @@ def start(string):
 def startImportFile(val):
     tidalrrStart()
     readFile(val)
+
+def startImportUrl(val):
+    tidalrrStart()
+    print("Url #{}: {}".format(1, val.strip()))
+    start(val.strip())

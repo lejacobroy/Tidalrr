@@ -27,7 +27,7 @@ def scanQueuedPlaylists():
                 try:
                     if hasattr(playlist, 'uuid'):
                         if playlist.queued:
-                            print('Scanning playlist / ', str(i), str(len(playlists)), playlist.title)
+                            print('Scanning playlist ', str(i), ' / ',str(len(playlists)), playlist.title)
                             start_playlist(playlist)
                             playlist.queued = False
                             updateTidalPlaylist(playlist)
@@ -87,9 +87,9 @@ def start_playlist(obj: Playlist):
     with open(obj.path+'.m3u', 'w+') as f:
         for i,item in enumerate(paths, start=1):
             if len(item) > 0:
-                itemPath = Path(item)
+                itemPath = Path(item.path.replace('.mp4','.flac'))
                 if plexPath != '':
-                    itemPath = Path(item.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                    itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
                 f.write(os.path.join(itemPath)+'\n')
     print('Generated m3u playlist file: '+obj.path+'.m3u')
 
@@ -102,7 +102,7 @@ def start_playlist(obj: Playlist):
                 f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
                 itemPath = Path(item.path.replace('.mp4','.flac'))
                 if plexPath != '':
-                    itemPath = Path(item.replace(settings.downloadPath, plexPath))
+                    itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
                 f.write(os.path.join(itemPath)+'\n')
     print('Generated m3u8 playlist file: '+obj.path+'.m3u8')
     scanQueuedTracks()

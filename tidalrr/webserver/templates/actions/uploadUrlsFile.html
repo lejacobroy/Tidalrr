@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Upload</h1>
-    
+<h2>Upload</h2>
+    <p>Upload a text file containing one Tidal URL per line.<br>
+    Every line will be scanned and added to the download queue.<br>
+    For example, if a line is an artist's page, all it'S albums and tracks will be queued for download.</p>
     <form method="POST" action="/upload" enctype="multipart/form-data">
         <input type="file" name="file">
         <button type="submit" class="btn btn-primary" value="Upload">Upload file</button>

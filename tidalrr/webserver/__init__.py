@@ -66,6 +66,30 @@ def tidalrrWeb(config=None):
         flash('Invalid file format. Only .txt files are allowed.')
         return redirect(request.url)
     
+    @app.route('/add', methods=['POST'])
+    def add_file():
+        if request.form.get('url') is None:
+            flash('No urls provided')
+            return redirect(request.url)
+
+        url = request.form.get('url')
+
+        if url == '':
+            flash('No urls provided')
+            return redirect(request.url)
+        
+        try:
+            # Replace 'your_script.py' with the name of the script you want to run
+            log_filename = f"script_log_import.txt"
+            log_path = os.path.join(LOG_FOLDER, log_filename)
+
+            # Use Popen to run the script and redirect its output to the log file
+            with open(log_path, 'w') as log_file:
+                process = subprocess.Popen([sys.executable, 'runImportURL.py', url], stdout=log_file, stderr=log_file)
+            return redirect('/actions/run-import')
+        except subprocess.CalledProcessError as e:
+            return f"Script execution failed: {e.output}"
+        
     @app.route('/run-import')
     def run_import():
         try:
@@ -75,7 +99,7 @@ def tidalrrWeb(config=None):
 
             # Use Popen to run the script and redirect its output to the log file
             with open(log_path, 'w') as log_file:
-                process = subprocess.Popen([sys.executable, 'runImportURLs.py'], stdout=log_file, stderr=log_file)
+                process = subprocess.Popen([sys.executable, 'runImportURLsFromFile.py'], stdout=log_file, stderr=log_file)
             return redirect('/actions/run-import')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"

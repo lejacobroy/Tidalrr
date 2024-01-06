@@ -13,11 +13,11 @@ Tidalrr is a complete software to keep an offline copy of your Tidal library and
 
 By default, it will synchronise all of your playlists, but you can also import artists (and all their albums), albums, tracks and playlists from others.
 
-The artists, albums and tracks are organized for an easy import in PlexAmp, so you can point your library folder to Plex.
+The artists, albums and tracks are organized for an easy import in PlexAmp, so you can point your Tidalrr library folder to Plex.
 
 The playlists are pushed to Plex, for offline plexAmp listening (providing that you have local access to the server running Plex)
 
-There is a webserver to watch progression and control the software.
+There is a webserver to watch progression/logs and to control the software.
 
 ### Start everything:
 I recommend that you run it using docker or docker-compose.
