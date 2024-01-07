@@ -345,6 +345,12 @@ class Settings:
     plexUrl: str
     plexToken: str
     plexHomePath: str
+    version: int
+    scansStartHour: int
+    scansDuration: int
+    downloadsStartHour: int
+    downloadsDuration: int
+
 
 @dataclass
 class PlaylistTrack:

@@ -1,89 +1,118 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Settings</h1>
+<h2>Settings</h2><span>v{{ version }}</span><br/>
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="form-group">
-            {{ form.apiKeyIndex.label(class="form-label") }}
-            {{ form.apiKeyIndex(class="form-select") }}
-        </div>
-        <div class="form-group">
-            {{ form.audioQuality.label(class="form-label") }}
+            <span>Select the maximum audio quality allowed. <br/>If your subscription only allows a lower quality, this setting will get downgraded.</span>
             {{ form.audioQuality(class="form-select") }}
         </div>
         <div class="form-group">
-            {{ form.downloadPath.label(class="form-label") }}
-            {{ form.downloadPath(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.albumFolderFormat.label(class="form-label") }}
-            {{ form.albumFolderFormat(class="form-control") }}
-        </div>
-        <div class="form-group">
             <div class="form-check">
-                {{ form.includeEP.label(class="form-check-label") }}
+                <span>Include the EPs and Singles as albums.</span>
                 {{ form.includeEP(class="form-check-input") }}
             </div>
         </div>
         <div class="form-group">
             <div class="form-check">
-                {{ form.saveAlbumInfo.label(class="form-check-label") }}
+                <span>Save Album information in a JSON file.</span>
                 {{ form.saveAlbumInfo(class="form-check-input") }}
             </div>
         </div>
         <div class="form-group">
             <div class="form-check">
-                {{ form.saveCovers.label(class="form-check-label") }}
+                <span>Save the album cover image.</span>
                 {{ form.saveCovers(class="form-check-input") }}
             </div>
         </div>
         <div class="form-group">
             <div class="form-check">
-                {{ form.usePlaylistFolder.label(class="form-check-label") }}
+                <span>Use a separate Playlists folder for the tracks, or save the tracks under their respective albums.</span>
                 {{ form.usePlaylistFolder(class="form-check-input") }}
             </div>
         </div>
         <div class="form-group">
             <div class="form-check">
-                {{ form.scanUserPlaylists.label(class="form-check-label") }}
+                <span>Scan the logged in user's playlist and queue the tracks for download.</span>
                 {{ form.scanUserPlaylists(class="form-check-input") }}
             </div>
         </div>
         <div class="form-group">
-            {{ form.playlistFolderFormat.label(class="form-label") }}
-            {{ form.playlistFolderFormat(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.trackFileFormat.label(class="form-label") }}
-            {{ form.trackFileFormat(class="form-control") }}
-        </div>
-        <div class="form-group">
             <div class="form-check">
-                {{ form.lyricFile.label(class="form-check-label") }}
+                <span>Save the track's lyrics as a separate file (will be embeded in the track file anyway).</span>
                 {{ form.lyricFile(class="form-check-input") }}
             </div>
         </div>
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    
+        <hr/>
+        <h4>Paths</h4>
         <div class="form-group">
-            {{ form.lidarrUrl.label(class="form-label") }}
+            <span>Specify the root download folder.</span>
+            {{ form.downloadPath(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify the album folder format.</span>
+            {{ form.albumFolderFormat(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify the playlist folder format.</span>
+            {{ form.playlistFolderFormat(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify the track file format.</span>
+            {{ form.trackFileFormat(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    
+        <hr/>
+        <h4>APIs</h4>
+        <div class="form-group">
+            <span>Tidal API Key type.</span>
+            {{ form.apiKeyIndex(class="form-select") }}
+        </div>
+        <div class="form-group">
+            <span>Specify the Lidarr server URL.</span>
             {{ form.lidarrUrl(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.lidarrApi.label(class="form-label") }}
+            <span>Lidarr API Key</span>
             {{ form.lidarrApi(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.plexUrl.label(class="form-label") }}
+            <span>Specify the Plex server URL.</span>
             {{ form.plexUrl(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.plexToken.label(class="form-label") }}
+            <span>Plex Token / API Key</span>
             {{ form.plexToken(class="form-control") }}
         </div>
         <div class="form-group">
-            {{ form.plexHomePath.label(class="form-label") }}
+            <span>Specify a different Plex root folder. Useful for docker mapped volumes.</span>
             {{ form.plexHomePath(class="form-control") }}
         </div>
-        <br/>
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+        
+        <hr/>
+        <h4>Time</h4>
+        <span>changing these values will require a restart of the container/app, as they are loaded at runtime in the workers.</span>
+        <div class="form-group">
+            <span>Specify the hour (24h) for when the <a href="/actions/run-scans">Scan Queued Content</a> should starts.</span>
+            {{ form.ScansStartHour(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify for how long (hrs) should the <a href="/actions/run-scans">Scan Queued Content</a> run before being stopped.</span>
+            {{ form.ScansDuration(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify the hour (24h) for when the <a href="/actions/run-downloads">Download Queue</a> should starts.</span>
+            {{ form.DownloadsStartHour(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <span>Specify for how long (hrs) should the <a href="/actions/run-downloads">Download Queue</a> run before being stopped.</span>
+            {{ form.DownloadsDuration(class="form-control") }}
+        </div>
         <button type="submit" class="btn btn-primary">Save Settings</button>
     </form>
+<br/>
 {% endblock %}

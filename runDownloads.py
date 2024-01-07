@@ -31,7 +31,8 @@ def forkDownloads():
 
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
-    hours = 9
+    settings = getSettings()
+    hours = settings.downloadsDuration
     seconds = hours * 60 * 60
     p.join(seconds)
 
@@ -44,7 +45,8 @@ def forkDownloads():
         p.join()
 
 def mainDownloadsSchedule():
-    schedule.every().day.at("03:00").do(forkDownloads)
+    settings = getSettings()
+    schedule.every().day.at(str(settings.downloadsStartHour).zfill(2)+":00").do(forkDownloads)
     while True:
         schedule.run_pending()
         time.sleep(1)

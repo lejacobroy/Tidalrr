@@ -23,7 +23,12 @@ CREATE TABLE settings (
     tidalToken BLOB,
     plexUrl TEXT,
     plexToken TEXT,
-    plexHomePath TEXT
+    plexHomePath TEXT,
+    version INTEGER,
+    scansStartHour INTEGER,
+    scansDuration INTEGER,
+    downloadsStartHour INTEGER,
+    downloadsDuration INTEGER
 );
 
 DROP TABLE IF EXISTS tidal_artists;

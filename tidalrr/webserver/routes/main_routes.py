@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, BooleanField
+from wtforms import StringField, SelectField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
 from tidalrr.database import *
 from tidalrr.tidal import *
@@ -27,6 +27,10 @@ class UserSettingsForm(FlaskForm):
     plexUrl = StringField('plexUrl')
     plexToken = StringField('plexToken')
     plexHomePath = StringField('plexHomePath')
+    ScansStartHour = IntegerField('ScansStartHour')
+    ScansDuration = IntegerField('ScansDuration')
+    DownloadsStartHour = IntegerField('DownloadsStartHour')
+    DownloadsDuration = IntegerField('DownloadsDuration')
     submit = SubmitField('Save Settings')
 
 @main_bp.route("/")
@@ -58,7 +62,11 @@ def settingsPage():
         lidarrApi=settings.lidarrApi,
         plexUrl=settings.plexUrl,
         plexToken=settings.plexToken,
-        plexHomePath=settings.plexHomePath
+        plexHomePath=settings.plexHomePath,
+        ScansStartHour=settings.scansStartHour,
+        ScansDuration=settings.scansDuration,
+        DownloadsStartHour=settings.downloadsStartHour,
+        DownloadsDuration=settings.downloadsDuration
         )
 
     if request.method == 'POST':
@@ -81,10 +89,14 @@ def settingsPage():
             settings.plexUrl = form.plexUrl.data
             settings.plexToken = form.plexToken.data
             settings.plexHomePath = form.plexHomePath.data
+            settings.scansStartHour = form.ScansStartHour.data
+            settings.scansDuration = form.ScansDuration.data
+            settings.downloadsStartHour = form.DownloadsStartHour.data
+            settings.downloadsDuration = form.DownloadsDuration.data
             setSettings(settings)
             # You should save the updated user settings to your database here
 
-    return render_template('config/settings.html', form=form)
+    return render_template('config/settings.html', form=form, version=settings.version)
 
 @main_bp.route("/stats")
 def stats():

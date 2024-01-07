@@ -22,6 +22,33 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 schema_path = Path(__file__).parent.joinpath('schema.sql').absolute()
 housekeeping_path = Path(__file__).parent.joinpath('housekeeping.sql').absolute()
 
+def migration():
+    conn = sqlite3.connect(db_path)
+    version = 0
+    try:
+         # Get current version
+        cur = conn.execute("SELECT version FROM settings;")
+        version = cur.fetchone()[0]
+    except:
+        version = 0
+
+    if version == 0:
+        # Upgrade to v1
+        conn.execute("ALTER TABLE settings \
+                     ADD COLUMN version integer;")
+        conn.execute("ALTER TABLE settings \
+                    ADD COLUMN scansStartHour INTEGER;")
+        conn.execute("ALTER TABLE settings \
+                    ADD COLUMN scansDuration INTEGER;")
+        conn.execute("ALTER TABLE settings \
+                    ADD COLUMN downloadsStartHour INTEGER;")
+        conn.execute("ALTER TABLE settings \
+                    ADD COLUMN downloadsDuration INTEGER;") 
+        conn.execute("update settings set version = 1, scansStartHour = 23, scansDuration = 4, downloadsStartHour = 3, downloadsDuration = 9;")
+
+    conn.commit()
+    conn.close()
+
 def createTables():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -32,7 +59,7 @@ def createTables():
         cur = conn.cursor()
         cur.execute("INSERT INTO settings (albumFolderFormat, apiKeyindex, audioQuality, checkExist, downloadDelay, downloadPath, includeEP, language, lyricFile, multiThread,\
                     playlistFolderFormat, saveAlbumInfo, saveCovers, showProgress, showTrackInfo, TrackFileFormat, usePlaylistFolder, scanUserPlaylists, lidarrUrl, lidarrApi, \
-                    tidalToken, plexUrl, plexToken, plexHomePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    tidalToken, plexUrl, plexToken, plexHomePath, version, scansStartHour, scansDuration, downloadsStartHour, downloadsDuration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)",
                     ('{ArtistName}/{AlbumTitle} [{AlbumYear}] {Flag}', 
                     4,
                     'Max',
@@ -56,7 +83,12 @@ def createTables():
                     '',
                     '',
                     '',
-                    ''
+                    '',
+                    1,
+                    23,
+                    4,
+                    3,
+                    9
                     )
                     )
         cur.execute("INSERT INTO tidal_key (deviceCode,\
@@ -81,6 +113,7 @@ def createTables():
     conn.close()
 
 def housekeeping():
+    migration()
     conn = sqlite3.connect(db_path)
     with open(housekeeping_path) as f:
         conn.executescript(f.read())
@@ -136,7 +169,12 @@ def setSettings(settings=Settings):
                 tidalToken = ?,\
                 plexUrl = ?,\
                 plexToken = ?,\
-                plexHomePath = ?\
+                plexHomePath = ?,\
+                version = ?,\
+                scansStartHour = ?,\
+                scansDuration = ?,\
+                downloadsStartHour = ?,\
+                downloadsDuration = ?\
                 ",(
                     settings.albumFolderFormat,
                     settings.apiKeyIndex,
@@ -161,7 +199,12 @@ def setSettings(settings=Settings):
                     settings.tidalToken,
                     settings.plexUrl,
                     settings.plexToken,
-                    settings.plexHomePath
+                    settings.plexHomePath,
+                    settings.version,
+                    settings.scansStartHour,
+                    settings.scansDuration,
+                    settings.downloadsStartHour,
+                    settings.downloadsDuration
                     ))
     connection.commit()
     connection.close()

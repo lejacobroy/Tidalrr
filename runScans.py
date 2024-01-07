@@ -18,6 +18,7 @@ from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
+from tidalrr.database import *
 
 @print_elapsed_time
 def startScans():
@@ -41,7 +42,8 @@ def forkScans():
 
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
-    hours = 4
+    settings = getSettings()
+    hours = settings.scansDuration
     seconds = hours * 60 * 60
     p.join(seconds)
 
@@ -54,7 +56,8 @@ def forkScans():
         p.join()
 
 def mainScansSchedule():
-    schedule.every().day.at("23:00").do(forkScans)
+    settings = getSettings()
+    schedule.every().day.at(str(settings.scansStartHour).zfill(2)+":00").do(forkScans)
     while True:
         schedule.run_pending()
         time.sleep(1)
