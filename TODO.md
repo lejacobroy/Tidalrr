@@ -11,10 +11,10 @@
     - sync lidarr
         - interactive match with search
     - inject spark
+    - backlink playlists from plex
     - maintenance
         - albums with master or max available to upgrade
         - incomplete albums, artists, playlists
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
-- add watchtower to docker-compose for automatic updates

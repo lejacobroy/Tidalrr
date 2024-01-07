@@ -19,6 +19,8 @@ The playlists are pushed to Plex, for offline plexAmp listening (providing that 
 
 There is a webserver to watch progression/logs and to control the software.
 
+![image1](/assets/image.png "image1")
+
 ### Start everything:
 I recommend that you run it using docker or docker-compose.
 
