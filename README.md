@@ -34,15 +34,19 @@ but if you want to run it barebones:
 
 `python3 app.py` 
 
-### First, import some URLs from a text file:
-Go to http://localhost:3001/actions/uploadUrlsFile
+### First, login:
+In your browser, navigate to the Tidalrr web server, http://localhost:3001
 
-And upload a text file containing URLs to scan.
+On the homepage, you should see a Tidal link to login. You must authenticate the Tidalrr app within the countdown.
+
+
+### Second, add a Tidal URL
+Go to http://localhost:3001/actions/add
 
 All content imported this way will be queued to download automaticaly.
 
 
-### Second, start the scanning process:
+### Third, start the scanning process:
 Note, it will start automaticaly and only run between 12:00 and 6:00 AM.
 
 You can start is manually from the webpage: http://localhost:3001/actions/run-scans
@@ -50,7 +54,7 @@ You can start is manually from the webpage: http://localhost:3001/actions/run-sc
 This will scan all the Queued content (artists, albums, tracks, playlists) and extract the download url, preparing for the download phase.
 
 
-### Third, download the prepared files:
+### Fourth, download the prepared files:
 Note, it will start automaticaly and only run between 12:00 and 6:00 AM.
 
 You can start is manually from the webpage: http://localhost:3001/actions/run-downloads
