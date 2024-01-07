@@ -37,27 +37,27 @@ but if you want to run it barebones:
 ### First, login:
 In your browser, navigate to the Tidalrr web server, http://localhost:3001
 
-On the homepage, you should see a Tidal link to login. You must authenticate the Tidalrr app within the countdown.
+On the homepage, you should see a Tidal link to login. You must authenticate the Tidalrr app before the countdown runs out.
 
 
 ### Second, add a Tidal URL
-Go to http://localhost:3001/actions/add
+Go to http://localhost:3001/actions/add and copy a Tidal URL. It can be an artist's page, an album, a track or a playlist.
 
 All content imported this way will be queued to download automaticaly.
 
 
 ### Third, start the scanning process:
-Note, it will start automaticaly and only run between 12:00 and 6:00 AM.
+Note, it will start automaticaly and only run between 23:00 and 3:00 AM (configurable in the settings).
 
-You can start is manually from the webpage: http://localhost:3001/actions/run-scans
+You can start it manually from the webpage: http://localhost:3001/actions/run-scans
 
-This will scan all the Queued content (artists, albums, tracks, playlists) and extract the download url, preparing for the download phase.
+This will scan all the Queued content (artists, albums, tracks, playlists) and extract the streaming url, preparing for the download phase.
 
 
 ### Fourth, download the prepared files:
-Note, it will start automaticaly and only run between 12:00 and 6:00 AM.
+Note, it will start automaticaly and only run between 3:00 and 11:00 AM (configurable in the settings).
 
-You can start is manually from the webpage: http://localhost:3001/actions/run-downloads
+You can start it manually from the webpage: http://localhost:3001/actions/run-downloads
 
 This will download all the scanned urls.
 
