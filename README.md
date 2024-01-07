@@ -3,12 +3,12 @@
 </div>
 <p align="center">
   Tidalrr is a self-hosted service that lets you archive music tracks from Tidal, for offline listening, using a web interface.<br/>
-  It can be linked with Lidarr to sync artists and albums using the Lidarr integration.<br/>
+  It can be linked with Lidarr to sync artists and albums.<br/>
   Tidalrr can also sync your Tidal Playlists to Plex & Plexamp.<br/>
   Especially usefull when going to a remote location with crappy internet but a great audio system.
 </p>
 
-## How to use:
+## What is Tidalrr?:
 Tidalrr is a complete software to keep an offline copy of your Tidal library and sychronise it every night.
 
 By default, it will synchronise all of your playlists, but you can also import artists (and all their albums), albums, tracks and playlists from others.
@@ -20,6 +20,8 @@ The playlists are pushed to Plex, for offline plexAmp listening (providing that 
 There is a webserver to watch progression/logs and to control the software.
 
 ![image1](/assets/image.png "image1")
+
+***
 
 ### Start everything:
 I recommend that you run it using docker or docker-compose.
@@ -35,6 +37,8 @@ but if you want to run it barebones:
 `pip install -r requirements.txt`
 
 `python3 app.py` 
+
+***
 
 ### First, login:
 In your browser, navigate to the Tidalrr web server, http://localhost:3001
@@ -63,6 +67,8 @@ You can start it manually from the webpage: http://localhost:3001/actions/run-do
 
 This will download all the scanned urls.
 
+
+***
 
 ## 🎨 Libraries and reference
 
