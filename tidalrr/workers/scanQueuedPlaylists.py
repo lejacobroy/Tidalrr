@@ -49,18 +49,20 @@ def start_playlist(obj: Playlist):
     print('Scanning playlist ',obj.title,' should take ', len(tracks)*3/60,' minutes')
     savedTracks = getTidalPlaylistTracks(obj.uuid)
     for index,track in enumerate(tracks):
+        skip = False
         if hasattr(track, 'id'):
             for i, savedTrack in enumerate(savedTracks):
                 if hasattr(savedTrack, 'id') and track.id == savedTrack.id:
                     print('Track '+str(index)+'/'+str(len(tracks))+' already in database and linked to playlist, skipping')
                     paths.append(savedTrack.path)
                     addTidalPlaylistTrack(obj.uuid, track.id)
+                    skip = True
                     break # skip the outer loop
-            if index > 200:
+            if not skip and index > 200:
                 # adding more pause time between tracks for longer playlists
                 time.sleep(5)
             #check if artist exists
-            if not hasattr(getTidalArtist(track.artist), 'id'):
+            if not skip and not hasattr(getTidalArtist(track.artist), 'id'):
                 # insert artist in db
                 try:
                     trackArtist = TIDAL_API.getArtist(track.artist)
@@ -69,7 +71,7 @@ def start_playlist(obj: Playlist):
                     print('Track artist dosent exist on Tidal, skipping track')
                     continue
             #same for album
-            if not hasattr(getTidalAlbum(track.album), 'id'):
+            if not skip and not hasattr(getTidalAlbum(track.album), 'id'):
                 # insert artist in db
                 addTidalAlbum(TIDAL_API.getAlbum(track.album))
 
@@ -81,7 +83,12 @@ def start_playlist(obj: Playlist):
             if itemAlbum is None:
                 track.trackNumberOnPlaylist = index + 1
             time.sleep(2)
-            path = scanTrackPath(track, itemAlbum, obj)[1]
+            if not skip:
+                path = scanTrackPath(track, itemAlbum, obj)[1]
+            else:
+                existingTrack = getTidalTrack(track.id)
+                path = existingTrack.path
+                
             if path != '':
                 paths.append(path)
 
