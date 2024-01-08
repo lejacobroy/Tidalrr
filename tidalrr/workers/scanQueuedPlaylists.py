@@ -54,7 +54,7 @@ def start_playlist(obj: Playlist):
         if hasattr(track, 'id'):
             for i, savedTrack in enumerate(savedTracks):
                 if hasattr(savedTrack, 'id') and track.id == savedTrack.id:
-                    print('Track '+index+'/'+len(tracks)+' already in database and linked to playlist, skipping')
+                    print('Track '+str(index)+'/'+str(len(tracks))+' already in database and linked to playlist, skipping')
                     paths.append(savedTrack.path)
                     addTidalPlaylistTrack(obj.uuid, track.id)
                     break # skip the outer loop
@@ -75,7 +75,7 @@ def start_playlist(obj: Playlist):
             track.queued = True
             addTidalTrack(track)
             addTidalPlaylistTrack(obj.uuid, track.id)
-            print('Adding track '+index+ '/'+len(tracks)+' to DB: '+track.title)
+            print('Adding track '+str(index)+ '/'+str(len(tracks))+' to DB: '+track.title)
             itemAlbum = getTidalAlbum(track.album)
             if itemAlbum is None:
                 track.trackNumberOnPlaylist = index + 1

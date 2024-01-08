@@ -52,7 +52,7 @@ def start_album(obj: Album):
                         addTidalArtist(TIDAL_API.getArtist(track.artist))
                     # insert artist in db
                     addTidalAlbum(TIDAL_API.getAlbum(track.album))
-                    print('Adding track '+i+ '/'+len(tracks)+' to DB: '+track.title)
+                    print('Adding track '+str(i)+ '/'+str(len(tracks))+' to DB: '+track.title)
                     if obj.queued:
                         track.queued = True
                     addTidalTrack(track)
