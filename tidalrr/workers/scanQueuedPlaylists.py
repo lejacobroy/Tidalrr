@@ -79,7 +79,7 @@ def start_playlist(obj: Playlist):
             itemAlbum = getTidalAlbum(track.album)
             if itemAlbum is None:
                 track.trackNumberOnPlaylist = index + 1
-            null, path = scanTrackPath(track, itemAlbum, obj)[1]
+            path = scanTrackPath(track, itemAlbum, obj)[1]
             if path != '':
                 paths.append(path)
 

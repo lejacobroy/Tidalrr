@@ -58,9 +58,9 @@ def start_album(obj: Album):
                     addTidalTrack(track)
                     scanQueuedTracks()
                 except Exception as e:
-                    print("Error adding track: ", e)
+                    print("Error adding track: ", str(e))
     except Exception as e:
-        print("Error scanning album: ", e)
+        print("Error scanning album: ", str(e))
 
 def writeAlbumInfo(album:Album, tracks: [Track]):
     if album is None:
@@ -72,12 +72,12 @@ def writeAlbumInfo(album:Album, tracks: [Track]):
 
         path += '/AlbumInfo.txt'
         infos = ""
-        infos += "[ID]          \n" % (str(album.id))
-        infos += "[Title]       \n" % (str(album.title))
-        infos += "[Artists]     \n" % (str(album.artists))
-        infos += "[ReleaseDate] \n" % (str(album.releaseDate))
-        infos += "[SongNum]     \n" % (str(album.numberOfTracks))
-        infos += "[Duration]    \n" % (str(album.duration))
+        infos += "[ID]          %s\n" % (str(album.id))
+        infos += "[Title]       %s\n" % (str(album.title))
+        infos += "[Artists]     %s\n" % (str(album.artists))
+        infos += "[ReleaseDate] %s\n" % (str(album.releaseDate))
+        infos += "[SongNum]     %s\n" % (str(album.numberOfTracks))
+        infos += "[Duration]    %s\n" % (str(album.duration))
         infos += '\n'
 
         for index in range(0, album.numberOfVolumes):
@@ -87,5 +87,5 @@ def writeAlbumInfo(album:Album, tracks: [Track]):
                 if item.volumeNumber != volumeNumber:
                     continue
                 infos += '{:<8}'.format("[%d]" % item.trackNumber)
-                infos += "\n" % item.title
+                infos += "%s\n" % item.title
         aigpy.file.write(path, infos, "w+")
