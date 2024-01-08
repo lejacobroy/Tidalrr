@@ -46,11 +46,9 @@ def start_playlist(obj: Playlist):
 
     paths = []
     tracks = TIDAL_API.getItems(obj.uuid, Type.Playlist)
-    print('Scanning playlist ',obj.title,' should take ', len(tracks)*5/60,' minutes')
+    print('Scanning playlist ',obj.title,' should take ', len(tracks)*3/60,' minutes')
     savedTracks = getTidalPlaylistTracks(obj.uuid)
     for index,track in enumerate(tracks):
-        if index > 200:
-            time.sleep(5)
         if hasattr(track, 'id'):
             for i, savedTrack in enumerate(savedTracks):
                 if hasattr(savedTrack, 'id') and track.id == savedTrack.id:
@@ -58,6 +56,9 @@ def start_playlist(obj: Playlist):
                     paths.append(savedTrack.path)
                     addTidalPlaylistTrack(obj.uuid, track.id)
                     break # skip the outer loop
+            if index > 200:
+                # adding more pause time between tracks for longer playlists
+                time.sleep(5)
             #check if artist exists
             if not hasattr(getTidalArtist(track.artist), 'id'):
                 # insert artist in db
@@ -79,6 +80,7 @@ def start_playlist(obj: Playlist):
             itemAlbum = getTidalAlbum(track.album)
             if itemAlbum is None:
                 track.trackNumberOnPlaylist = index + 1
+            time.sleep(2)
             path = scanTrackPath(track, itemAlbum, obj)[1]
             if path != '':
                 paths.append(path)
@@ -91,6 +93,7 @@ def start_playlist(obj: Playlist):
         plexPath = settings.plexHomePath
     with open(obj.path+'.m3u', 'w+') as f:
         for i,item in enumerate(paths, start=1):
+            print(i,item)
             if len(item) > 0:
                 itemPath = Path(item.replace('.mp4','.flac'))
                 if plexPath != '':

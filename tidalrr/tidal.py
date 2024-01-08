@@ -311,10 +311,7 @@ class TidalAPI(object):
                 if respond.status_code == 429 or respond.text == 'Asset is not ready for playback':
                     print('Too many requests, waiting for 20 seconds...')
                     # Loop countdown 20 seconds and print the remaining time
-                    for i in range(20, 0, -1):
-                        time.sleep(1)
-                        #print(i, end=' ')
-                    #print('')
+                    time.sleep(20)
                     continue
                     
                 result = json.loads(respond.text)
