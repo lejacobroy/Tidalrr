@@ -93,7 +93,6 @@ def start_playlist(obj: Playlist):
         plexPath = settings.plexHomePath
     with open(obj.path+'.m3u', 'w+') as f:
         for i,item in enumerate(paths, start=1):
-            print(i,item)
             if len(item) > 0:
                 itemPath = Path(item.replace('.mp4','.flac'))
                 if plexPath != '':
