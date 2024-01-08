@@ -108,9 +108,9 @@ def start_playlist(obj: Playlist):
             artist = getTidalArtist(item.artist)
             if hasattr(artist, 'id'):
                 f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
-                itemPath = Path(item.replace('.mp4','.flac'))
+                itemPath = Path(item.path.replace('.mp4','.flac'))
                 if plexPath != '':
-                    itemPath = Path(item.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                    itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
                 f.write(os.path.join(itemPath)+'\n')
     print('Generated m3u8 playlist file: '+obj.path+'.m3u8')
     scanQueuedTracks()
