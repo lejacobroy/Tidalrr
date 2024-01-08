@@ -56,7 +56,7 @@ function unqueueArtist(artistId) {
   }
 
 // Download queued artists
-function downloadArtist() {
+function downloadArtist(artistId) {
   fetch('/tidal/artist/' + artistId+'/download', {
     method: 'POST'
   })
@@ -142,7 +142,7 @@ function unqueuePlaylist(playlistId) {
 }
 
 // Download queued playlists
-function downloadPlaylist() {
+function downloadPlaylist(playlistId) {
   fetch('/tidal/playlist/' + playlistId + '/download', {
     method: 'POST'
   })
