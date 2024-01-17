@@ -18,3 +18,6 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
+
+scan playlist mark as downloaded
+scan & download tracks artists name too long
