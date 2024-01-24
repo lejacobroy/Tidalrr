@@ -39,6 +39,7 @@ def workDownloadTrack(track=Track):
             if not check:
                 print(f"DL Track[{track.title}] failed.")
                 print(json.dumps(err))
+                track.queued = True
                 track.downloaded = False
                 return track
             if check:
@@ -57,6 +58,7 @@ def workDownloadTrack(track=Track):
                         track.path = final_path
                     except:
                         print('FFmpeg is not installed or working! Using fallback, may have errors')
+                        track.queued = True
                         track.downloaded = False
                         return track
 
@@ -79,12 +81,15 @@ def workDownloadTrack(track=Track):
                 metadataArtists = [str(album.artists)]
                 try:
                     setMetaData(track, album, metadataArtist, metadataArtists, track.path, contributors, lyrics)
+                    track.queued = False
                     track.downloaded = True
                 except:
                     print('cannot write to flac')
+                    track.queued = True
                     track.downloaded = False
     else:
         print('No artist or album')
+        track.queued = False
         track.downloaded = False
     return track
 
@@ -95,6 +100,7 @@ def downloadTrack(track=Track):
             track = workDownloadTrack(track)
             print('Downloaded track file', track.title)
         else:
+            track.queued = False
             track.downloaded = True
             
         if track.downloaded:
@@ -116,8 +122,10 @@ def downloadTrack(track=Track):
         updateTidalAlbumsDownloaded()
         updateTidalArtistsDownloaded()
         updateTidalPlaylistsDownloaded()
+        return True
     except Exception as e:
         print("Error in downloadTrack: ", e)
+        return False
 
 def download_file_part(path, url, part_number):
     try:
