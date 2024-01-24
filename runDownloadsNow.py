@@ -34,7 +34,7 @@ def startDownloads():
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" startDownloads")
     tidalrrStart()
     downloadQueuedCovers()
-    downloadQueuedTracks()
+    scanQueuedTracks()
     
 def forkDownloads():
     # Start foo as a process

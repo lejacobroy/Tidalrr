@@ -131,6 +131,9 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
     # artist
     artists = ""
     if track.artists is not None:
+        # only save the first 5 artists in the folder name
+        artists = track.artists.split(", ")[:5]
+        artists = ", ".join(artists)
         artists = fixPath(str(track.artists)) 
 
     artist = getTidalArtist(track.artist)

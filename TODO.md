@@ -21,3 +21,5 @@
 
 scan playlist mark as downloaded
 scan & download tracks artists name too long
+how to use on login page
+combine scanqueuedTracks and downloadQueuedTrack

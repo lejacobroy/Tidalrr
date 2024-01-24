@@ -51,6 +51,7 @@ def start(string):
             elif etype == Type.Track:
                 dbTrack = getTidalTrack(obj.id)
                 if dbTrack is None:
+                    obj.queued = True
                     addTidalTrack(obj)
                     print('Added track to DB:', obj.title)
                     #scanQueuedTracks()

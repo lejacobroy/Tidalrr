@@ -26,8 +26,8 @@ def scanQueuedAlbums():
                 if hasattr(album, 'id') and album.monitored:
                     print('Scanning album ', str(i), ' / ', str(len(albums)), album.title)
                     start_album(album)
-                    album.monitored = False
-                    updateTidalAlbum(album)
+                    #album.monitored = False
+                    #updateTidalAlbum(album)
             except Exception as e:
                 print("Error scanning album: ", e)
                 if "Album" in str(e) and "not found" in str(e):
@@ -53,8 +53,11 @@ def start_album(obj: Album):
                     # insert artist in db
                     addTidalAlbum(TIDAL_API.getAlbum(track.album))
                     print('Adding track '+str(i)+ '/'+str(len(tracks))+' to DB: '+track.title)
+                    if obj.monitored:
+                        # album is monitored, we will queue this track too
+                        track.queued = True
                     addTidalTrack(track)
-                    scanQueuedTracks()
+                    #scanQueuedTracks()
                 except Exception as e:
                     print("Error adding track: ", str(e))
     except Exception as e:
