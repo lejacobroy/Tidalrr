@@ -25,13 +25,12 @@ logger = logging.getLogger(__name__)
 def workDownloadTrack(track=Track):
     album = getTidalAlbum(track.album)
     artist = getTidalArtist(album.artist)
-    result = True
     if album is not None and artist is not None:
         settings = getSettings()
         
         stream, track.path = scanTrackPath(track, album, None)
         # check exist
-        if not isSkip(track.path, track.url) and result:
+        if not isSkip(track.path, track.url):
             # download
             sleep_time = random.randint(500, 5000) / 1000
             time.sleep(sleep_time)
@@ -40,8 +39,9 @@ def workDownloadTrack(track=Track):
             if not check:
                 print(f"DL Track[{track.title}] failed.")
                 print(json.dumps(err))
-                result = False
-            if result and check:
+                track.downloaded = False
+                return track
+            if check:
                 # encrypted -> decrypt and remove encrypted file
                 encrypted(stream.encryptionKey, track.path, track.path)
 
@@ -57,8 +57,8 @@ def workDownloadTrack(track=Track):
                         track.path = final_path
                     except:
                         print('FFmpeg is not installed or working! Using fallback, may have errors')
-                        result = False
-                        return result
+                        track.downloaded = False
+                        return track
 
                 # contributors
                 try:
@@ -79,21 +79,21 @@ def workDownloadTrack(track=Track):
                 metadataArtists = [str(album.artists)]
                 try:
                     setMetaData(track, album, metadataArtist, metadataArtists, track.path, contributors, lyrics)
-                    result = True
+                    track.downloaded = True
                 except:
                     print('cannot write to flac')
-                    result = False
+                    track.downloaded = False
     else:
         print('No artist or album')
-        result = False
-    return result
+        track.downloaded = False
+    return track
 
 
 def downloadTrack(track=Track):
     try:
         if not exists(track.path):
             print('Downloading track file', track.title)
-            track.downloaded = workDownloadTrack(track)
+            track = workDownloadTrack(track)
         else:
             track.downloaded = True
             

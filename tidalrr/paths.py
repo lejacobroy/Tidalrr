@@ -133,12 +133,13 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
     if track.artists is not None:
         # only save the first 5 artists in the folder name
         artists = track.artists.split(", ")[:5]
-        artists = ", ".join(artists)
+        artists = ", ".join(artists)[:50]
         artists = fixPath(str(track.artists)) 
 
     artist = getTidalArtist(track.artist)
     if artist is not None:
-        artist = fixPath(artist.name) 
+        artist = fixPath(artist.name[:50])
+
     # title
     title = fixPath(track.title)
     if not aigpy.string.isNull(track.version):
