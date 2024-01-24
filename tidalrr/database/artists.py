@@ -18,23 +18,23 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalArtist(artist=Artist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_artists (id, name, url, path, queued, downloaded) VALUES (?, ?, ?, ?, ?, ?)",
-                (artist.id, artist.name, artist.url, artist.path, artist.queued, artist.downloaded))
+    cur.execute("INSERT OR IGNORE INTO tidal_artists (id, name, url, path, monitored, downloaded) VALUES (?, ?, ?, ?, ?, ?)",
+                (artist.id, artist.name, artist.url, artist.path, artist.monitored, artist.downloaded))
     connection.commit()
     connection.close()
 
 def updateTidalArtist(artist=Artist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_artists SET queued = ?, downloaded = ? WHERE id = ?",
-                (artist.queued, artist.downloaded, artist.id))
+    cur.execute("UPDATE tidal_artists SET monitored = ?, downloaded = ? WHERE id = ?",
+                (artist.monitored, artist.downloaded, artist.id))
     connection.commit()
     connection.close()
 
 def updateTidalArtistsDownloaded():
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_artists SET queued = 0, downloaded = 1 WHERE id IN (\
+    cur.execute("UPDATE tidal_artists SET downloaded = 1 WHERE id IN (\
                     SELECT tidal_artists.id\
                     FROM tidal_artists\
                     LEFT JOIN tidal_albums ON tidal_albums.artist = tidal_artists.id\

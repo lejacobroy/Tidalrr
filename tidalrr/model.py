@@ -82,7 +82,7 @@ class Artist:
     name : str
     url : str
     path: str
-    queued: bool
+    monitored: bool
     downloaded: bool
 
 def convertToArtist(artist) -> Artist:
@@ -91,7 +91,7 @@ def convertToArtist(artist) -> Artist:
         name= artist['name'],
         url= artist['url'],
         path= artist['path'],
-        queued= artist['queued'],
+        monitored= artist['monitored'],
         downloaded= artist['downloaded']
     )
     return artistType
@@ -110,7 +110,7 @@ class Album:
     artists : Artist
     url : str
     path : str
-    queued: bool
+    monitored: bool
     downloaded: bool
     duration : int = 0
     numberOfTracks : int = 0
@@ -136,7 +136,7 @@ def convertToAlbum(album) -> Album:
         numberOfVolumes= album['numberOfVolumes'],
         version= album['version'],
         path= album['path'],
-        queued= album['queued'],
+        monitored= album['monitored'],
         downloaded= album['downloaded']
     )
     return albumType
@@ -156,7 +156,7 @@ class Playlist:
     squareImage : str
     url : str
     path : str
-    queued: bool
+    monitored: bool
     downloaded: bool
     plexUUID: str
     numberOfTracks : int = 0
@@ -172,7 +172,7 @@ def convertToPlaylist(playlist) -> Playlist:
         squareImage= playlist['squareImage'],
         url= playlist['url'],
         path= playlist['path'],
-        queued= playlist['queued'],
+        monitored= playlist['monitored'],
         downloaded= playlist['downloaded'],
         plexUUID = playlist['plexUUID'],
         numberOfTracks=  playlist['numberOfTracks'],

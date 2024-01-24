@@ -1,0 +1,13 @@
+{% block content %}
+    {% if artist['downloaded'] %}
+        <span class="badge rounded-pill text-bg-success">Downloaded</span>
+    {% elif artist['numAlbums'] > 0 %}
+        <span class="badge rounded-pill text-bg-info">
+            {{ ((artist['numDownloadedAlbums'] / artist['numAlbums']) * 100) | round | int }}% downloaded
+        </span>
+    {% elif artist['monitored'] or artist['inQueue'] %}
+        <span class="badge rounded-pill text-bg-info">
+            0% downloaded
+        </span>
+    {% endif %}
+{% endblock %}

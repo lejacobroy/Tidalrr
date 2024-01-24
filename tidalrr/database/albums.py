@@ -17,7 +17,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalAlbum(album=Album):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_albums (id, title, duration, numberOfTracks, numberofVolumes, releaseDate, type, version, cover, explicit, audioQuality, audioModes,artist, artists, url ,path, queued, downloaded)\
+    cur.execute("INSERT OR IGNORE INTO tidal_albums (id, title, duration, numberOfTracks, numberofVolumes, releaseDate, type, version, cover, explicit, audioQuality, audioModes,artist, artists, url ,path, monitored, downloaded)\
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     album.id,
@@ -36,7 +36,7 @@ def addTidalAlbum(album=Album):
                     album.artists,
                     album.url,
                     album.path,
-                    album.queued,
+                    album.monitored,
                     album.downloaded
                 ))
     connection.commit()
@@ -45,15 +45,15 @@ def addTidalAlbum(album=Album):
 def updateTidalAlbum(album=Album):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_albums SET queued = ?, downloaded = ? WHERE id = ?",
-                (album.queued, album.downloaded, album.id))
+    cur.execute("UPDATE tidal_albums SET monitored = ?, downloaded = ? WHERE id = ?",
+                (album.monitored, album.downloaded, album.id))
     connection.commit()
     connection.close()
 
 def updateTidalAlbumsDownloaded():
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_albums SET queued = 0, downloaded = 1 WHERE id IN (\
+    cur.execute("UPDATE tidal_albums SET downloaded = 1 WHERE id IN (\
                     SELECT tidal_albums.id\
                     FROM tidal_albums\
                     LEFT JOIN tidal_tracks ON tidal_tracks.album = tidal_albums.id\

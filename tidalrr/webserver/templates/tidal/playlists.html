@@ -1,65 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Playlists</h2>
-<br/>
-<span>Queued playlists will be scanned and all tracks will be added to the download queue</span><br/>
+    <h2>Playlists</h2>
+    <span>Monitored playlists will be scanned daily and all new tracks will be added to the download queue</span>
+    <br/>
+    <table class="table table-striped" id="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Tidal page</th>
+                <th>Tracks</th>
+                <th>Monitoring</th>
+                <th>Download Status</th>
+            </tr>  
+        </thead>
 
-<table class="table table-striped" id="table">
+        <tbody>
+            {% for playlist in playlists %}
+                <tr>
+                    <td>
+                        <a href="/tidal/playlist/{{ playlist['uuid'] }}">{{ playlist['title'] }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ playlist['url'] }}" target="_blank">Open</a>
+                    </td>
+                    <td>{{ playlist['numberOfTracks'] }}</td>
 
-<thead>
-<tr>
-  <th>Title</th>
-  <th>Tracks</th>
-  <th>Actions</th>
-  <th>Completion</th>
-</tr>  
-</thead>
+                    <td>
+                        {% include 'tidal/playlist_monitoring.html' with context %}
+                    </td>
 
-<tbody>
-{% for playlist in playlists %}
-<tr>
-
-  <td>
-    <a href="/tidal/playlist/{{ playlist['uuid'] }}">{{ playlist['title'] }}</a>
-    <a href="{{ playlist['url'] }}" target="_blank" class="btn btn-sm btn-outline-info">Tidal page</a>
-  </td>
-
-  <td>{{ playlist['numberOfTracks'] }}</td>
-
-  <td>
-    {% include 'tidal/playlist_tag.html' with context %}
-  </td>
-
-  <td>
-    <div class="progress">
-      {% if playlist['numberOfTracks'] > 0 %}
-        <div class="progress-bar" 
-          role="progressbar"
-          style="width: {{ (playlist['numDownloadedTracks'] / playlist['numberOfTracks']) * 100 }}%;" 
-          aria-valuenow="{{ (playlist['numDownloadedTracks'] / playlist['numberOfTracks']) * 100 }}" 
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          {{ (playlist['numDownloadedTracks'] / playlist['numberOfTracks']) * 100 }}%
-        </div>
-      {% else %}
-        <div class="progress-bar"
-          role="progressbar"
-          style="width: 0%"
-          aria-valuenow="0"
-          aria-valuemin="0"
-          aria-valuemax="100"  
-        >
-          0%
-        </div>
-      {% endif %}
-    </div>
-  </td>
-
-</tr>
-{% endfor %}
-</tbody>
-
-</table>
-<br/>
+                    <td>
+                        {% include 'tidal/playlist_status.html' with context %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br/>
 {% endblock %}

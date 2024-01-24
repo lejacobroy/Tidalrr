@@ -28,7 +28,7 @@ def scanUserPlaylists(UserId=None):
   for i,playlist in enumerate(playlists):
     try:
       if hasattr(playlist, 'title'):
-        playlist.queued = True
+        playlist.monitored = True
         addTidalPlaylist(playlist)
         print('Added playlist  to DB', playlist.title) 
     except Exception as e:
@@ -38,4 +38,4 @@ def scanUserPlaylists(UserId=None):
     scanQueuedPlaylists()
     print("Completed scan of user playlists")
   except Exception as e:
-    print("Error scanning queued playlists: ", e)
+    print("Error scanning monitored playlists: ", e)

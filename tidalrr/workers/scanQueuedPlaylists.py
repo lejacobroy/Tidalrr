@@ -27,10 +27,10 @@ def scanQueuedPlaylists():
             for i, playlist in enumerate(playlists):
                 try:
                     if hasattr(playlist, 'uuid'):
-                        if playlist.queued:
+                        if playlist.monitored:
                             print('Scanning playlist ', str(i), ' / ',str(len(playlists)), playlist.title)
                             start_playlist(playlist)
-                            playlist.queued = False
+                            playlist.monitored = False
                             updateTidalPlaylist(playlist)
                 except Exception as e:
                     print("Error scanning playlist: ", e)
@@ -75,7 +75,6 @@ def start_playlist(obj: Playlist):
                 # insert artist in db
                 addTidalAlbum(TIDAL_API.getAlbum(track.album))
 
-            track.queued = True
             addTidalTrack(track)
             addTidalPlaylistTrack(obj.uuid, track.id)
             print('Adding track '+str(index)+ '/'+str(len(tracks))+' to DB: '+track.title)

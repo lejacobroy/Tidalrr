@@ -23,15 +23,15 @@ def scanQueuedArtists():
     if len(artists) > 0:
         for i, artist in enumerate(artists):
             try:
-                if hasattr(artist, 'id') and artist.queued:
+                if hasattr(artist, 'id') and artist.monitored:
                     print('Scanning artist ', str(i), ' / ', str(len(artists)), artist.name)
                     start_artist(artist)
-                    artist.queued = False
+                    artist.monitored = False
                     updateTidalArtist(artist)
             except Exception as e:
                 print("Error scanning artist: ", e)
                 if "Artist" in str(e) and "not found" in str(e):
-                    artist.queued = False
+                    artist.monitored = False
                     updateTidalArtist(artist)
 
 
@@ -47,7 +47,7 @@ def start_artist(obj: Artist):
                         # insert artist in db
                         addTidalArtist(TIDAL_API.getArtist(album.artist))
                     print('Adding album to DB  '+str(i)+'/'+str(len(albums))+' '+obj.name+' - '+album.title)
-                    if obj.queued:
-                        album.queued = True
+                    if obj.monitored:
+                        album.monitored = True
                     addTidalAlbum(album)
                     scanQueuedAlbums()

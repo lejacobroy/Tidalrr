@@ -37,7 +37,7 @@ CREATE TABLE tidal_artists (
     name TEXT,
     url TEXT,
     path TEXT,
-    queued BOOLEAN,
+    monitored BOOLEAN,
     downloaded BOOLEAN
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE tidal_albums (
     artists TEXT,
     url TEXT,
     path TEXT,
-    queued BOOLEAN,
+    monitored BOOLEAN,
     downloaded BOOLEAN
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE tidal_playlists (
     squareImage TEXT,
     URL TEXT,
     path TEXT,
-    queued BOOLEAN,
+    monitored BOOLEAN,
     downloaded BOOLEAN,
     plexUUID TEXT
 );

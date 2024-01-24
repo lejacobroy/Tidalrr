@@ -136,6 +136,7 @@ def tidalrrWeb(config=None):
 
 def webServer(debug=True):
     createTables()
+    migration()
     housekeeping()
     tidalrrStart()
     print("Starting web server")

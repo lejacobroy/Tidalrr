@@ -17,7 +17,7 @@ db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
 def addTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("INSERT OR IGNORE INTO tidal_playlists (uuid, title, duration, numberOfTracks, description, image, squareimage, url, path, queued, downloaded, plexUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT OR IGNORE INTO tidal_playlists (uuid, title, duration, numberOfTracks, description, image, squareimage, url, path, monitored, downloaded, plexUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     playlist.uuid,
                     playlist.title,
@@ -28,7 +28,7 @@ def addTidalPlaylist(playlist=Playlist):
                     playlist.squareImage,
                     playlist.url,
                     playlist.path,
-                    playlist.queued,
+                    playlist.monitored,
                     playlist.downloaded,
                     playlist.plexUUID
                 ))
@@ -87,8 +87,8 @@ def getTidalPlaylistTracks(uuid=str) -> [Track]:
 def updateTidalPlaylist(playlist=Playlist):
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_playlists SET queued = ?, downloaded = ?, plexUUID = ? WHERE uuid = ?",
-                (playlist.queued, playlist.downloaded, playlist.plexUUID, playlist.uuid))
+    cur.execute("UPDATE tidal_playlists SET monitored = ?, downloaded = ?, plexUUID = ? WHERE uuid = ?",
+                (playlist.monitored, playlist.downloaded, playlist.plexUUID, playlist.uuid))
     connection.commit()
     connection.close()
 
@@ -103,7 +103,7 @@ def updateTidalPlaylistTrack(uuid:str, id:int, puid:str):
 def updateTidalPlaylistsDownloaded():
     connection = sqlite3.connect(db_path)
     cur = connection.cursor()
-    cur.execute("UPDATE tidal_playlists SET queued = 0, downloaded = 1 WHERE uuid IN (\
+    cur.execute("UPDATE tidal_playlists SET downloaded = 1 WHERE uuid IN (\
                     SELECT tidal_playlists.uuid\
                     FROM tidal_playlists\
                     inner join tidal_playlist_tracks ON tidal_playlist_tracks.uuid = tidal_playlists.uuid\

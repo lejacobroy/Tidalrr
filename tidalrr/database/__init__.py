@@ -46,6 +46,14 @@ def migration():
                     ADD COLUMN downloadsDuration INTEGER;") 
         conn.execute("update settings set version = 1, scansStartHour = 23, scansDuration = 4, downloadsStartHour = 3, downloadsDuration = 9;")
 
+    if version == 1:
+        conn.execute("ALTER TABLE tidal_artists \
+                    RENAME COLUMN queued TO monitored;")
+        conn.execute("ALTER TABLE tidal_albums \
+                    RENAME COLUMN queued TO monitored;")
+        conn.execute("ALTER TABLE tidal_playlists \
+                    RENAME COLUMN queued TO monitored;")
+        conn.execute("update settings set version = 2")
     conn.commit()
     conn.close()
 
@@ -250,25 +258,23 @@ def getStats():
     conn.row_factory = sqlite3.Row
     rows = conn.execute("SELECT 'Artists' as type, count(*) as count FROM tidal_artists\
                         UNION\
-                        SELECT 'Artists Queued' as type, count(*) as count FROM tidal_artists WHERE queued = TRUE\
+                        SELECT 'Artists monitored' as type, count(*) as count FROM tidal_artists WHERE monitored = TRUE\
                         UNION\
                         SELECT 'Artists Downloaded' as type, count(*) as count FROM tidal_artists WHERE downloaded = TRUE\
                         UNION\
                         SELECT 'Albums' as type, count(*) as count FROM tidal_albums\
                         UNION\
-                        SELECT 'Albums Queued' as type, count(*) as count FROM tidal_albums WHERE queued = TRUE\
+                        SELECT 'Albums monitored' as type, count(*) as count FROM tidal_albums WHERE monitored = TRUE\
                         UNION\
                         SELECT 'Albums Downloaded' as type, count(*) as count FROM tidal_albums WHERE downloaded = TRUE\
                         UNION\
                         SELECT 'Tracks' as type, count(*) as count FROM tidal_tracks\
                         UNION\
-                        SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
-                        UNION\
                         SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
                         UNION\
                         SELECT 'Playlists' as type, count(*) as count FROM tidal_playlists\
                         UNION\
-                        SELECT 'Playlists Queued' as type, count(*) as count FROM tidal_playlists WHERE queued = TRUE\
+                        SELECT 'Playlists monitored' as type, count(*) as count FROM tidal_playlists WHERE monitored = TRUE\
                         UNION\
                         SELECT 'Playlists Downloaded' as type, count(*) as count FROM tidal_playlists WHERE downloaded = TRUE\
                         UNION\

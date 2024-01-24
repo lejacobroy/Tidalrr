@@ -23,25 +23,17 @@ def viewArtist(id):
 
     return render_template("tidal/artist.html", artist=artist, albums=albums)
 
-@tidal_bp.route("/artist/<int:id>/queue", methods=['POST'])  
-def queueArtist(id):
+@tidal_bp.route("/artist/<int:id>/monitor", methods=['POST'])  
+def monitorArtist(id):
     artist = getTidalArtist(id)
-    artist.queued = True
+    artist.monitored = True
     updateTidalArtist(artist)
     return "OK"
 
-@tidal_bp.route("/artist/<int:id>/unqueue", methods=['POST'])  
+@tidal_bp.route("/artist/<int:id>/unmonitor", methods=['POST'])  
 def unqueueArtist(id):
     artist = getTidalArtist(id)
-    artist.queued = False
-    updateTidalArtist(artist)
-    return "OK"
-
-@tidal_bp.route("/artist/<int:id>/download", methods=['POST'])
-def downloadArtist(id):
-    artist = getTidalArtist(id)
-    artist.downloaded = False 
-    artist.queued = True
+    artist.monitored = False
     updateTidalArtist(artist)
     return "OK"
 
@@ -57,30 +49,21 @@ def viewAlbum(id):
 
   return render_template("tidal/album.html", album=album, tracks=tracks)
 
-@tidal_bp.route("/album/<int:id>/queue", methods=['POST'])
+@tidal_bp.route("/album/<int:id>/monitor", methods=['POST'])
 def queueAlbum(id):
   album = getTidalAlbum(id)
-  album.queued = True
+  album.monitored = True
   updateTidalAlbum(album)
   
   return "OK"
 
-@tidal_bp.route("/album/<int:id>/unqueue", methods=['POST'])
+@tidal_bp.route("/album/<int:id>/unmonitor", methods=['POST'])
 def unqueueAlbum(id):
   album = getTidalAlbum(id)
-  album.queued = False
+  album.monitored = False
   updateTidalAlbum(album)
 
   delTidalQueue(album.id)
-
-  return "OK"
-  
-@tidal_bp.route("/album/<int:id>/download", methods=['POST'])  
-def downloadAlbum(id):
-  album = getTidalAlbum(id)
-  album.downloaded = False
-  album.queued = True
-  updateTidalAlbum(album)
 
   return "OK"
 
@@ -108,27 +91,18 @@ def viewPlaylist(uuid):
 
   return render_template("tidal/playlist.html", playlist=playlist, tracks=tracks)
 
-@tidal_bp.route("/playlist/<uuid>/queue", methods=['POST'])
+@tidal_bp.route("/playlist/<uuid>/monitor", methods=['POST'])
 def queuePlaylist(uuid):
   playlist = getTidalPlaylist(uuid)
-  playlist.queued = True
+  playlist.monitored = True
   updateTidalPlaylist(playlist)
 
   return "OK"
   
-@tidal_bp.route("/playlist/<uuid>/unqueue", methods=['POST'])
+@tidal_bp.route("/playlist/<uuid>/unmonitor", methods=['POST'])
 def unqueuePlaylist(uuid):
   playlist = getTidalPlaylist(uuid)
-  playlist.queued = False
-  updateTidalPlaylist(playlist)
-
-  return "OK"
-
-@tidal_bp.route("/playlist/<uuid>/download", methods=['POST'])
-def downloadPlaylist(uuid):
-  playlist = getTidalPlaylist(uuid)
-  playlist.downloaded = False
-  playlist.queued = True
+  playlist.monitored = False
   updateTidalPlaylist(playlist)
 
   return "OK"
@@ -154,24 +128,6 @@ def viewTrack(id):
   artist = getTidalArtist(track.artist)
 
   return render_template("tidal/track.html", track=track, album=album, artist=artist)
-
-@tidal_bp.route("/track/<int:id>/queue", methods=['POST']) 
-def queueTrack(id):
-  track = getTidalTrack(id)
-  track.queued = True
-  updateTidalTrack(track)
-
-  delTidalQueue(track.id)
-
-  return "OK"
-
-@tidal_bp.route("/track/<int:id>/unqueue", methods=['POST'])
-def unqueueTrack(id):
-  track = getTidalTrack(id)
-  track.queued = False
-  updateTidalTrack(track)
-
-  return "OK"  
 
 @tidal_bp.route("/track/<int:id>/download", methods=['POST'])
 def downloadTrack(id):

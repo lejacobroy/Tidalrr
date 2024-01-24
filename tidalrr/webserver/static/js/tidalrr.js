@@ -28,26 +28,26 @@ $(document).ready( function () {
 });
 
     // Queue artist
-function queueArtist(artistId) {
-  fetch('/tidal/artist/' + artistId+'/queue', {
+function monitorArtist(artistId) {
+  fetch('/tidal/artist/' + artistId+'/monitor', {
     method: 'POST'
   })
   .then(response => {
     if(response.ok) {
-      console.log('Artist queued successfully!');
+      console.log('Artist monitored successfully!');
       window.location.reload();
     } else {
       console.log('Error queueing artist');
     }
   })
 }
-function unqueueArtist(artistId) {
-    fetch('/tidal/artist/' + artistId+'/unqueue', {
+function unmonitorArtist(artistId) {
+    fetch('/tidal/artist/' + artistId+'/unmonitor', {
       method: 'POST'
     })
     .then(response => {
       if(response.ok) {
-        console.log('Artist queued successfully!');
+        console.log('Artist unmonitored successfully!');
         window.location.reload();
       } else {
         console.log('Error queueing artist');
@@ -55,28 +55,14 @@ function unqueueArtist(artistId) {
     })
   }
 
-// Download queued artists
-function downloadArtist(artistId) {
-  fetch('/tidal/artist/' + artistId+'/download', {
-    method: 'POST'
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('Artists downloaded successfully!');
-      window.location.reload();
-    } else {
-      console.log('Error downloading artists');
-    }
-  })
-}
 // Queue album
-function queueAlbum(albumId) {
-  fetch('/tidal/album/' + albumId + '/queue', {
+function monitorAlbum(albumId) {
+  fetch('/tidal/album/' + albumId + '/monitor', {
     method: 'POST'
   })
   .then(response => {
     if(response.ok) {
-      console.log('Album queued successfully!');
+      console.log('Album monitored successfully!');
       window.location.reload();
     } else {
       console.log('Error queueing album');
@@ -84,13 +70,13 @@ function queueAlbum(albumId) {
   })
 }
 
-function unqueueAlbum(albumId) {
-  fetch('/tidal/album/' + albumId + '/unqueue', {
+function unmonitorAlbum(albumId) {
+  fetch('/tidal/album/' + albumId + '/unmonitor', {
     method: 'POST'
   })
   .then(response => {
     if(response.ok) {
-      console.log('Album unqueued successfully!');
+      console.log('Album unmonitored successfully!');
       window.location.reload();
     } else {
       console.log('Error unqueueing album');
@@ -98,28 +84,15 @@ function unqueueAlbum(albumId) {
   })
 }
 
-// Download queued albums
-function downloadAlbum(albumId) {
-  fetch('/tidal/album/'+albumId+'/download', {
-    method: 'POST'
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('Albums downloaded successfully!');
-      window.location.reload();
-    } else {
-      console.log('Error downloading albums');
-    }
-  })
-}
+
 // Queue playlist
-function queuePlaylist(playlistId) {
-  fetch('/tidal/playlist/' + playlistId + '/queue', {
+function monitorPlaylist(playlistId) {
+  fetch('/tidal/playlist/' + playlistId + '/monitor', {
     method: 'POST'
   })
   .then(response => {
     if(response.ok) {
-      console.log('Playlist queued successfully!');
+      console.log('Playlist monitored successfully!');
       window.location.reload();
     } else {
       console.log('Error queueing playlist');
@@ -127,59 +100,16 @@ function queuePlaylist(playlistId) {
   })
 }
 
-function unqueuePlaylist(playlistId) {
-  fetch('/tidal/playlist/' + playlistId + '/unqueue', {
+function unmonitorPlaylist(playlistId) {
+  fetch('/tidal/playlist/' + playlistId + '/unmonitor', {
     method: 'POST'
   })
   .then(response => {
     if(response.ok) {
-      console.log('Playlist unqueued successfully!');
+      console.log('Playlist unmonitored successfully!');
       window.location.reload();
     } else {
       console.log('Error unqueueing playlist');
-    }
-  })
-}
-
-// Download queued playlists
-function downloadPlaylist(playlistId) {
-  fetch('/tidal/playlist/' + playlistId + '/download', {
-    method: 'POST'
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('Playlists downloaded successfully!');
-      window.location.reload();
-    } else {
-      console.log('Error downloading playlists');
-    }
-  }) 
-}
-// Queue track
-function queueTrack(trackId) {
-  fetch('/tidal/track/' + trackId + '/queue', {
-    method: 'POST'
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('track queued successfully!');
-      window.location.reload();
-    } else {
-      console.log('Error queueing track');
-    }
-  })
-}
-
-function unqueueTrack(trackId) {
-  fetch('/tidal/track/' + trackId + '/unqueue', {
-    method: 'POST'
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('track unqueued successfully!');
-      window.location.reload();
-    } else {
-      console.log('Error unqueueing track');
     }
   })
 }

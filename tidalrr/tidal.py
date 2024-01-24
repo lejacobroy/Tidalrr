@@ -358,7 +358,7 @@ class TidalAPI(object):
         album['audioModes'] = json.dumps(album['audioModes'])
         album['artists'] = json.dumps(album['artists'])
         album['path'] = ''
-        album['queued'] = False
+        album['monitored'] = False
         album['downloaded'] = False
         album['artist'] = album['artist']['id']
         convertedAlbum = convertToAlbum(album)
@@ -382,7 +382,7 @@ class TidalAPI(object):
         output_dict[0]['audioModes'] = json.dumps(output_dict[0]['audioModes'])
         output_dict[0]['artists'] = json.dumps(output_dict[0]['artists'])
         output_dict[0]['path'] = ''
-        output_dict[0]['queued'] = False
+        output_dict[0]['monitored'] = False
         output_dict[0]['downloaded'] = False
         output_dict[0]['artist'] = output_dict[0]['artist']['id']
         convertedAlbum = convertToAlbum(output_dict[0])
@@ -400,7 +400,7 @@ class TidalAPI(object):
             return
         for item in input_dict:
             item["playlist"]['path'] = f"{settings.downloadPath}/Playlists/{fixPath(item['playlist']['title'])}"
-            item["playlist"]['queued'] = False
+            item["playlist"]['monitored'] = False
             item["playlist"]['downloaded'] = False
             item["playlist"]['plexUUID'] = ''
             playlists.append(convertToPlaylist(item["playlist"]))
@@ -411,7 +411,7 @@ class TidalAPI(object):
         settings = getSettings()
         playlist = self.__get__('playlists/' + str(id))
         playlist['path'] = f"{settings.downloadPath}/Playlists/{fixPath(playlist['title'])}"
-        playlist['queued'] = False
+        playlist['monitored'] = False
         playlist['downloaded'] = False
         playlist['plexUUID'] = ''
         return convertToPlaylist(playlist)
@@ -420,7 +420,7 @@ class TidalAPI(object):
         settings = getSettings()
         artist = self.__get__('artists/' + str(id))
         artist['path'] = f"{settings.downloadPath}/{fixPath(artist['name'])}"
-        artist['queued'] = False
+        artist['monitored'] = False
         artist['downloaded'] = False
         return convertToArtist(artist)
 
@@ -532,7 +532,7 @@ class TidalAPI(object):
             new_albums[i]['audioModes'] = json.dumps(new_albums[i]['audioModes'])
             new_albums[i]['artists'] = json.dumps(new_albums[i]['artists'])
             new_albums[i]['path'] = ''
-            new_albums[i]['queued'] = False
+            new_albums[i]['monitored'] = False
             new_albums[i]['downloaded'] = False
             new_albums[i]['artist'] = new_albums[i]['artist']['id']
             convertedAlbum = convertToAlbum(new_albums[i])
