@@ -20,12 +20,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 def downloadQueuedCovers():
-    try:
-        covers = getTidalQueues('Cover')
-    except Exception as e:
-        print("Error getting cover queues: ", e)
-        return
-    
+    covers = getTidalQueues('Cover')
+    print(len(covers))
     for i, cover in enumerate(covers):
         try:
             file = getFileById(cover.id)
