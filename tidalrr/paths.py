@@ -70,7 +70,9 @@ def getAlbumPath(album:Album):
     settings = getSettings()
     artist = getTidalArtist(album.artist)
     if artist is not None:
-        artistName = fixPath(str(album.artists))
+        artists = album.artists.split(", ")[:5]
+        artists = ", ".join(artists)[:50]
+        artistName = fixPath(str(artists))
         albumArtistName = fixPath(artist.name) if album.artist is not None else ""
         # album folder pre: [ME]
         flag = getFlag(album, Type.Album, True, "")
