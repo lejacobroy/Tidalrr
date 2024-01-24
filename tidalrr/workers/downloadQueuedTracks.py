@@ -92,8 +92,8 @@ def workDownloadTrack(track=Track):
 def downloadTrack(track=Track):
     try:
         if not exists(track.path):
-            print('Downloading track file', track.title)
             track = workDownloadTrack(track)
+            print('Downloaded track file', track.title)
         else:
             track.downloaded = True
             
