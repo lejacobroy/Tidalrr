@@ -54,6 +54,12 @@ def migration():
         conn.execute("ALTER TABLE tidal_playlists \
                     RENAME COLUMN queued TO monitored;")
         conn.execute("update settings set version = 2")
+
+    if version == 2:
+        # convert the queues to queued tracks
+        conn.execute("UPDATE tidal_tracks SET queued = 1 WHERE id IN (SELECT id from tidal_queue WHERE type = 'Track');")
+        conn.execute("DELETE FROM tidal_queue WHERE type = 'Track' AND id in (SELECT id from tidal_tracks WHERE queued = 1);")
+        conn.execute("update settings set version = 3")
     conn.commit()
     conn.close()
 
@@ -269,6 +275,8 @@ def getStats():
                         SELECT 'Albums Downloaded' as type, count(*) as count FROM tidal_albums WHERE downloaded = TRUE\
                         UNION\
                         SELECT 'Tracks' as type, count(*) as count FROM tidal_tracks\
+                        UNION\
+                        SELECT 'Tracks Queued' as type, count(*) as count FROM tidal_tracks WHERE queued = TRUE\
                         UNION\
                         SELECT 'Tracks Downloaded' as type, count(*) as count FROM tidal_tracks WHERE downloaded = TRUE\
                         UNION\

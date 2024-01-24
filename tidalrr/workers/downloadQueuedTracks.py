@@ -15,28 +15,12 @@ from os.path import exists
 from tidalrr.paths import *
 from tidalrr.decryption import *
 from tidalrr.tidal import *
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
 from tidalrr.database import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 import logging
 
 logger = logging.getLogger(__name__)
-
-# def refreshStreamURL(id=int, audioQuality=str):
-#     return TIDAL_API.getStreamUrl(id, audioQuality)
-
-# def isNeedRefresh(url):
-#     #extract the 'expire' key from the url
-#     parsed_url = urlparse(url)
-#     if not hasattr(parse_qs(parsed_url.query), 'Expires'):
-#         return True
-#     else:
-#         captured_value = parse_qs(parsed_url.query)['Expires'][0]
-#         if int(captured_value) > int( time.time() ):
-#             return False
-#         return True
 
 def workDownloadTrack(track=Track):
     album = getTidalAlbum(track.album)
@@ -45,20 +29,14 @@ def workDownloadTrack(track=Track):
     if album is not None and artist is not None:
         settings = getSettings()
         
-        stream, track.path = scanTrack(track, album, settings.audioQuality)
-
+        stream, track.path = scanTrackPath(track, album, None)
         # check exist
         if not isSkip(track.path, track.url) and result:
             # download
-            #logging.info("[DL Track] name=" + aigpy.path.getFileName(queue.path) + "\nurl=" + queue.url)
             sleep_time = random.randint(500, 5000) / 1000
-            #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
             time.sleep(sleep_time)
 
-            #tool = aigpy.download.DownloadTool(queue.path + '.part', json.loads(queue.urls))
-            #tool.setPartSize(partSize)
-            #check, err = tool.start(False)
-            check, err = download_and_combine(track.path, json.loads(stream.urls))
+            check, err = download_and_combine(track.path, stream.urls)
             if not check:
                 print(f"DL Track[{track.title}] failed.")
                 print(json.dumps(err))
@@ -99,15 +77,12 @@ def workDownloadTrack(track=Track):
                 
                 metadataArtist = [str(artist.name)]
                 metadataArtists = [str(album.artists)]
-                print('Downloaded file', track.title, track.audioQuality, track.path)
                 try:
                     setMetaData(track, album, metadataArtist, metadataArtists, track.path, contributors, lyrics)
                     result = True
                 except:
                     print('cannot write to flac')
                     result = False
-                #print(str(number)+ " : " + artist.name + " - " + album.title + " - " + track.title)
-                #print(str(number)+ " : " +aigpy.path.getFileName(path) + " (skip:already exists!)")
     else:
         print('No artist or album')
         result = False
@@ -119,6 +94,8 @@ def downloadTrack(track=Track):
         if not exists(track.path):
             print('Downloading track file', track.title)
             track.downloaded = workDownloadTrack(track)
+        else:
+            track.downloaded = True
             
         if track.downloaded:
             # save file in db
@@ -133,8 +110,6 @@ def downloadTrack(track=Track):
             # remove queue in db
             delTidalQueue(track.id)
 
-            # update track row
-            track.downloaded = True
         updateTidalTrack(track)
 
         # update downloaded albums & artists
@@ -309,29 +284,3 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
             print("Error getting track path: ", e)
 
     return stream, path
-
-# def scanTrack(track: Track, album=Album, playlist=None):
-#     stream, path = scanTrackPath(track, album, playlist)
-#     if path != '' and stream is not None and stream.url is not None:
-#         # queue = Queue(
-#         #     type='Track',
-#         #     login=True,
-#         #     id=track.id,
-#         #     path=path,
-#         #     url=stream.url,
-#         #     encryptionKey=stream.encryptionKey,
-#         #     urls = stream.urls
-#         # )
-
-#         # addTidalQueue(queue)
-#         # print('Adding track to queue '+track.title)
-
-#         # let's download the track directly instead
-#         downloadQueuedTracks(track)
-#         return True
-#     else:
-#         print('Track '+str(track.id)+' Unknown artist or url '+ str(track.artist)+' '+ track.artists)
-#         # maybe add the artist and re-run
-#         track.queued = False
-#         updateTidalTrack(track)
-#         return False

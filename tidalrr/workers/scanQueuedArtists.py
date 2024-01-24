@@ -51,4 +51,4 @@ def start_artist(obj: Artist):
                         # artist is monitored, we will monitor this album too
                         album.monitored = True
                     addTidalAlbum(album)
-                    scanQueuedAlbums()
+                    #scanQueuedAlbums()

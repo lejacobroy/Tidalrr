@@ -1,7 +1,7 @@
 {% block content %}
     {% if playlist['downloaded'] %}
         <span class="badge rounded-pill text-bg-success">Downloaded</span>
-    {% elif artist['numAlbums'] > 0 %}
+    {% elif playlist['numDownloadedTracks'] > 0 %}
         <span class="badge rounded-pill text-bg-info">
             {{ ((playlist['numDownloadedTracks'] / playlist['numberOfTracks']) * 100) | round | int }}% downloaded
         </span>

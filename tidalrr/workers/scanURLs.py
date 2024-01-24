@@ -41,12 +41,22 @@ def start(string):
                     addTidalArtist(obj)
                     print('Added artist to DB:', obj.name)
                     #scanQueuedArtists()
+                else:
+                    dbArtist.monitored = True
+                    updateTidalArtist(dbArtist)
+                    print('Monitored artist in DB:', obj.name)
+                    #scanQueuedArtists()
             elif etype == Type.Album:
                 dbAlbum = getTidalAlbum(obj.id)
                 if dbAlbum is None:
                     obj.monitored = True
                     addTidalAlbum(obj)
                     print('Added album to DB:', obj.title)
+                    #scanQueuedAlbums()
+                else:
+                    dbAlbum.monitored = True
+                    updateTidalAlbum(dbAlbum)
+                    print('Monitored album in DB:', obj.title)
                     #scanQueuedAlbums()
             elif etype == Type.Track:
                 dbTrack = getTidalTrack(obj.id)
@@ -55,12 +65,21 @@ def start(string):
                     addTidalTrack(obj)
                     print('Added track to DB:', obj.title)
                     #scanQueuedTracks()
+                else:
+                    dbTrack.queued = True
+                    updateTidalTrack(dbTrack)
+                    print('Queued track in DB:', obj.title)
+                    #scanQueuedTracks()
             elif etype == Type.Playlist:
                 dbPlaylist = getTidalPlaylist(obj.uuid)
                 if dbPlaylist is None:
                     obj.monitored = True
                     addTidalPlaylist(obj)
                     print('Added playlist to DB:', obj.title)
+                else:
+                    dbPlaylist.monitored = True
+                    updateTidalPlaylist(dbPlaylist)
+                    print('Monitored playlist in DB:', obj.title)
                 #scanQueuedPlaylists()
             #elif etype == Type.Mix:
                 #start_mix(obj)

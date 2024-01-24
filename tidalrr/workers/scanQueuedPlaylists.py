@@ -120,7 +120,7 @@ def start_playlist(obj: Playlist):
                     itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
                 f.write(os.path.join(itemPath)+'\n')
     print('Generated m3u8 playlist file: '+obj.path+'.m3u8')
-    scanQueuedTracks()
+    #scanQueuedTracks()
 
 def writePlaylistInfos(tracks, album: Album = None, playlist : Playlist=None):
     def __getAlbum__(item: Track):

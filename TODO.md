@@ -19,7 +19,11 @@
         - missing lyrics
         - migrate paths in queues and files
 
-scan playlist mark as downloaded
+
 scan & download tracks artists name too long -> should work
-how to use on login page
 combine scanqueuedTracks and downloadQueuedTrack -> should work
+speed up playlists: list tracks in tally table, 
+                    add incomplete tracks to db, 
+                    download new tracks, 
+                    when all tracks are downloaded update the playlist paths
+                    generate playlists files

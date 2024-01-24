@@ -1,9 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Tidalrr</h1>
-{% if timeout != '' %}
-    Please login: <a href="{{ url }}" target="_blank">{{ url }}</a>
-    <br/>
-    <p>Link valid for {{ timeout }}</p>
-{% endif %}
+    <div class="container my-5">
+
+        <h3>Quick Start</h3>
+        
+        <div class="row">
+    
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">1. Login</h5>
+                <p class="card-text">
+                    {% if timeout != '' %}
+                        <span class="badge rounded-pill text-bg-danger">Not Authenticated</span>
+                        <p>
+                            Please login: <a href="{{ url }}" target="_blank">{{ url }}</a>
+                            <br/>
+                            Link valid for {{ timeout }}.
+                            <br/>
+                            You must authenticate the Tidalrr app before the countdown runs out.
+                        </p>
+                    {% else %}
+                        <span class="badge rounded-pill text-bg-success">Authenticated</span>
+                    {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">2. <a href="/actions/add">Add</a> a Tidal URL</h5>
+                <p class="card-text">
+                  <a href="/actions/add">Copy</a> a Tidal URL. <br/>
+                  It can be an artist's page, an album, a track or a playlist. <br/>
+                  All content imported this way will be queued to download automaticaly and be monitored for future new content.
+                </p>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">3. <a href="/actions/run-scans">Scan</a> the monitored items</h5>
+                <p class="card-text">
+                    <a href="/actions/run-scans">Manually start</a> the scan of monitored content (artists, albums, playlists), to add new (not downloaded) content to the download queue.<br/>
+                    <em>it will start automaticaly between 23:00 and 3:00 AM (configurable in the <a href="/settings">settings</a>).</em> 
+                </p>
+              </div>
+            </div>
+          </div>
+    
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">4. <a href="/actions/run-downloads">Download</a> the queued files</h5>
+                <p class="card-text">
+                    <a href="/actions/run-downloads">Manually start</a> the download of the queued content (tracks, album covers).<br/>
+                    <em>it will start automaticaly between 3:00 and 11:00 AM (configurable in the <a href="/settings">settings</a>).</em>
+                </p>
+              </div>
+            </div>
+          </div>
+    
+        </div>
+    
+      </div>
 {% endblock %}
