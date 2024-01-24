@@ -19,9 +19,6 @@
         - missing lyrics
         - migrate paths in queues and files
 
-
-scan & download tracks artists name too long -> should work
-combine scanqueuedTracks and downloadQueuedTrack -> should work
 speed up playlists: list tracks in tally table, 
                     add incomplete tracks to db, 
                     download new tracks, 

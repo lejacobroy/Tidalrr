@@ -44,8 +44,8 @@ def downloadQueuedCovers():
                     except Exception as e:
                         print("Error downloading : ", cover.url, e)
                         continue
-                    
-                    print("Downloaded album cover / ", str(i), str(len(covers)), album.title)
+                else:
+                    delTidalQueue(cover.id)
                 
                 file = File(
                     description=album.title,
@@ -55,14 +55,12 @@ def downloadQueuedCovers():
                 )
                 try:
                     addFiles(file)
+                    delTidalQueue(cover.id)
+                    print("Downloaded album cover / ", str(i), str(len(covers)), album.title)
                 except Exception as e:
                     print("Error adding file : ", file.id, e)
                     continue
-
-            try:
-                delTidalQueue(cover.path)
-            except Exception as e:
-                print("Error deleting queue : ", cover.path, e)
-
+            else:
+                delTidalQueue(cover.id)
         except Exception as e:
             print("Error processing cover : ", cover.id, e)
