@@ -14,7 +14,7 @@ from tidalrr.database import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
 from tidalrr.workers.scanQueuedAlbums import *
-from tidalrr.workers.scanQueuedTracks import *
+from tidalrr.workers.downloadQueuedTracks import *
 
 import logging
 

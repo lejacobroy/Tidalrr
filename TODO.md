@@ -20,6 +20,6 @@
         - migrate paths in queues and files
 
 scan playlist mark as downloaded
-scan & download tracks artists name too long
+scan & download tracks artists name too long -> should work
 how to use on login page
-combine scanqueuedTracks and downloadQueuedTrack
+combine scanqueuedTracks and downloadQueuedTrack -> should work

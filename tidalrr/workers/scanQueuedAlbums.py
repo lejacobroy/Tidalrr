@@ -12,7 +12,7 @@ from os.path import exists
 from tidalrr.database import *
 from tidalrr.tidal import *
 from tidalrr.workers import *
-from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
+#from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 
 import logging
 
