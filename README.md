@@ -8,7 +8,7 @@
   Especially usefull when going to a remote location with crappy internet but a great audio system.
 </p>
 
-## What is Tidalrr?:
+## What is Tidalrr:
 Tidalrr is a complete software to keep an offline copy of your Tidal library and sychronise it every night.
 
 By default, it will synchronise all of your playlists, but you can also import artists (and all their albums), albums, tracks and playlists from others.
@@ -40,19 +40,19 @@ but if you want to run it barebones:
 
 ***
 
-### First, login:
+### 1. login:
 In your browser, navigate to the Tidalrr web server, http://localhost:3001
 
 On the homepage, you should see a Tidal link to login. You must authenticate the Tidalrr app before the countdown runs out.
 
 
-### Second, add a Tidal URL
+### 2. add a Tidal URL
 Go to http://localhost:3001/actions/add and copy a Tidal URL. It can be an artist's page, an album, a track or a playlist.
 
 All content imported this way will be queued to download automaticaly and be monitored for future new content.
 
 
-### Third, start the scanning process:
+### 3. Scan the monitored items:
 Note, it will start automaticaly and only run between 23:00 and 3:00 AM (configurable in the settings).
 
 You can start it manually from the webpage: http://localhost:3001/actions/run-scans
@@ -60,7 +60,7 @@ You can start it manually from the webpage: http://localhost:3001/actions/run-sc
 This will scan all the Monitored content (artists, albums, playlists) and add new (not downloaded) content to the download queue.
 
 
-### Fourth, download the prepared files:
+### 4. download the queued files:
 Note, it will start automaticaly and only run between 3:00 and 11:00 AM (configurable in the settings).
 
 You can start it manually from the webpage: http://localhost:3001/actions/run-downloads
