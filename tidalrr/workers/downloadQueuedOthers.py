@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 def downloadQueuedCovers():
     covers = getTidalQueues('Cover')
-    print(len(covers))
     for i, cover in enumerate(covers):
         try:
             file = getFileById(cover.id)

@@ -143,7 +143,7 @@ def getTrackPath(track, stream, artist=None, album=None, playlist=None, filename
         artist = fixPath(artist.name[:50])
 
     # title
-    title = fixPath(track.title)
+    title = fixPath(track.title)[:150]
     if not aigpy.string.isNull(track.version):
         title += f' ({fixPath(track.version)})'
 
