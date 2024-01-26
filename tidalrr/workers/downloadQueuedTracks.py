@@ -30,7 +30,7 @@ def workDownloadTrack(track=Track):
         
         stream, track.path = scanTrackPath(track, album, None)
         # check exist
-        if not isSkip(track.path, track.url):
+        if track.path is not None and not isSkip(track.path, track.url):
             # download
             sleep_time = random.randint(500, 5000) / 1000
             time.sleep(sleep_time)
@@ -261,6 +261,9 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     except Exception as e:
         print("Error getting stream URL: ", e)
         if str(e) == "Asset is not ready for playback":
+            return None, None
+        if str(e) == "The token has expired. (Expired on time)":
+            loginByConfig()
             return None, None
 
     try:

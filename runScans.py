@@ -48,7 +48,7 @@ def forkScans():
     # Wait a maximum of 10 seconds for foo
     # Usage: join([timeout in seconds])
     settings = getSettings()
-    hours = settings.scansDuration
+    hours = int(settings.scansDuration)
     seconds = hours * 60 * 60
     p.join(seconds)
 
