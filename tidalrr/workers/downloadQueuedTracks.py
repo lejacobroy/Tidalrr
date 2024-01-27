@@ -98,12 +98,12 @@ def downloadTrack(track=Track):
     try:
         if not exists(track.path):
             track = workDownloadTrack(track)
-            print('Downloaded track file', track.title)
         else:
             track.queued = False
             track.downloaded = True
             
         if track.downloaded:
+            print('Downloaded track file', track.title)
             # save file in db
             file = File(
                 description=track.title,
@@ -112,9 +112,6 @@ def downloadTrack(track=Track):
                 path=track.path
             )
             addFiles(file)
-
-            # remove queue in db
-            delTidalQueue(track.id)
 
         updateTidalTrack(track)
 
