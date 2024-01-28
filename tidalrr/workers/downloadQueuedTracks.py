@@ -34,7 +34,7 @@ def workDownloadTrack(track=Track):
             # download
             sleep_time = random.randint(500, 5000) / 1000
             time.sleep(sleep_time)
-
+            
             check, err = download_and_combine(track.path, stream.urls)
             if not check:
                 print(f"DL Track[{track.title}] failed.")
@@ -142,6 +142,10 @@ def download_file_part(path, url, part_number):
         return False, str(e)
 
 def combine_file_parts(output_file, *file_parts):
+    # verify that all the file parts have downloaded successfully
+    for file in file_parts:
+        if not os.path.isfile(file):
+            return False, f'File part {file} not found'
     try:
         with open(output_file, 'wb') as output:
             for part in file_parts:
@@ -173,16 +177,17 @@ def download_and_combine(path, urls):
             # Skip to the next URL if there's an error downloading a part
             continue
 
-    combine_file_parts(path, *file_parts)
+    result, text = combine_file_parts(path, *file_parts)
     # Clean up: delete individual file parts
     for file_part in file_parts:
         try:
             os.remove(file_part)
             logging.info(f'Deleted file part: {file_part}')
+            result = True
         except Exception as e:
             logging.error(f'Error deleting file part {file_part}: {e}')
             return False, str(e)
-    return True, err
+    return result, err
 
 def scanQueuedTracks():
     try:
