@@ -20,6 +20,8 @@ from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 from tidalrr.workers.scanUserPlaylists import scanUserPlaylists
 from tidalrr.database import *
+from tidalrr.workers.downloadQueuedOthers import *
+from tidalrr.workers.downloadQueuedTracks import *
 
 @print_elapsed_time
 def startScans():
@@ -60,16 +62,46 @@ def forkScans():
         # Cleanup
         p.join()
 
-def mainScansSchedule():
+@print_elapsed_time
+def startDownloads():
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" startDownloads")
+    tidalrrStart()
+    downloadQueuedCovers()
+    scanQueuedTracks()
+
+def forkDownloads():
+    # Start foo as a process
+    print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" Starting downloads")
+    p = multiprocessing.Process(target=startDownloads)
+    p.start()
+
+    # Wait a maximum of 10 seconds for foo
+    # Usage: join([timeout in seconds])
+    settings = getSettings()
+    hours = int(settings.downloadsDuration)
+    seconds = hours * 60 * 60
+    p.join(seconds)
+
+    # If thread is active
+    if p.is_alive():
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" Downloads are running... let's kill it...")
+        # Terminate foo
+        p.terminate()
+        # Cleanup
+        p.join()
+
+def mainSchedule():
     settings = getSettings()
     if settings.scansDuration != 0:
         print('Scans are scheduled')
         schedule.every().day.at(str(settings.scansStartHour).zfill(2)+":00").do(forkScans)
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+    if settings.downloadsDuration != 0:
+        print('Downloads are scheduled')
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == '__main__':
     #startScans()
     #main()
-    mainScansSchedule()
+    mainSchedule()

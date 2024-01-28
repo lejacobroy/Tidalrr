@@ -10,18 +10,18 @@
 '''
 from multiprocessing import Process
 from runWebServer import *
-from runScans import *
-from runDownloads import *
+from runSchedule import *
 
 def main():
     print("Starting tidalrr app", flush=True)
     processes = []
 
     process1 = Process(target=webServer, args=(False,))
-    process2 = Process(target=mainScansSchedule)
-    process3 = Process(target=mainDownloadsSchedule)
+    process2 = Process(target=mainSchedule)
+    #process2 = Process(target=mainScansSchedule)
+    #process3 = Process(target=mainDownloadsSchedule)
 
-    processes.extend([process1, process2, process3])
+    processes.extend([process1, process2])
 
     for process in processes:
         process.start()
