@@ -11,6 +11,10 @@
 import time
 import functools
 from tidalrr.tidal import *
+from tidalrr.database import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 # This decorator can be applied to any job function to log the elapsed time of each job
 def print_elapsed_time(func):
@@ -114,3 +118,111 @@ def scanCover(album):
 
             addTidalQueue(queue)
             #aigpy.net.downloadFile(url, path)
+
+def download_file_part(path, url, part_number):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check for HTTP errors
+
+        file_name = f'{path}_{part_number}.part'
+
+        with open(file_name, 'wb') as file:
+            file.write(response.content)
+
+        logging.info(f'Downloaded part {part_number} from')
+        return file_name, None
+
+    except requests.RequestException as e:
+        logging.error(f'Error downloading part {part_number} from : {e}')
+        return False, str(e)
+
+def combine_file_parts(output_file, *file_parts):
+    # verify that all the file parts have downloaded successfully
+    for file in file_parts:
+        if not os.path.isfile(file):
+            print('File part not found', file)
+            return False
+    try:
+        with open(output_file, 'wb') as output:
+            for part in file_parts:
+                with open(part, 'rb') as file_part:
+                    output.write(file_part.read())
+
+        logging.info(f'Combined file saved as {output_file}')
+
+    except Exception as e:
+        logging.error(f'Error combining file parts: {e}')
+        return False, str(e)
+
+def download_and_combine(path, urls):
+    file_parts = []
+    err = None
+    # Extract the directory path from the file path
+    directory_path = os.path.dirname(path)
+
+    # Create the directory structure if it doesn't exist
+    os.makedirs(directory_path, exist_ok=True)
+
+    for i, url in enumerate(urls):
+        part_number = i + 1
+        file_part, err = download_file_part(path, url, part_number)
+
+        if file_part:
+            file_parts.append(file_part)
+        else:
+            # Skip to the next URL if there's an error downloading a part
+            continue
+
+    result = combine_file_parts(path, *file_parts)
+    # Clean up: delete individual file parts
+    for file_part in file_parts:
+        try:
+            os.remove(file_part)
+            logging.info(f'Deleted file part: {file_part}')
+            result = True
+        except Exception as e:
+            logging.error(f'Error deleting file part {file_part}: {e}')
+            return False, str(e)
+    return result, err
+
+def updatePlaylistsFiles():
+    settings = getSettings()
+    
+    # get all downloaded playlists 
+    playlists = getDownloadedTidalPlaylists()
+    for i, playlist in enumerate(playlists):
+        tracks = getTidalPlaylistTracks(playlist.uuid)
+        for index, track in enumerate(tracks):
+            if hasattr(track, 'id'):
+                track.trackNumberOnPlaylist = index + 1
+        # Generate m3u playlist file
+        generateM3uFile(settings, playlist, tracks)
+
+        # Generate m3u8 playlist file
+        generateM3uFile(settings, playlist, tracks)
+        print('Generated files for playlist '+str(i)+'/'+str(len(playlists))+': '+playlist.title)
+
+def generateM3uFile(settings: Settings, playlist: Playlist, tracks: list):
+    plexPath = ''
+    if settings.plexToken != '' and settings.plexUrl != '' and settings.plexHomePath != '':
+        plexPath = settings.plexHomePath
+    with open(playlist.path+'.m3u', 'w+') as f:
+        for i,track in enumerate(tracks, start=1):
+            if len(track.path) > 0:
+                itemPath = Path(track.path.replace('.mp4','.flac'))
+                if plexPath != '':
+                    itemPath = Path(track.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                f.write(os.path.join(itemPath)+'\n')
+
+def generateM3u8File(settings: Settings, playlist: Playlist, tracks: list):
+    plexPath = ''
+    with open(playlist.path+'.m3u8', 'w+') as f:
+        f.write('#EXTM3U\n')
+        for i,item in enumerate(tracks, start=1):
+            artist = getTidalArtist(item.artist)
+            if hasattr(artist, 'id'):
+                f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
+                itemPath = Path(item.path.replace('.mp4','.flac'))
+                if plexPath != '':
+                    itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                f.write(os.path.join(itemPath)+'\n')

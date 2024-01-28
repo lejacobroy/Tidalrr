@@ -58,7 +58,7 @@ def updateTidalAlbumsDownloaded():
                     FROM tidal_albums\
                     LEFT JOIN tidal_tracks ON tidal_tracks.album = tidal_albums.id\
                     GROUP BY tidal_albums.id\
-                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE THEN 1 ELSE 0 END)\
+                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = 0 THEN 1 ELSE 0 END)\
                 )")
     connection.commit()
     connection.close()
@@ -69,6 +69,22 @@ def getTidalAlbums() -> [Album]:
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
                         inner join tidal_artists on tidal_artists.id = tidal_albums.artist \
                         WHERE tidal_albums.title <> ""\
+                        ORDER BY tidal_artists.name, tidal_albums.title').fetchall()
+    new_rows = []
+    conn.close()
+    if len(rows) > 0 :
+        for album in rows:
+            a = convertToAlbum(album)
+            a.artists = getArtistsNameJSON(a.artists)
+            new_rows.append(a)
+    return new_rows
+
+def getMonitoredTidalAlbums() -> [Album]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
+                        inner join tidal_artists on tidal_artists.id = tidal_albums.artist \
+                        WHERE tidal_albums.title <> "" AND tidal_albums.monitored = 1 \
                         ORDER BY tidal_artists.name, tidal_albums.title').fetchall()
     new_rows = []
     conn.close()

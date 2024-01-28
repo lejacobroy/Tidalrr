@@ -46,10 +46,12 @@ def forkDownloads():
 
 def mainDownloadsSchedule():
     settings = getSettings()
-    schedule.every().day.at(str(settings.downloadsStartHour).zfill(2)+":00").do(forkDownloads)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    if settings.downloadsDuration is not 0:
+        print('Downloads are scheduled')
+        schedule.every().day.at(str(settings.downloadsStartHour).zfill(2)+":00").do(forkDownloads)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 if __name__ == '__main__':
     #startDownloads()

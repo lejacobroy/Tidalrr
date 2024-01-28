@@ -34,6 +34,18 @@ def actionslogImport():
     log_content = view_log(log_filename)
     return log_content
 
+@actions_bp.route("/run-lidarr")
+def actionsRunScans():
+    log_filename = f"script_log_lidarr.txt"
+    log_content = view_log(log_filename)
+    return render_template("actions/run-lidarr.html", log_content=log_content)
+
+@actions_bp.route("/log-lidarr-data")
+def actionslogScans():
+    log_filename = f"script_log_lidarr.txt"
+    log_content = view_log(log_filename)
+    return log_content
+
 @actions_bp.route("/run-scans")
 def actionsRunScans():
     log_filename = f"script_log_scans.txt"

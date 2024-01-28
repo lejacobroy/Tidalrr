@@ -62,10 +62,12 @@ def forkScans():
 
 def mainScansSchedule():
     settings = getSettings()
-    schedule.every().day.at(str(settings.scansStartHour).zfill(2)+":00").do(forkScans)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    if settings.scansDuration is not 0:
+        print('Scans are scheduled')
+        schedule.every().day.at(str(settings.scansStartHour).zfill(2)+":00").do(forkScans)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 if __name__ == '__main__':
     #startScans()

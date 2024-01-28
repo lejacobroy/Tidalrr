@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Run Lidarr Sync</h2>
+    <p>Manually run the scans for monitored content in Lidarr, and add the new content to the download queue.<br>
+    This operation is run every day between 23:00 and 04:00</p>
+    <a href="/run-lidarr" class="btn"><button type="button" class="btn btn-primary">Start Lidarr Sync</button></a>
+    <br/>
+    <h3>Logs</h3>
+    <pre id="log">
+        {{ log_content|safe }}
+    </pre>
+    <script>
+        const log = document.getElementById('log');
+      
+        function updateLog() {
+          fetch('/actions/log-lidarr-data')
+            .then(response => response.text())
+            .then(data => {
+              log.textContent = data;
+            });
+        }
+      
+        setInterval(updateLog, 1000);
+      </script>
+{% endblock %}

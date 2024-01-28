@@ -47,3 +47,10 @@ def getFileById(id= int) -> File:
     if row is not None:
         file = convertToFile(row)
     return file
+
+def delFile(id=str):
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute('DELETE FROM files WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()

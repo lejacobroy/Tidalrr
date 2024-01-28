@@ -19,11 +19,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 def scanQueuedArtists():
-    artists = getTidalArtists()
+    artists = getMonitoredTidalArtists()
     if len(artists) > 0:
         for i, artist in enumerate(artists):
             try:
-                if hasattr(artist, 'id') and artist.monitored:
+                if hasattr(artist, 'id'):
                     print('Scanning artist ', str(i), ' / ', str(len(artists)), artist.name)
                     start_artist(artist)
                     #artist.monitored = False

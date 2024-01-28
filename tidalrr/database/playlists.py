@@ -58,6 +58,28 @@ def getTidalPlaylists() -> [Playlist]:
             new_rows.append(convertToPlaylist(item))
     return new_rows
 
+def getMonitoredTidalPlaylists() -> [Playlist]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND monitored = 1').fetchall()
+    conn.close()
+    new_rows = []
+    if len(rows) > 0 :
+        for item in rows:
+            new_rows.append(convertToPlaylist(item))
+    return new_rows
+
+def getDownloadedTidalPlaylists() -> [Playlist]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND downloaded = 1').fetchall()
+    conn.close()
+    new_rows = []
+    if len(rows) > 0 :
+        for item in rows:
+            new_rows.append(convertToPlaylist(item))
+    return new_rows
+
 def getTidalPlaylist(id=str) -> Playlist:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -109,7 +131,7 @@ def updateTidalPlaylistsDownloaded():
                     inner join tidal_playlist_tracks ON tidal_playlist_tracks.uuid = tidal_playlists.uuid\
                     LEFT JOIN tidal_tracks ON tidal_playlist_tracks.track = tidal_tracks.id\
                     GROUP BY tidal_playlists.uuid\
-                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE THEN 1 ELSE 0 END)\
+                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = 0 THEN 1 ELSE 0 END)\
                 )")
     connection.commit()
     connection.close()

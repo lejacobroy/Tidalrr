@@ -19,11 +19,11 @@ import logging
 logger = logging.getLogger(__name__) 
 
 def scanQueuedAlbums():
-    albums = getTidalAlbums()
+    albums = getMonitoredTidalAlbums()
     if len(albums) > 0:
         for i, album in enumerate(albums):
             try:
-                if hasattr(album, 'id') and album.monitored:
+                if hasattr(album, 'id'):
                     print('Scanning album ', str(i), ' / ', str(len(albums)), album.title)
                     start_album(album)
                     #album.monitored = False
