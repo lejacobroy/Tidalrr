@@ -48,6 +48,7 @@ def getMissingAlbums(URL: str, API: str):
             alb.path = record['artist']['path']
             alb.artist = art
             # search in db if artist - album exists
+            print(alb.artist.name, alb.title)
             albums.append(alb)
         #print(aigpy.model.modelListToDictList(albums))
     #print(aigpy.model.modelListToDictList(albums))
@@ -64,5 +65,8 @@ def getMissingAlbums(URL: str, API: str):
 def start_album_search(alb: Album):
     #print(aigpy.model.modelToDict(obj))
     album = TIDAL_API.searchAlbum(alb)
-    if album is not None and album.artist == alb.artist:
+    print('Comparing albums:'+ alb.title +'and'+ album.title)
+    print('Comparing artists:'+ alb.artist.name +'and'+ album.artist)
+    if album is not None and album.artist == alb.artist.name:
+        print('Found album:' + album.title)
         addTidalAlbum(album)
