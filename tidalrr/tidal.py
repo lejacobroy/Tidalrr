@@ -367,15 +367,30 @@ class TidalAPI(object):
     
     def searchAlbum(self, obj) -> Album:
         #print(aigpy.model.modelToDict(obj))
-        name = str(obj.artist.name +' - '+ obj.title)
+        name = str(obj['title'])
 
         # Transform json input to python objects
         input_dict = self.__get__('albums?query='+str(name), {}, 'https://api.tidalhifi.com/v1/search/')["items"]
 
         # Filter python objects with list comprehensions
         # x["numberOfTracks"] == obj.numberOfTracks and
-        output_dict = [x for x in input_dict if  x["title"] == obj.title and x["artist"]["name"] == obj.artist.name]
-        # filter by artist and album title
+        output_dict = []
+        pattern = r'[^A-Za-z0-9]+'
+        for album in input_dict:
+            check = False
+            if obj['artistId'] != 0 and album["artist"]["id"] == obj['artistId']:
+                check = True
+            if obj['artistId'] == 0 and re.sub(pattern, '', album["artist"]["name"].lower()) == re.sub(pattern, '', obj['artist'].lower()):
+                check = True
+            if check and re.sub(pattern, '', album["title"].lower()) == re.sub(pattern, '', obj['title'].lower()):
+                check = True
+                output_dict.append(album)
+            # if not check:
+            #     print('title not matched', album["title"], obj['title'])
+            #     print('artist name not matched', album["artist"]["name"], obj['artist'])
+            #     print('artist id not matched', album["artist"]["id"], obj['artistId'])
+
+
         if len(output_dict) == 0:
             print('no album matched')
             return

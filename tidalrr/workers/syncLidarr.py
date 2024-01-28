@@ -15,43 +15,42 @@ from tidalrr.workers import *
 def syncLidarr():
     settings = getSettings()
     albums = [Album]
-    albums = getMissingAlbums(settings.lidarrURL, settings.lidarrAPI)
+    albums = getMissingAlbums(settings.lidarrUrl, settings.lidarrApi)
+    print('Scanning '+str(len(albums))+' missing albums')
     for album in albums :
-        if album.title is not None:    
+        if album['title'] is not None:    
             # set download path
             # settings.downloadPath = str(album.path)
             start_album_search(album)
 
 def getMissingAlbums(URL: str, API: str):
-    # http://pomelo:8686/api/v1/wanted/missing?apikey=LIDARR_APIKEY
+    # get missing albums from Lidarr
+    albums = []
+    try:
+        respond = requests.get(URL+'/api/v1/wanted/missing?apikey='+API)
+        result = json.loads(respond.text)
 
-    #print(urlpre + path, header, params)
-    #print(URL+'/api/v1/wanted/missing?apikey='+API)
-    respond = requests.get(URL+'/api/v1/wanted/missing?apikey='+API)
-    #print(respond)
-    
-    result = json.loads(respond.text)
+        if 'status' not in result:
+            #print(result)
+            
+            for record in result["records"]:
+                artistId = 0
 
-    albums = [Album()]
+                for link in record['artist']['links']:
+                    if link['name'] == 'tidal':
+                        artistId = int(link['url'].split('/')[-1])
+                album = {
+                    'title': record['title'],
+                    'artist': record['artist']['artistName'],
+                    'artistId': artistId,
+                }
+                #print(album)
+                albums.append(album)
+        else:
+            print(result)
+    except Exception as e:
+        print("Error getting missing albums: ", e)
 
-    if 'status' not in result:
-        #print(result)
-        
-        for record in result["records"]:
-            art = Artist
-            art.name = record['artist']['artistName']
-
-            alb = Album()
-            alb.title = record['title']
-            alb.duration = record['duration']/60
-            alb.numberOfTracks = record['releases'][0]['trackCount']
-            alb.path = record['artist']['path']
-            alb.artist = art
-            # search in db if artist - album exists
-            print(alb.artist.name, alb.title)
-            albums.append(alb)
-        #print(aigpy.model.modelListToDictList(albums))
-    #print(aigpy.model.modelListToDictList(albums))
     return albums
 
     # returns this:
@@ -65,8 +64,7 @@ def getMissingAlbums(URL: str, API: str):
 def start_album_search(alb: Album):
     #print(aigpy.model.modelToDict(obj))
     album = TIDAL_API.searchAlbum(alb)
-    print('Comparing albums:'+ alb.title +'and'+ album.title)
-    print('Comparing artists:'+ alb.artist.name +'and'+ album.artist)
-    if album is not None and album.artist == alb.artist.name:
-        print('Found album:' + album.title)
+    if album is not None:
+        album.monitored = 1
         addTidalAlbum(album)
+        print('Found album and added to DB: ' + album.title)

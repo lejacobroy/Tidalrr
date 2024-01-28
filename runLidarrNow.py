@@ -17,10 +17,10 @@ from tidalrr.workers.syncLidarr import syncLidarr
 
 @print_elapsed_time
 def startLidarrSync():
-    settings = getSettings()
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" startLidarrSync")
     tidalrrStart()
     print('tidalrrStart')
+    syncLidarr()
     
     
 def forkScans():

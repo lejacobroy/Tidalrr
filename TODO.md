@@ -6,7 +6,7 @@
     - store matching information in db for future use (superseeded)
     - when scanning a track, look if it's album is superseeded, then scan the corresponding track
     - superseeded table? - for albums and tracks
-    
+
 - create an api webserver and control center
     - sync lidarr
         - interactive match with search
@@ -18,3 +18,5 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
+
+- ccombine the scheduled workers into one file
