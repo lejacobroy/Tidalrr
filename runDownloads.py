@@ -46,7 +46,7 @@ def forkDownloads():
 
 def mainDownloadsSchedule():
     settings = getSettings()
-    if settings.downloadsDuration is not 0:
+    if settings.downloadsDuration != 0:
         print('Downloads are scheduled')
         schedule.every().day.at(str(settings.downloadsStartHour).zfill(2)+":00").do(forkDownloads)
         while True:
