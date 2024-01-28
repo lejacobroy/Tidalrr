@@ -64,6 +64,7 @@ def migration():
     conn.close()
 
 def createTables():
+    aigpy.path.mkdirs(Path(__file__).parent.joinpath('config/').absolute())
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     settings = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings';").fetchone()
