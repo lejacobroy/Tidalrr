@@ -9,6 +9,7 @@
 @Desc    :   
 '''
 import sqlite3
+import os
 from tidalrr.model import *
 from tidalrr.database.artists import *
 from tidalrr.database.albums import *
@@ -64,7 +65,14 @@ def migration():
     conn.close()
 
 def createTables():
-    aigpy.path.mkdirs(Path(__file__).parent.joinpath('config/').absolute())
+    # checking if the directory config  
+    # exist or not. 
+    
+    if not os.path.exists(Path(__file__).parent.joinpath('config/').absolute()): 
+        # if the demo_folder directory is not present  
+        # then create it. 
+        os.makedirs(Path(__file__).parent.joinpath('config/').absolute()) 
+        
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     settings = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings';").fetchone()
