@@ -146,6 +146,20 @@ def tidalrrWeb(config=None):
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
         
+    @app.route('/run-export-plex')
+    def run_export_plex():
+        try:
+            # Replace 'your_script.py' with the name of the script you want to run
+            log_filename = f"script_log_export_plex.txt"
+            log_path = os.path.join(LOG_FOLDER, log_filename)
+
+            # Use Popen to run the script and redirect its output to the log file
+            with open(log_path, 'w') as log_file:
+                process = subprocess.Popen([sys.executable, 'runExportPlex.py'], stdout=log_file, stderr=log_file)
+            return redirect('/actions/run-export-plex')
+        except subprocess.CalledProcessError as e:
+            return f"Script execution failed: {e.output}"
+        
     return app
 
 def webServer(debug=True):

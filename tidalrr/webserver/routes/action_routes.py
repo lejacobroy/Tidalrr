@@ -69,3 +69,15 @@ def actionslogDownloads():
     log_filename = f"script_log_downloads.txt"
     log_content = view_log(log_filename)
     return log_content
+
+@actions_bp.route("/run-export-plex")
+def actionsRunExportPlex():
+    log_filename = f"script_log_export_plex.txt"
+    log_content = view_log(log_filename)
+    return render_template("actions/run-export-plex.html", log_content=log_content)
+
+@actions_bp.route("/log-export-plex-data")
+def actionslogExportPLex():
+    log_filename = f"script_log_export_plex.txt"
+    log_content = view_log(log_filename)
+    return log_content

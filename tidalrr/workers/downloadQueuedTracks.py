@@ -100,6 +100,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
         return False
     if fileExists(track.path, track.url):
         print("Track exists and should be skipped")
+        updateTidalTrackPath(track)
         return True
 
     # download
@@ -128,6 +129,8 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
         except:
             print('FFmpeg is not installed or working! Using fallback, may have errors')
             return False
+    # set track.path in db
+    updateTidalTrackPath(track)
 
     # contributors
     try:

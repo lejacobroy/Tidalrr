@@ -17,6 +17,8 @@ from time import gmtime, strftime
 from tidalrr.database import *
 from tidalrr.workers import print_elapsed_time
 
+# the goal of this script is to export a playlist to plex and backlink the uuid or the playlist and songs
+
 @print_elapsed_time
 def startImportPlex():
     settings = getSettings()
@@ -24,12 +26,12 @@ def startImportPlex():
         print(strftime("%Y-%m-%d %H:%M:%S", gmtime())+" startImportPlex")
         plex_instance = make_connection(baseurl=settings.plexUrl, token=settings.plexToken)
         audio = plex_instance.library.section('Music')
-        playlists = getTidalPlaylistDownloaded()
+        playlists = getDownloadedTidalPlaylists()
         for i, playlist in enumerate(playlists):
             if hasattr(playlist, 'uuid'):
                 # playlist has all tracks downloaded, importing to plex
-                puuid = playlist.plexUUID
-                if len(puuid) == 0:
+                if len(playlist.plexUUID) == 0:
+                    # playlist was not linked to plex
                     # check if playlist exists in plex first
                     try:
                         pplaylist = plex_instance.playlist(playlist.title)
@@ -38,6 +40,7 @@ def startImportPlex():
                         updateTidalPlaylist(playlist)
                     except plexapi.exceptions.PlexApiException as e:
                         print(e)
+                        # playlist title is not found in plex, create it
                         create_playlist(plex_instance, audio, playlist)
 
 def forkImportPlex():
@@ -66,43 +69,42 @@ def make_connection(baseurl: str, token: str):
 
 
 def create_playlist(plex, audio, playlist:Playlist):
-    tracks = search_for_tracks(plex, audio, playlist)
+    tracks = search_plex_for_tracks(plex, audio, playlist)
     plexPlaylist = plex.createPlaylist(playlist.title, section=audio.key, items=tracks)
     playlist.plexUUID = plexPlaylist.guid
     updateTidalPlaylist(playlist)
-    print("Created playlist " + playlist.title + playlist.plexUUID)
+    print("Created playlist " + playlist.title)
 
 
-def search_for_tracks(plex, audio, playlist:Playlist):
+def search_plex_for_tracks(plex, audio, playlist:Playlist):
     #f = open(m3u_file, "r")
     #lines = f.readlines()
     tracks = getTidalPlaylistTracks(playlist.uuid)
     items = []
     for track in tracks:
         if hasattr(track, 'title'):
-            if track.plexUUID:
+            if len(track.plexUUID) != 0:
                 try:
                     result = audio.getGuid(track.plexUUID.rsplit('/', 1)[1])
                     items.append(result)
-                    track.plexUUID = result.guid
-                    updateTidalTrack(track)
                     continue
                 except plexapi.exceptions.PlexApiException as e:
+                    # track not found in plex by it's uuid
+                    track.plexUUID = ''
+                    updateTidalTrack(track)
                     print(e)
             l: str = track.title.strip()
-            if len(track.title) > 0:
+            if len(l) > 0:
                 result = get_matching_track(plex, track.title, audio.key, l)
                 if result:
-                    print('Adding track ' + result.guid)
-                    updateTidalPlaylistTrack(playlist.uuid, track.id, result.guid)
+                    print('Adding track ' + track.title +'to playlist'+ playlist.title)
                     track.plexUUID = result.guid
                     updateTidalTrack(track)
                     items.append(result)
                 else:
                     result = get_matching_track(plex, track.title, audio.key, l, strip_parens=True)
                     if result:
-                        print('Adding track ' + result.guid)
-                        updateTidalPlaylistTrack(playlist.uuid, track.id, result.guid)
+                        print('Adding track ' + track.title +'to playlist'+ playlist.title)
                         track.plexUUID = result.guid
                         updateTidalTrack(track)
                         items.append(result)
@@ -110,6 +112,7 @@ def search_for_tracks(plex, audio, playlist:Playlist):
                         print('ERROR: Could not find match for ' + l)
             else:
                 print('DEBUG: Skipping ' + l)
+    updateTidalPlaylistTracksPlexUUID(playlist.uuid)
     return items
 
 

@@ -72,7 +72,7 @@ def getMonitoredTidalPlaylists() -> [Playlist]:
 def getDownloadedTidalPlaylists() -> [Playlist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND downloaded = 1').fetchall()
+    rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND downloaded = TRUE').fetchall()
     conn.close()
     new_rows = []
     if len(rows) > 0 :
@@ -129,10 +129,30 @@ def updateTidalPlaylistsDownloaded():
                     SELECT tidal_playlists.uuid\
                     FROM tidal_playlists\
                     inner join tidal_playlist_tracks ON tidal_playlist_tracks.uuid = tidal_playlists.uuid\
-                    LEFT JOIN tidal_tracks ON tidal_playlist_tracks.track = tidal_tracks.id\
+                    left JOIN tidal_tracks ON tidal_playlist_tracks.track = tidal_tracks.id\
+                    WHERE tidal_playlists.uuid IN (\
+                        select tidal_playlists.uuid\
+                            FROM tidal_playlists\
+                            inner join tidal_playlist_tracks ON tidal_playlist_tracks.uuid = tidal_playlists.uuid\
+                            inner JOIN tidal_tracks ON tidal_playlist_tracks.track = tidal_tracks.id\
+                                AND tidal_tracks.downloaded = 1\
+						GROUP BY tidal_playlists.uuid\
+                        having COUNT(tidal_tracks.id) > 0)\
                     GROUP BY tidal_playlists.uuid\
-                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = 0 THEN 1 ELSE 0 END)\
+                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = FALSE THEN 1 ELSE 0 END)\
                 )")
+    connection.commit()
+    connection.close()
+
+def updateTidalPlaylistTracksPlexUUID(uuid:str):
+    connection = sqlite3.connect(db_path)
+    cur = connection.cursor()
+    cur.execute("UPDATE tidal_playlist_tracks \
+                SET puid = track.plexUUID \
+                FROM (select id, plexUUID from tidal_tracks) as track\
+                WHERE  track.id =  tidal_playlist_tracks.track \
+                AND track.plexUUID != tidal_playlist_tracks.puid \
+                AND tidal_playlist_tracks.uuid = ? ", (uuid,))
     connection.commit()
     connection.close()
 

@@ -87,7 +87,7 @@ function unmonitorAlbum(albumId) {
 
 // Queue playlist
 function monitorPlaylist(playlistId) {
-  fetch('/tidal/playlist/' + playlistId + '/monitor', {
+  fetch('/tidal/playlist/' + String(playlistId) + '/monitor', {
     method: 'POST'
   })
   .then(response => {
@@ -101,7 +101,7 @@ function monitorPlaylist(playlistId) {
 }
 
 function unmonitorPlaylist(playlistId) {
-  fetch('/tidal/playlist/' + playlistId + '/unmonitor', {
+  fetch('/tidal/playlist/' + String(playlistId) + '/unmonitor', {
     method: 'POST'
   })
   .then(response => {

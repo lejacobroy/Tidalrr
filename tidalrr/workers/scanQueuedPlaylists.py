@@ -49,28 +49,35 @@ def start_playlist(playlist: Playlist):
     # Save playlist info to JSON
     generateJSonFile(playlist)
 
-def verifyPlaylistTracks(playlist: Playlist, tracks: [Track]):
+def verifyPlaylistTracks(playlist: Playlist, tidalTracks: [Track]):
     savedTracks = getTidalPlaylistTracks(playlist.uuid)
     tracksToScan = []
     paths = []
-    print(time.time(), 'start playlist tally table')
-    for i, track in enumerate(tracks):
+
+    for i, tidalTrack in enumerate(tidalTracks):
+        exists = False
         for savedTrack in savedTracks:
-            if not hasattr(savedTrack, 'id') or not track.id == savedTrack.id:
-                # track not linked to playlist
-                dbTrack = getTidalTrack(track.id)
-                if not hasattr(dbTrack, 'id'):
-                    # track not in database
-                    tracksToScan.append(track)
-                    # also, add it to the db
-                    track.queued = True
-                    addTidalTrack(track)
+            if hasattr(savedTrack, 'id') and tidalTrack.id == savedTrack.id:
+                if savedTrack.queued or savedTrack.downloaded:
+                    exists = True
+        if not exists:
+            # track not linked to playlist
+            dbTrack = getTidalTrack(tidalTrack.id)
+            if not hasattr(dbTrack, 'id'):
+                # track not in database
+                # also, add it to the db
+                tidalTrack.queued = True
+                addTidalTrack(tidalTrack)
+                tracksToScan.append(tidalTrack)
+            elif dbTrack.queued == 0 and dbTrack.downloaded == 0:
+                tidalTrack.queued = True
+                updateTidalTrack(tidalTrack)
+                tracksToScan.append(tidalTrack)
 
-                addTidalPlaylistTrack(playlist.uuid, track.id)
-                print('Added missing track '+str(i)+'/'+str(len(tracks))+' to DB: '+track.title)
-        paths.append(track.path)
+            addTidalPlaylistTrack(playlist.uuid, tidalTrack.id)
+            print('Added missing track '+str(i)+'/'+str(len(tidalTracks))+' to DB: '+tidalTrack.title)
+        paths.append(tidalTrack.path)
 
-    print(time.time(), 'end playlist tally table')
     return tracksToScan, paths
 
 def generateJSonFile(playlist: Playlist):

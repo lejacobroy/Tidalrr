@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Run Export Plex</h2>
+    <p>Manually export the downloaded playlists to Plex, and backlink the UUIDs.</p>
+    <a href="/run-export-plex" class="btn"><button type="button" class="btn btn-primary">Start Export Plex</button></a>
+    <br/>
+    <h3>Logs</h3>
+    <pre id="log">
+        {{ log_content|safe }}
+    </pre>
+    <script>
+        const log = document.getElementById('log');
+      
+        function updateLog() {
+          fetch('/actions/log-export-plex-data')
+            .then(response => response.text())
+            .then(data => {
+              log.textContent = data;
+            });
+        }
+      
+        setInterval(updateLog, 1000);
+      </script>
+{% endblock %}

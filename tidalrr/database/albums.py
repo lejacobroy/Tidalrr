@@ -58,7 +58,7 @@ def updateTidalAlbumsDownloaded():
                     FROM tidal_albums\
                     LEFT JOIN tidal_tracks ON tidal_tracks.album = tidal_albums.id\
                     GROUP BY tidal_albums.id\
-                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = 0 THEN 1 ELSE 0 END)\
+                    HAVING COUNT(*) = SUM(CASE WHEN tidal_tracks.downloaded = TRUE OR tidal_tracks.queued = FALSE THEN 1 ELSE 0 END)\
                 )")
     connection.commit()
     connection.close()

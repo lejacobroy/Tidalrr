@@ -194,35 +194,46 @@ def updatePlaylistsFiles():
         tracks = getTidalPlaylistTracks(playlist.uuid)
         for index, track in enumerate(tracks):
             if hasattr(track, 'id'):
-                track.trackNumberOnPlaylist = index + 1
+                tracks[index].trackNumberOnPlaylist = index + 1
+
         # Generate m3u playlist file
         generateM3uFile(settings, playlist, tracks)
 
         # Generate m3u8 playlist file
-        generateM3uFile(settings, playlist, tracks)
+        generateM3u8File(settings, playlist, tracks)
         print('Generated files for playlist '+str(i)+'/'+str(len(playlists))+': '+playlist.title)
 
-def generateM3uFile(settings: Settings, playlist: Playlist, tracks: list):
+def generateM3uFile(settings: Settings, playlist: Playlist, tracks: [Track]):
     plexPath = ''
-    if settings.plexToken != '' and settings.plexUrl != '' and settings.plexHomePath != '':
+    if settings.plexHomePath != '':
         plexPath = settings.plexHomePath
-    with open(playlist.path+'.m3u', 'w+') as f:
-        for i,track in enumerate(tracks, start=1):
-            if len(track.path) > 0:
-                itemPath = Path(track.path.replace('.mp4','.flac'))
-                if plexPath != '':
-                    itemPath = Path(track.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
-                f.write(os.path.join(itemPath)+'\n')
+    try:
+        with open(playlist.path+'.m3u', 'w+') as f:
+            for i,track in enumerate(tracks, start=1):
+                if len(track.path) > 0:
+                    itemPath = Path(track.path.replace('.mp4','.flac'))
+                    if plexPath != '':
+                        itemPath = Path(track.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                    f.write(os.path.join(itemPath)+'\n')
 
-def generateM3u8File(settings: Settings, playlist: Playlist, tracks: list):
+    except Exception as e:
+        print('Error generating m3u file for playlist '+playlist.title+': '+str(e))
+
+def generateM3u8File(settings: Settings, playlist: Playlist, tracks: [Track]):
     plexPath = ''
-    with open(playlist.path+'.m3u8', 'w+') as f:
-        f.write('#EXTM3U\n')
-        for i,item in enumerate(tracks, start=1):
-            artist = getTidalArtist(item.artist)
-            if hasattr(artist, 'id'):
-                f.write(f'#EXTINF:{item.duration},{artist.name} - {item.title}\n')
-                itemPath = Path(item.path.replace('.mp4','.flac'))
-                if plexPath != '':
-                    itemPath = Path(item.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
-                f.write(os.path.join(itemPath)+'\n')
+    if settings.plexHomePath != '':
+        plexPath = settings.plexHomePath
+    try: 
+        with open(playlist.path+'.m3u8', 'w+') as f:
+            f.write('#EXTM3U\n')
+            for i,track in enumerate(tracks, start=1):
+                if len(track.path) > 0:
+                    artist = getTidalArtist(track.artist)
+                    if hasattr(artist, 'id'):
+                        f.write(f'#EXTINF:{track.duration},{artist.name} - {track.title}\n')
+                        itemPath = Path(track.path.replace('.mp4','.flac'))
+                        if plexPath != '':
+                            itemPath = Path(track.path.replace(settings.downloadPath, plexPath).replace('.mp4','.flac'))
+                        f.write(os.path.join(itemPath)+'\n')
+    except Exception as e:
+        print('Error generating m3u8 file for playlist '+playlist.title+': '+str(e))

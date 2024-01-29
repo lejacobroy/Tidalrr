@@ -9,7 +9,6 @@
 
 - create an api webserver and control center
     - inject spark
-    - backlink playlists from plex
     - maintenance
         - albums with master or max available to upgrade
         - incomplete albums, artists, playlists
