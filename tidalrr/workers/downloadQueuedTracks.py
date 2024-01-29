@@ -91,7 +91,8 @@ def start_track(track: Track):
 def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     stream, track.path = scanTrackPath(track, album, None)
     # check exist
-    if track.path is None or isSkip(track.path, track.url) or stream is None or len(stream.urls) == 0:
+    print(str(len(stream.urls)))
+    if track.path is None or isSkip(track.path, track.url) or stream is None:
         # track dosen't exists on tidal or should be skipped
         return False
 
@@ -144,6 +145,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     except:
         print('cannot write to flac')
         return False
+    
     return True
 
 def scanTrackPath(track=Track, album=Album, playlist=Playlist):
