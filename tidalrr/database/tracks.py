@@ -123,3 +123,10 @@ def getTidalTrack(id=int) -> Track:
         track = convertToTrack(row)
         track.artists = getArtistsNameJSON(track.artists)
     return track
+
+def delTidalTrack(id=str):
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    cur.execute('DELETE FROM tidal_tracks WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()

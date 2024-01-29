@@ -507,7 +507,7 @@ class TidalAPI(object):
             raise Exception("invalid Type!")
         tracks = []
         for item in data:
-            if item['type'] == 'track' and item['item']['streamReady']:
+            if item['type'] == 'track' and item['item']['streamReady'] and item['item']['allowStreaming']:
                 item['item']['path'] = ''
                 item['item']['queued'] = False
                 item['item']['downloaded'] = False

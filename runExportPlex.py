@@ -78,17 +78,23 @@ def startImportPlex():
                         if not tidalCheck and len(tidalTrack.plexUUID) > 0 :
                             # tidalTrack was not found in plexPlaylist
                             try:
-                                correspondingPlexTrack = audio.getGuid(tidalTrack.plexUUID)
+                                #correspondingPlexTrack = tidalTrack.plexUUID
                                 # apparently, getGuid dosen't work for audio
-                                newTracks.append(correspondingPlexTrack)
+                                newTracks.append(tidalTrack.plexUUID)
+                                # since we can'T do that, we could delete the plexPlaylist and recreate it instead
                             except plexapi.exceptions.PlexApiException as e:
                                 print(e)
                                 # track not found in plex, add it
 
                     # add new tracks with pplaylist.addItems(audio.getGuid(track.plexUUID))
                     if len(newTracks) > 0:
-                        pplaylist.addItems(newTracks)
-                        print('Added '+ str(len(newTracks)) +' new tracks to plex playlist '+ playlist.title)
+                        #pplaylist.addItems(newTracks)
+                        #print('Added '+ str(len(newTracks)) +' new tracks to plex playlist '+ playlist.title)
+                        pplaylist.delete()
+                        tracks = search_plex_for_tracks(plex_instance, audio, playlist)
+                        if len(tracks) > 0:
+                                create_playlist(plex_instance, audio, playlist, tracks)
+                        print('Recreated playlist '+ playlist.title)
                     
                     # remove tracks with plexPlaylist.removeItems(plexTrack)
                     if len(removeTracks) > 0:
@@ -143,7 +149,7 @@ def search_plex_for_tracks(plex, audio, playlist:Playlist):
                     # track not found in plex by it's uuid
                     track.plexUUID = ''
                     updateTidalTrack(track)
-                    print(e)
+                    #print(e)
             l: str = track.title.strip()
             if len(l) > 0:
                 result = get_matching_track(plex, track.title, audio.key, l)
@@ -159,8 +165,8 @@ def search_plex_for_tracks(plex, audio, playlist:Playlist):
                         track.plexUUID = result.guid
                         updateTidalTrack(track)
                         items.append(result)
-                    else:
-                        print('ERROR: Could not find match for ' + l)
+                    #else:
+                    #    print('ERROR: Could not find match for ' + l)
             else:
                 print('DEBUG: Skipping ' + l)
     updateTidalPlaylistTracksPlexUUID(playlist.uuid)

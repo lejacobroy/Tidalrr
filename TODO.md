@@ -15,3 +15,5 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
+
+- delete and recreate playlists to add tracks

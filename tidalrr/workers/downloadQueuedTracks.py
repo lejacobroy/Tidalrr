@@ -86,7 +86,8 @@ def start_track(track: Track):
 
 def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     try:
-        stream, track.path = scanTrackPath(track, album, None)
+        stream = getTrackStream(track)
+        track.path = scanTrackPath(stream, track, album)
     except Exception as e:
         print("Error scanning track path: ", e)
         return False
@@ -97,6 +98,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     if stream is None or (len(stream.urls) == 0 and len(stream.url) == 0):
         # track dosen't exists on tidal or should be skipped
         print("Track stream not found on Tidal", type(stream), len(stream.urls), len(stream.url))
+        delTidalTrack(track.id)
         return False
     if fileExists(track.path, track.url):
         print("Track exists and should be skipped")
@@ -157,8 +159,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     
     return True
 
-def scanTrackPath(track=Track, album=Album, playlist=Playlist):
-    path = ''
+def getTrackStream(track=Track):
     settings = getSettings()
     stream = StreamUrl()
     try:
@@ -166,11 +167,15 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     except Exception as e:
         print("Error getting stream URL: ", e)
         if str(e) == "Asset is not ready for playback":
-            return None, None
+            return None
         if str(e) == "The token has expired. (Expired on time)":
             loginByConfig()
-            return None, None
-
+            return None
+    return stream
+        
+def scanTrackPath(stream=StreamUrl, track=Track, album=Album):
+    path = ''
+    
     artist = getTidalArtist(track.artist)
     if artist is None:
         try:
@@ -189,12 +194,12 @@ def scanTrackPath(track=Track, album=Album, playlist=Playlist):
 
     if artist is not None and stream is not None and stream.url is not None:
         try:
-            path = getTrackPath(track, stream, artist, album, playlist)
+            path = getTrackPath(track, stream, artist, album, None)
         except Exception as e:
             print("Error getting track path: ", e)
-            return None, None
+            return None
 
-    return stream, path
+    return path
 
 def saveFileFromTrack(track: Track):
     # save file in db
