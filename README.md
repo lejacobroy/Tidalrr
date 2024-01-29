@@ -4,7 +4,7 @@
 <p align="center">
   Tidalrr is a self-hosted service that lets you archive music tracks from Tidal, for offline listening, using a web interface.<br/>
   It can be linked with Lidarr to sync artists and albums.<br/>
-  Tidalrr can also sync your Tidal Playlists to Plex & Plexamp.<br/>
+  Tidalrr can also export your Tidal Playlists to Plex & Plexamp.<br/>
   Especially usefull when going to a remote location with crappy internet but a great audio system.
 </p>
 

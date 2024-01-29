@@ -41,10 +41,59 @@ def startImportPlex():
                     except plexapi.exceptions.PlexApiException as e:
                         print(e)
                         # playlist title is not found in plex, create it
-                        create_playlist(plex_instance, audio, playlist)
+                        tracks = search_plex_for_tracks(plex_instance, audio, playlist)
+                        if len(tracks) > 0:
+                            create_playlist(plex_instance, audio, playlist, tracks)
                 else:
                     # we need to update the playlist
-                    print('Playlist already linked to plex, updating... NOT IMPLEMENTED')
+                    print('Playlist '+ playlist.title +' already linked to plex, updating...')
+                    pplaylist = plex_instance.playlist(playlist.title)
+                    plexTracks = pplaylist.items()
+                    tidalTracks = getTidalPlaylistTracks(playlist.uuid)
+                    newTracks = []
+                    removeTracks = []
+                    #compare tracks in both systems
+                    for plexTrack in plexTracks:
+                        plexCheck = False
+                        for tidalTrack in tidalTracks:
+                            if len(tidalTrack.plexUUID) > 0:
+                                if plexTrack.guid == tidalTrack.plexUUID:
+                                    plexCheck = True
+                        if not plexCheck:
+                            # plexTrack was not found in tidalPlaylist 
+                            removeTracks.append(plexTrack)
+
+                    for tidalTrack in tidalTracks:
+                        tidalCheck = False
+                        for plexTrack in plexTracks:
+                            if len(tidalTrack.plexUUID) > 0 :
+                                if tidalTrack.plexUUID == plexTrack.guid:
+                                    tidalCheck = True
+                            else:
+                                if tidalTrack.title == plexTrack.title:
+                                    # we need to add the new track to plex somehow
+                                    # then retreive the guid
+                                    # then change this flag to True
+                                    tidalCheck = False
+                        if not tidalCheck and len(tidalTrack.plexUUID) > 0 :
+                            # tidalTrack was not found in plexPlaylist
+                            try:
+                                correspondingPlexTrack = audio.getGuid(tidalTrack.plexUUID)
+                                # apparently, getGuid dosen't work for audio
+                                newTracks.append(correspondingPlexTrack)
+                            except plexapi.exceptions.PlexApiException as e:
+                                print(e)
+                                # track not found in plex, add it
+
+                    # add new tracks with pplaylist.addItems(audio.getGuid(track.plexUUID))
+                    if len(newTracks) > 0:
+                        pplaylist.addItems(newTracks)
+                        print('Added '+ str(len(newTracks)) +' new tracks to plex playlist '+ playlist.title)
+                    
+                    # remove tracks with plexPlaylist.removeItems(plexTrack)
+                    if len(removeTracks) > 0:
+                        pplaylist.removeItems(removeTracks)
+                        print('Removed '+ str(len(newTracks)) +' tracks to plex playlist '+ playlist.title)
 
 def forkImportPlex():
     # Start foo as a process
@@ -71,8 +120,7 @@ def make_connection(baseurl: str, token: str):
     return PlexServer(baseurl, token)
 
 
-def create_playlist(plex, audio, playlist:Playlist):
-    tracks = search_plex_for_tracks(plex, audio, playlist)
+def create_playlist(plex, audio, playlist:Playlist, tracks:list):
     plexPlaylist = plex.createPlaylist(playlist.title, section=audio.key, items=tracks)
     playlist.plexUUID = plexPlaylist.guid
     updateTidalPlaylist(playlist)
@@ -88,7 +136,7 @@ def search_plex_for_tracks(plex, audio, playlist:Playlist):
         if hasattr(track, 'title'):
             if len(track.plexUUID) != 0:
                 try:
-                    result = audio.getGuid(track.plexUUID.rsplit('/', 1)[1])
+                    result = audio.getGuid(track.plexUUID) # .rsplit('/', 1)[1]
                     items.append(result)
                     continue
                 except plexapi.exceptions.PlexApiException as e:
@@ -100,14 +148,14 @@ def search_plex_for_tracks(plex, audio, playlist:Playlist):
             if len(l) > 0:
                 result = get_matching_track(plex, track.title, audio.key, l)
                 if result:
-                    print('Adding track ' + track.title +'to playlist'+ playlist.title)
+                    print('Adding track ' + track.title +' to playlist '+ playlist.title)
                     track.plexUUID = result.guid
                     updateTidalTrack(track)
                     items.append(result)
                 else:
                     result = get_matching_track(plex, track.title, audio.key, l, strip_parens=True)
                     if result:
-                        print('Adding track ' + track.title +'to playlist'+ playlist.title)
+                        print('Adding track ' + track.title +' to playlist '+ playlist.title)
                         track.plexUUID = result.guid
                         updateTidalTrack(track)
                         items.append(result)
