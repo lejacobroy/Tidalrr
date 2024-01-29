@@ -51,7 +51,7 @@ def downloadQueuedCovers():
                 try:
                     addFiles(file)
                     delTidalQueue(cover.id)
-                    print("Downloaded album cover / ", str(i), str(len(covers)), album.title)
+                    print("Downloaded album cover "+str(i)+'/'+str(len(covers))+': '+ album.title)
                 except Exception as e:
                     print("Error adding file : ", file.id, e)
                     continue
