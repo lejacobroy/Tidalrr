@@ -23,33 +23,43 @@ def syncLidarr():
             # settings.downloadPath = str(album.path)
             start_album_search(album)
 
+def getLidarrMissingRecords(URL: str, API: str, page: int = 1):
+    try:
+        respond = requests.get(URL+'/api/v1/wanted/missing?apikey='+API+'&pageSize=10&page='+str(page))
+        return json.loads(respond.text)
+    except Exception as e:
+        print("Error getting missing albums: ", e)
+        return ''
+
 def getMissingAlbums(URL: str, API: str):
     # get missing albums from Lidarr
     albums = []
-    try:
-        respond = requests.get(URL+'/api/v1/wanted/missing?apikey='+API)
-        result = json.loads(respond.text)
+    page = 1
+    result = getLidarrMissingRecords(URL, API, page)
+    if 'status' not in result:
+        allMissingRecords = []
+        while result['records']!= []:
+            allMissingRecords.extend(result['records'])
+            page += 1
+            result = getLidarrMissingRecords(URL, API, page)
+    else:
+        print(result)
+        return albums
 
-        if 'status' not in result:
-            #print(result)
-            
-            for record in result["records"]:
-                artistId = 0
+    for record in allMissingRecords:
+        artistId = 0
 
-                for link in record['artist']['links']:
-                    if link['name'] == 'tidal':
-                        artistId = int(link['url'].split('/')[-1])
-                album = {
-                    'title': record['title'],
-                    'artist': record['artist']['artistName'],
-                    'artistId': artistId,
-                }
-                #print(album)
-                albums.append(album)
-        else:
-            print(result)
-    except Exception as e:
-        print("Error getting missing albums: ", e)
+        for link in record['artist']['links']:
+            if link['name'] == 'tidal':
+                artistId = int(link['url'].split('/')[-1])
+        album = {
+            'title': record['title'],
+            'artist': record['artist']['artistName'],
+            'artistId': artistId,
+        }
+        #print(album)
+        albums.append(album)
+
 
     return albums
 

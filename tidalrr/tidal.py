@@ -392,7 +392,7 @@ class TidalAPI(object):
 
 
         if len(output_dict) == 0:
-            print('no album matched')
+            print('no album matched for album: ' + obj['artist'] + ' - '+ str(obj['title']))
             return
         output_dict[0]['audioModes'] = json.dumps(output_dict[0]['audioModes'])
         output_dict[0]['artists'] = json.dumps(output_dict[0]['artists'])
