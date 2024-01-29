@@ -29,8 +29,10 @@ def scanQueuedTracks():
             try:
                 if hasattr(track, 'id'):
                     print('Scanning track ', str(i), ' / ',str(len(tracks)), track.title)
-                    track = start_track(track)
-                    updateTidalTrack(track)
+                    result = start_track(track)
+                    if result:
+                        track = setDownloaded(track, True)
+                        updateTidalTrack(track)
 
                     # update downloaded albums & artists
                     updateTidalAlbumsDownloaded()
@@ -48,13 +50,10 @@ def scanQueuedTracks():
 
 def start_track(track: Track):
     if exists(track.path):
-        track = setDownloaded(track, True)
-        saveFileFromTrack(track)
-        return track
+        return True
     if getFileById(track.id) is not None:
         # fs file is not preset, but db file is, let's clear it
         delFile(track.id)
-        track = setDownloaded(track, False)
 
     settings = getSettings()
 
@@ -65,8 +64,7 @@ def start_track(track: Track):
             addTidalArtist(TIDAL_API.getArtist(track.artist))
     except Exception as e:
         print("Error adding artist: ", e)
-        track = setDownloaded(track, False)
-        return track
+        return False
     try:    
         album = getTidalAlbum(track.album)
         if not hasattr(album, 'id'):
@@ -77,29 +75,25 @@ def start_track(track: Track):
                 scanCover(album)
     except Exception as e:
         print("Error adding album: ", e)
-        track = setDownloaded(track, False)
-        return track
-
+        return False
+    result = False
     try:
-        track = downloadTrack(settings, track, artist, album)
+        result = downloadTrack(settings, track, artist, album)
     except Exception as e:
         print("Error downloading track: ", e)
-        track = setDownloaded(track, False)
-        return track
+        return False
 
-    if track.downloaded:
+    if result:
         print('Downloaded track file', track.title)
         saveFileFromTrack(track)
-        track = setDownloaded(track, True)
-        return track
+        return True
 
 def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     stream, track.path = scanTrackPath(track, album, None)
     # check exist
     if track.path is None or isSkip(track.path, track.url) or stream is None or len(stream.urls) == 0:
         # track dosen't exists on tidal or should be skipped
-        track = setDownloaded(track, False)
-        return track
+        return False
 
     # download
     sleep_time = random.randint(500, 5000) / 1000
@@ -109,8 +103,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     if not check:
         print(f"DL Track[{track.title}] failed.")
         print(json.dumps(err))
-        track = setDownloaded(track, False)
-        return track
+        return False
 
     # encrypted -> decrypt and remove encrypted file
     encrypted(stream.encryptionKey, track.path, track.path)
@@ -127,8 +120,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
             track.path = final_path
         except:
             print('FFmpeg is not installed or working! Using fallback, may have errors')
-            track = setDownloaded(track, False)
-            return track
+            return False
 
     # contributors
     try:
@@ -151,10 +143,8 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
         setMetaData(track, album, metadataArtist, metadataArtists, track.path, contributors, lyrics)
     except:
         print('cannot write to flac')
-        track = setDownloaded(track, False)
-        return track
-    track = setDownloaded(track, True)
-    return track
+        return False
+    return True
 
 def scanTrackPath(track=Track, album=Album, playlist=Playlist):
     path = ''
