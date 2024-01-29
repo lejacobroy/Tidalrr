@@ -94,13 +94,13 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     if track.path is None or track.path is False or len(track.path) == 0 :
         print("Track path not found", str(track.path))
         return False
-    if isSkip(track.path, track.url):
-        print("Track should be skipped", str(isSkip(track.path, track.url)))
-        return False
     if stream is None or (len(stream.urls) == 0 and len(stream.url) == 0):
         # track dosen't exists on tidal or should be skipped
         print("Track stream not found on Tidal", type(stream), len(stream.urls), len(stream.url))
         return False
+    if fileExists(track.path, track.url):
+        print("Track exists and should be skipped")
+        return True
 
     # download
     sleep_time = random.randint(500, 5000) / 1000

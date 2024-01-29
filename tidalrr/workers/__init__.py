@@ -70,7 +70,7 @@ def setMetaData(track: Track, album: Album, artist: Artist, artists:str, filepat
     coverpath = TIDAL_API.getCoverUrl(album.cover)
     obj.save(coverpath)
 
-def isSkip(finalpath, url):
+def fileExists(finalpath, url):
     settings = getSettings()
     if not settings.checkExist:
         return False
