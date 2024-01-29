@@ -42,6 +42,9 @@ def startImportPlex():
                         print(e)
                         # playlist title is not found in plex, create it
                         create_playlist(plex_instance, audio, playlist)
+                else:
+                    # we need to update the playlist
+                    print('Playlist already linked to plex, updating... NOT IMPLEMENTED')
 
 def forkImportPlex():
     # Start foo as a process
