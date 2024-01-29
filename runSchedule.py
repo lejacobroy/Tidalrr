@@ -16,7 +16,6 @@ from time import gmtime, strftime
 from tidalrr.workers import print_elapsed_time, tidalrrStart
 from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
-#from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 from tidalrr.workers.scanUserPlaylists import scanUserPlaylists
 from tidalrr.database import *

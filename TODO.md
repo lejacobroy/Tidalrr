@@ -8,8 +8,6 @@
     - superseeded table? - for albums and tracks
 
 - create an api webserver and control center
-    - sync lidarr
-        - interactive match with search
     - inject spark
     - backlink playlists from plex
     - maintenance
@@ -18,5 +16,3 @@
         - missing covers
         - missing lyrics
         - migrate paths in queues and files
-
-- ccombine the scheduled workers into one file
