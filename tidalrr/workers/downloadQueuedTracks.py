@@ -89,7 +89,7 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     # check exist
     if track.path is None or isSkip(track.path, track.url) or stream is None or len(stream.urls) == 0:
         # track dosen't exists on tidal or should be skipped
-        print("Track not found on Tidal or should be skipped")
+        print("Track not found on Tidal or should be skipped", str(track.path), str(isSkip(track.path, track.url)), type(stream), len(stream.urls), len(stream.url))
         return False
 
     # download
