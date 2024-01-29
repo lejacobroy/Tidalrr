@@ -85,11 +85,21 @@ def start_track(track: Track):
         return False
 
 def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
-    stream, track.path = scanTrackPath(track, album, None)
+    try:
+        stream, track.path = scanTrackPath(track, album, None)
+    except Exception as e:
+        print("Error scanning track path: ", e)
+        return False
     # check exist
-    if track.path is None or isSkip(track.path, track.url) or stream is None or len(stream.urls) == 0:
+    if track.path is None or track.path is False or len(track.path) == 0 :
+        print("Track path not found", str(track.path))
+        return False
+    if isSkip(track.path, track.url):
+        print("Track should be skipped", str(isSkip(track.path, track.url)))
+        return False
+    if stream is None or (len(stream.urls) == 0 and len(stream.url) == 0):
         # track dosen't exists on tidal or should be skipped
-        print("Track not found on Tidal or should be skipped", str(track.path), str(isSkip(track.path, track.url)), type(stream), len(stream.urls), len(stream.url))
+        print("Track stream not found on Tidal", type(stream), len(stream.urls), len(stream.url))
         return False
 
     # download
