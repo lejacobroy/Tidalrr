@@ -29,10 +29,11 @@ def scanQueuedTracks():
             try:
                 if hasattr(track, 'id'):
                     print('Scanning track ', str(i), ' / ',str(len(tracks)), track.title)
-                    result = start_track(track)
-                    if result:
+                    if start_track(track):
+                        saveFileFromTrack(track)
                         track = setDownloaded(track, True)
                         updateTidalTrack(track)
+                        print('Downloaded track file', track.title)
 
                     # update downloaded albums & artists
                     updateTidalAlbumsDownloaded()
@@ -76,23 +77,19 @@ def start_track(track: Track):
     except Exception as e:
         print("Error adding album: ", e)
         return False
-    result = False
+
     try:
-        result = downloadTrack(settings, track, artist, album)
+        return downloadTrack(settings, track, artist, album)
     except Exception as e:
         print("Error downloading track: ", e)
         return False
-
-    if result:
-        print('Downloaded track file', track.title)
-        saveFileFromTrack(track)
-        return True
 
 def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     stream, track.path = scanTrackPath(track, album, None)
     # check exist
     if track.path is None or isSkip(track.path, track.url) or stream is None or len(stream.urls) == 0:
         # track dosen't exists on tidal or should be skipped
+        print("Track not found on Tidal or should be skipped")
         return False
 
     # download
