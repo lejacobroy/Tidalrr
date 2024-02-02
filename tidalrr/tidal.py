@@ -294,7 +294,8 @@ class TidalAPI(object):
             try:
                 respond = requests.get(urlpre + path, headers=header, params=params)
                 #print(respond.text)
-                if respond.text.find('The token has expired.') :
+                if 'The token has expired. (Expired on time)' in respond.text :
+                    print(respond.text)
                     # need to reauth user
                     if loginByConfig():
                         print('loginByConfig returned true')
@@ -309,7 +310,7 @@ class TidalAPI(object):
                     #print(f"Sleeping for {sleep_time} seconds, to mimic human behaviour and prevent too many requests error")
                     time.sleep(sleep_time)
 
-                if respond.status_code == 429 or respond.text.find('Asset is not ready for playback'):
+                if respond.status_code == 429 or 'Asset is not ready for playback' in respond.text:
                     print('Too many requests, waiting for 20 seconds...')
                     # Loop countdown 20 seconds and print the remaining time
                     time.sleep(20)
