@@ -285,6 +285,7 @@ class TidalAPI(object):
         setTidalKey(self.key)
 
     def __get__(self, path, params={}, urlpre='https://api.tidalhifi.com/v1/'):
+        self.key = getTidalKey()
         header = {}
         header = {'authorization': f'Bearer {self.key.accessToken}'}
         params['countryCode'] = self.key.countryCode
