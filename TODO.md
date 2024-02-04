@@ -17,3 +17,5 @@
         - migrate paths in queues and files
 
 - delete and recreate playlists to add tracks
+
+- change logs to % completions with time estimation

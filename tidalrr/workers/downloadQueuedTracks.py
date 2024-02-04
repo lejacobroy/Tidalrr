@@ -94,6 +94,9 @@ def downloadTrack(settings=Settings, track=Track, artist= Artist, album= Album):
     # check exist
     if track.path is None or track.path is False or len(track.path) == 0 :
         print("Track path not found", str(track.path))
+        track.queued = False
+        track.downloaded = False
+        updateTidalTrack(track)
         return False
     if stream is None or (len(stream.urls) == 0 and len(stream.url) == 0):
         # track dosen't exists on tidal or should be skipped
