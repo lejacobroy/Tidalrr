@@ -44,7 +44,7 @@ def tidalrrWeb(config=None):
     """     @app.route("/foo/<someId>")
             def foo_url_arg(someId):
             return jsonify({"echo": someId}) """
-        
+
     @app.route('/upload', methods=['POST'])
     def upload_file():
         if 'file' not in request.files:
@@ -65,7 +65,7 @@ def tidalrrWeb(config=None):
 
         flash('Invalid file format. Only .txt files are allowed.')
         return redirect(request.url)
-    
+
     @app.route('/add', methods=['POST'])
     def add_file():
         if request.form.get('url') is None:
@@ -77,7 +77,7 @@ def tidalrrWeb(config=None):
         if url == '':
             flash('No urls provided')
             return redirect(request.url)
-        
+
         try:
             # Replace 'your_script.py' with the name of the script you want to run
             log_filename = f"script_log_import.txt"
@@ -89,7 +89,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-import')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     @app.route('/run-import')
     def run_import():
         try:
@@ -103,7 +103,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-import')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     @app.route('/run-scans')
     def run_scans():
         try:
@@ -117,7 +117,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-scans')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     @app.route('/run-lidarr')
     def run_lidarr():
         try:
@@ -131,7 +131,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-lidarr')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     @app.route('/run-downloads')
     def run_downloads():
         try:
@@ -145,7 +145,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-downloads')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     @app.route('/run-export-plex')
     def run_export_plex():
         try:
@@ -159,7 +159,7 @@ def tidalrrWeb(config=None):
             return redirect('/actions/run-export-plex')
         except subprocess.CalledProcessError as e:
             return f"Script execution failed: {e.output}"
-        
+
     return app
 
 def webServer(debug=True):
@@ -168,5 +168,6 @@ def webServer(debug=True):
     housekeeping()
     tidalrrStart()
     print("Starting web server")
+    port = os.environ.get("WEB_PORT", "3001")
     app = tidalrrWeb()
-    app.run(host="0.0.0.0", port=3001, debug=debug)
+    app.run(host="0.0.0.0", port=port, debug=debug)

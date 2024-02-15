@@ -30,13 +30,18 @@ The image is available on [dockerhub](https://hub.docker.com/r/jacobroyquebec/ti
 
 but I also provide an example of a docker-compose file.
 
+#### variables
+- `WEB_PORT` set the port on which the webserver listens
+
+#### run
+
 Modify it and run `docker-compose up -d`
 
 but if you want to run it barebones:
 
 `pip install -r requirements.txt`
 
-`python3 app.py` 
+`python3 app.py`
 
 ***
 
@@ -85,7 +90,7 @@ This will download all the queued album covers and tracks.
 
 ## 📜 Disclaimer
 - Private use only.
-- Need a Tidal-HIFI subscription. 
+- Need a Tidal-HIFI subscription.
 - Do not use this method to distribute or pirate music.
 - It may be illegal to use this in your country, so be informed.
 
