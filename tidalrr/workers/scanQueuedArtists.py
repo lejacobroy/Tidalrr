@@ -18,7 +18,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def scanMissingArtists():
+    tracks = getTidalTracksUnordered()
+    for i, track in enumerate(tracks):
+        if hasattr(track, 'artist'):
+            artist = getTidalArtist(track.artist)
+            if artist is None:
+                addTidalArtist(TIDAL_API.getArtist(track.artist))
+                print('Added artist ', track.artist)
+        if hasattr(track, 'album'):
+            album = getTidalAlbum(track.album)
+            if album is None:
+                addTidalAlbum(TIDAL_API.getAlbum(track.album))
+                print('Added album ', track.album)
+
 def scanQueuedArtists():
+    scanMissingArtists()
     artists = getMonitoredTidalArtists()
     if len(artists) > 0:
         for i, artist in enumerate(artists):

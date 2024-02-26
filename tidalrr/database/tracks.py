@@ -79,6 +79,20 @@ def getTidalTracks() -> [Track]:
             new_rows.append(t)
     return new_rows
 
+def getTidalTracksUnordered() -> [Track]:
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
+                         WHERE tidal_tracks.id IS NOT NULL').fetchall()
+    conn.close()
+    new_rows = []
+    if len(rows) > 0:
+        for track in rows:
+            t = convertToTrack(track)
+            t.artists = getArtistsNameJSON(t.artists)
+            new_rows.append(t)
+    return new_rows
+
 def getQueuedTidalTracks() -> [Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
