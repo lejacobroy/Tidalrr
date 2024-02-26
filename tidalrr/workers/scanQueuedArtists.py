@@ -24,13 +24,23 @@ def scanMissingArtists():
         if hasattr(track, 'artist'):
             artist = getTidalArtist(track.artist)
             if artist is None:
-                addTidalArtist(TIDAL_API.getArtist(track.artist))
-                print('Added artist ', track.artist)
+                try:
+                    tidal_artist = TIDAL_API.getArtist(track.artist)
+                    addTidalArtist(tidal_artist)
+                    print('Added artist ', track.artist)
+                except Exception as e:
+                    print('Error adding artist to DB: ', e)
+                
         if hasattr(track, 'album'):
             album = getTidalAlbum(track.album)
             if album is None:
-                addTidalAlbum(TIDAL_API.getAlbum(track.album))
-                print('Added album ', track.album)
+                try:
+                    tidal_album = TIDAL_API.getAlbum(track.album)
+                    addTidalAlbum(tidal_album)
+                    print('Added album ', track.album)
+                except Exception as e:
+                    print('Error adding album to DB: ', e)
+
 
 def scanQueuedArtists():
     scanMissingArtists()
