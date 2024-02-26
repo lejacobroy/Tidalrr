@@ -68,6 +68,9 @@ def verifyPlaylistTracks(playlist: Playlist, tidalTracks: [Track]):
                 # also, add it to the db
                 tidalTrack.queued = True
                 addTidalTrack(tidalTrack)
+                # add artist and album to the db
+                addTidalAlbum(TIDAL_API.getAlbum(tidalTrack.album))
+                addTidalArtist(TIDAL_API.getArtist(tidalTrack.artist))
                 tracksToScan.append(tidalTrack)
             elif dbTrack.queued == 0 and dbTrack.downloaded == 0:
                 tidalTrack.queued = True
