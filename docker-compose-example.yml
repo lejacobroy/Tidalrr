@@ -8,6 +8,7 @@ services:
       - TZ=America/Toronto
       - PUID=501
       - PGID=501
+      - WEB_PORT=3001
     ports:
       - 3001:3001
     volumes:
