@@ -75,6 +75,14 @@ def start_album_search(alb: Album):
     #print(aigpy.model.modelToDict(obj))
     album = TIDAL_API.searchAlbum(alb)
     if album is not None:
-        album.monitored = 1
+        artist = getTidalArtist(album.artist)
+        if artist is None:
+            artist = TIDAL_API.getArtist(album.artist)
+            artist.monitored = False
+            addTidalArtist(artist)
+            print('Found artist and added to DB: ' + artist.name)
+
+        album.monitored = True
+            
         addTidalAlbum(album)
         print('Found album and added to DB: ' + album.title)
