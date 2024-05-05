@@ -199,7 +199,7 @@ def startImportPlex():
                     try:
                         pplaylist = plex_instance.playlist(playlist.title)
                         # playlist still exists
-                        update_Plex_Playlist()
+                        update_Plex_Playlist(plex_instance, audio, playlist, pplaylist)
                     except plexapi.exceptions.PlexApiException as e:
                         print(e)
                         # playlist title is not found in plex, create it
