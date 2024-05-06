@@ -28,7 +28,7 @@ I recommend that you run it using docker or docker-compose.
 
 The image is available on [dockerhub](https://hub.docker.com/r/jacobroyquebec/tidalrr)
 
-but I also provide an example of a docker-compose file.
+but I also provide an example of a docker-compose file (**docker-compose-example.yml**).
 
 #### variables
 - `WEB_PORT` set the port on which the webserver listens
