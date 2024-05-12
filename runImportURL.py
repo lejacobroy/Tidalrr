@@ -10,7 +10,7 @@
 '''
 import sys
 
-from tidalrr.workers.scanURLs import *
+from tidalrr.workers.scanURLs import startImportUrl
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

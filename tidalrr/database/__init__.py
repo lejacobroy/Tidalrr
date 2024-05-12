@@ -10,13 +10,10 @@
 '''
 import sqlite3
 import os
-from tidalrr.model import *
-from tidalrr.database.artists import *
-from tidalrr.database.albums import *
-from tidalrr.database.tracks import *
-from tidalrr.database.queues import *
-from tidalrr.database.files import *
-from tidalrr.database.playlists import *
+from tidalrr.model import Settings, LoginKey
+from tidalrr.database.albums import updateTidalAlbumsDownloaded
+from tidalrr.database.artists import updateTidalArtistsDownloaded
+from tidalrr.database.playlists import updateTidalPlaylistsDownloaded
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()

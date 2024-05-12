@@ -9,9 +9,9 @@
 @Desc    :   
 '''
 
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers.scanQueuedPlaylists import *
+from tidalrr.tidal import TIDAL_API
+from tidalrr.database.playlists import addTidalPlaylist
+from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 import logging
 
 logger = logging.getLogger(__name__)

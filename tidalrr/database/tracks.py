@@ -9,8 +9,7 @@
 @Desc    :   
 '''
 import sqlite3
-from tidalrr.model import *
-from tidalrr.database.albums import getArtistsNameJSON
+from tidalrr.model import Track, getArtistsNameJSON, convertToTrack
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -62,7 +61,7 @@ def updateTidalTrackPath(track=Track):
     connection.commit()
     connection.close()
 
-def getTidalTracks() -> [Track]:
+def getTidalTracks() -> list[Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
@@ -79,7 +78,7 @@ def getTidalTracks() -> [Track]:
             new_rows.append(t)
     return new_rows
 
-def getTidalTracksUnordered() -> [Track]:
+def getTidalTracksUnordered() -> list[Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
@@ -93,7 +92,7 @@ def getTidalTracksUnordered() -> [Track]:
             new_rows.append(t)
     return new_rows
 
-def getQueuedTidalTracks() -> [Track]:
+def getQueuedTidalTracks() -> list[Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\
@@ -110,7 +109,7 @@ def getQueuedTidalTracks() -> [Track]:
             new_rows.append(t)
     return new_rows
 
-def getTracksForAlbum(albumId) -> [Track]:
+def getTracksForAlbum(albumId) -> list[Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\

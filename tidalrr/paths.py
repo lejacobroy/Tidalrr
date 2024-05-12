@@ -8,11 +8,12 @@
 @Contact :  yaronhuang@foxmail.com
 @Desc    :  
 """
-import os
+
 import aigpy
 import datetime
-from tidalrr.model import *
-from tidalrr.database import *
+from tidalrr.model import StreamUrl, Album, Type, AudioQuality
+from tidalrr.database import getSettings
+from tidalrr.database.artists import getTidalArtist
 
 def fixPath(name: str):
     return aigpy.path.replaceLimitChar(name, '-').strip()

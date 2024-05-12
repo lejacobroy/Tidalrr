@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 import sqlite3
-from tidalrr.model import *
+from tidalrr.model import Playlist, convertToPlaylist, Track, convertToTrack, getArtistsNameJSON
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -47,7 +47,7 @@ def addTidalPlaylistTrack(uuid=str, track=int):
     connection.commit()
     connection.close()
 
-def getTidalPlaylists() -> [Playlist]:
+def getTidalPlaylists() -> list[Playlist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL').fetchall()
@@ -58,7 +58,7 @@ def getTidalPlaylists() -> [Playlist]:
             new_rows.append(convertToPlaylist(item))
     return new_rows
 
-def getMonitoredTidalPlaylists() -> [Playlist]:
+def getMonitoredTidalPlaylists() -> list[Playlist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND monitored = 1').fetchall()
@@ -69,7 +69,7 @@ def getMonitoredTidalPlaylists() -> [Playlist]:
             new_rows.append(convertToPlaylist(item))
     return new_rows
 
-def getDownloadedTidalPlaylists() -> [Playlist]:
+def getDownloadedTidalPlaylists() -> list[Playlist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_playlists WHERE uuid IS NOT NULL AND downloaded = TRUE').fetchall()
@@ -90,7 +90,7 @@ def getTidalPlaylist(id=str) -> Playlist:
         playlist = convertToPlaylist(row)
     return playlist
 
-def getTidalPlaylistTracks(uuid=str) -> [Track]:
+def getTidalPlaylistTracks(uuid=str) -> list[Track]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_tracks.* FROM tidal_tracks\

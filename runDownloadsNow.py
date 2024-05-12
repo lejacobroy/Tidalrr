@@ -13,8 +13,8 @@ import time
 import functools
 from time import gmtime, strftime
 from tidalrr.workers import tidalrrStart
-from tidalrr.workers.downloadQueuedOthers import *
-from tidalrr.workers.downloadQueuedTracks import *
+from tidalrr.workers.downloadQueuedOthers import downloadQueuedCovers
+from tidalrr.workers.downloadQueuedTracks import scanQueuedTracks
 
 
 # This decorator can be applied to any job function to log the elapsed time of each job

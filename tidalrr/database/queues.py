@@ -10,7 +10,7 @@
 '''
 import sqlite3
 import json
-from tidalrr.model import *
+from tidalrr.model import Queue, convertToQueue
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -31,7 +31,7 @@ def addTidalQueue(queue=Queue):
     connection.commit()
     connection.close()
 
-def getTidalQueues(type=str) -> [Queue]:
+def getTidalQueues(type=str) -> list[Queue]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     if type == '':

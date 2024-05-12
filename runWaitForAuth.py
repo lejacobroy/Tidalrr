@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 
-from tidalrr.tidal import *
+from tidalrr.tidal import waitForAuth
 
 if __name__ == '__main__':
     print('run waitForAuth')

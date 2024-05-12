@@ -3,9 +3,10 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
+from tidalrr.database import getSettings, setSettings, getStats
+from tidalrr.database.files import getFiles
+from tidalrr.database.queues import getTidalQueues
+from tidalrr.tidal import tidalLogin
 main_bp = Blueprint('main', __name__)
 
 # Define a UserSettingsForm

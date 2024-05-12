@@ -9,9 +9,19 @@
 @Desc    :   
 '''
 import time
+import aigpy
+import requests
 import functools
-from tidalrr.tidal import *
-from tidalrr.database import *
+import os
+from pathlib import Path
+from tidalrr.tidal import TIDAL_API, tidalLogin
+from tidalrr.model import Queue,  Track, Settings, Album, Artist, Playlist
+from tidalrr.paths import getAlbumPath
+from tidalrr.database import getSettings, createTables
+from tidalrr.database.files import getFileById
+from tidalrr.database.queues import addTidalQueue
+from tidalrr.database.playlists import getDownloadedTidalPlaylists, getTidalPlaylistTracks
+from tidalrr.database.artists import getTidalArtist
 import logging
 
 logger = logging.getLogger(__name__)
@@ -203,7 +213,7 @@ def updatePlaylistsFiles():
         generateM3u8File(settings, playlist, tracks)
         print('Generated files for playlist '+str(i)+'/'+str(len(playlists))+': '+playlist.title)
 
-def generateM3uFile(settings: Settings, playlist: Playlist, tracks: [Track]):
+def generateM3uFile(settings: Settings, playlist: Playlist, tracks: list[Track]):
     plexPath = ''
     if settings.plexHomePath != '':
         plexPath = settings.plexHomePath
@@ -219,7 +229,7 @@ def generateM3uFile(settings: Settings, playlist: Playlist, tracks: [Track]):
     except Exception as e:
         print('Error generating m3u file for playlist '+playlist.title+': '+str(e))
 
-def generateM3u8File(settings: Settings, playlist: Playlist, tracks: [Track]):
+def generateM3u8File(settings: Settings, playlist: Playlist, tracks: list[Track]):
     plexPath = ''
     if settings.plexHomePath != '':
         plexPath = settings.plexHomePath

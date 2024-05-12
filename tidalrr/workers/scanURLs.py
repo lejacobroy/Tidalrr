@@ -9,8 +9,12 @@
 @Desc    :   
 '''
 import aigpy
-from tidalrr.tidal import *
-from tidalrr.workers import *
+from tidalrr.tidal import TIDAL_API, Type
+from tidalrr.database.tracks import updateTidalTrack, getTidalTrack, addTidalTrack
+from tidalrr.database.albums import getTidalAlbum, addTidalAlbum, updateTidalAlbum
+from tidalrr.database.artists import addTidalArtist, getTidalArtist, updateTidalArtist
+from tidalrr.database.playlists import updateTidalPlaylist, getTidalPlaylist, addTidalPlaylist
+from tidalrr.workers import tidalrrStart
 
 def readFile(val):
     print('Using file list: '+val)

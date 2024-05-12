@@ -8,12 +8,15 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
+import aigpy
 from os.path import exists
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
-#from tidalrr.workers.scanQueuedTracks import scanQueuedTracks
-
+from tidalrr.model import Track, Album, Track
+from tidalrr.tidal import TIDAL_API, Type
+from tidalrr.database import getSettings
+from tidalrr.database.tracks import getTidalTrack, addTidalTrack
+from tidalrr.database.albums import addTidalAlbum, getMonitoredTidalAlbums, updateTidalAlbum
+from tidalrr.database.artists import addTidalArtist, getTidalArtist
+from tidalrr.workers import scanCover, getAlbumPath
 import logging
 
 logger = logging.getLogger(__name__) 
@@ -63,7 +66,7 @@ def start_album(obj: Album):
     except Exception as e:
         print("Error scanning album: ", str(e))
 
-def writeAlbumInfo(album:Album, tracks: [Track]):
+def writeAlbumInfo(album:Album, tracks: list[Track]):
     if album is None:
         return
 

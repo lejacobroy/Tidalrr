@@ -10,7 +10,7 @@
 '''
 
 import sqlite3
-from tidalrr.model import *
+from tidalrr.model import Artist, convertToArtist
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -44,7 +44,7 @@ def updateTidalArtistsDownloaded():
     connection.commit()
     connection.close()
 
-def getTidalArtists() -> [Artist]:
+def getTidalArtists() -> list[Artist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL ORDER BY name').fetchall()
@@ -55,7 +55,7 @@ def getTidalArtists() -> [Artist]:
             new_rows.append(convertToArtist(item))
     return new_rows
 
-def getMonitoredTidalArtists() -> [Artist]:
+def getMonitoredTidalArtists() -> list[Artist]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM tidal_artists WHERE id IS NOT NULL AND monitored = 1 ORDER BY name').fetchall()

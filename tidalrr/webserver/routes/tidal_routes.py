@@ -1,5 +1,9 @@
 from flask import Blueprint, render_template
-from tidalrr.database import *
+from tidalrr.database.tracks import getTidalTracks, getTidalTrack, getTracksForAlbum, updateTidalTrack
+from tidalrr.database.albums import getTidalAlbum, getTidalAlbums,getAlbumsForArtist, updateTidalAlbum, getNumDownloadedAlbumTracks
+from tidalrr.database.artists import getTidalArtist, updateTidalArtist, getTidalArtists, getNumArtistAlbums, getNumDownloadedArtistAlbums
+from tidalrr.database.playlists import getTidalPlaylist, getTidalPlaylists, getTidalPlaylistTracks, getNumDownloadedPlaylistTracks, updateTidalPlaylist
+from tidalrr.database.queues import isIdInQueue, delTidalQueue
 tidal_bp = Blueprint('tidal', __name__)
 
 @tidal_bp.route("/artists")

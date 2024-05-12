@@ -9,8 +9,8 @@
 @Desc    :   
 '''
 from multiprocessing import Process
-from runWebServer import *
-from runSchedule import *
+from runWebServer import webServer
+from runSchedule import mainSchedule
 
 def main():
     print("Starting tidalrr app", flush=True)

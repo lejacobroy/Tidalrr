@@ -9,11 +9,12 @@
 @Desc    :   
 '''
 
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
-from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
-
+from tidalrr.model import Artist
+from tidalrr.tidal import TIDAL_API
+from tidalrr.database import getSettings
+from tidalrr.database.tracks import getTidalTracksUnordered
+from tidalrr.database.albums import addTidalAlbum, getTidalAlbum
+from tidalrr.database.artists import addTidalArtist, getTidalArtist, updateTidalArtist, getMonitoredTidalArtists
 import logging
 
 logger = logging.getLogger(__name__)

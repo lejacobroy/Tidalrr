@@ -8,13 +8,15 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-import pathlib
-import time
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
-from tidalrr.workers.scanQueuedAlbums import *
-from tidalrr.workers.downloadQueuedTracks import *
+import aigpy
+import json
+from tidalrr.model import Track, Track, Playlist
+from tidalrr.tidal import TIDAL_API, Type
+from tidalrr.database import getSettings
+from tidalrr.database.tracks import getTidalTrack, addTidalTrack, updateTidalTrack
+from tidalrr.database.albums import addTidalAlbum
+from tidalrr.database.artists import addTidalArtist
+from tidalrr.database.playlists import getMonitoredTidalPlaylists, getTidalPlaylistTracks, addTidalPlaylistTrack
 
 import logging
 
@@ -49,7 +51,7 @@ def start_playlist(playlist: Playlist):
     # Save playlist info to JSON
     generateJSonFile(playlist)
 
-def verifyPlaylistTracks(playlist: Playlist, tidalTracks: [Track]):
+def verifyPlaylistTracks(playlist: Playlist, tidalTracks: list[Track]):
     savedTracks = getTidalPlaylistTracks(playlist.uuid)
     tracksToScan = []
     paths = []

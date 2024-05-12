@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 
-from tidalrr.webserver import *
+from tidalrr.webserver import webServer
 
 if __name__ == '__main__':
     webServer(False)

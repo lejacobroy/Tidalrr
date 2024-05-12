@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 import sqlite3
-from tidalrr.model import *
+from tidalrr.model import File, convertToFile
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -27,7 +27,7 @@ def addFiles(file=File):
     connection.commit()
     connection.close()
 
-def getFiles() -> [File]:
+def getFiles() -> list[File]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT * FROM files').fetchall()

@@ -20,9 +20,10 @@ import requests
 from xml.etree import ElementTree
 import pandas as pd
 
-from tidalrr.model import *
-from tidalrr.paths import *
-from tidalrr.apiKey import *
+from tidalrr.model import Album, convertToAlbum, Artist, convertToArtist, Track, convertToTrack, Playlist, convertToPlaylist, Mix, StreamUrl, Type, StreamRespond, AudioQuality, SearchResult, Lyrics
+from tidalrr.paths import fixPath, getAlbumPath
+from tidalrr.apiKey import getItem, getVersion, getItems, getLimitIndexs, isItemValid
+from tidalrr.database import createTables, getSettings, setSettings, getTidalKey, setTidalKey
 
 # SSL Warnings | retry number
 requests.packages.urllib3.disable_warnings()
@@ -521,7 +522,7 @@ class TidalAPI(object):
                 tracks.append(convertToTrack(item['item']))
         return tracks
 
-    def orderHighQAlbums(self, data=[]) -> [Album]:
+    def orderHighQAlbums(self, data=[]) -> list[Album]:
         filteredAlbums = []
         for album in data:
             if 'title' in album.keys() and 'audioQuality' in album.keys():

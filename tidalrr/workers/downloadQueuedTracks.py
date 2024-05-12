@@ -8,16 +8,23 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-#import aigpy
+import aigpy
 import time
 import ffmpeg
+import json
+import os
 from os.path import exists
-from tidalrr.paths import *
-from tidalrr.decryption import *
-from tidalrr.tidal import *
-from tidalrr.database import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
+from tidalrr.model import Track, Settings, File, Album, Artist, StreamUrl
+from tidalrr.paths import getTrackPath
+from tidalrr.tidal import TIDAL_API, loginByConfig, random
+from tidalrr.decryption import encrypted
+from tidalrr.database import getSettings
+from tidalrr.database.tracks import getQueuedTidalTracks, updateTidalTrack, delTidalTrack, updateTidalTrackPath
+from tidalrr.database.albums import updateTidalAlbumsDownloaded, getTidalAlbum, addTidalAlbum
+from tidalrr.database.artists import updateTidalArtistsDownloaded, addTidalArtist, getTidalArtist
+from tidalrr.database.playlists import updateTidalPlaylistsDownloaded
+from tidalrr.database.files import getFileById, addFiles, delFile
+from tidalrr.workers import scanCover, fileExists, setMetaData, download_and_combine, updatePlaylistsFiles
 import logging
 
 logger = logging.getLogger(__name__)

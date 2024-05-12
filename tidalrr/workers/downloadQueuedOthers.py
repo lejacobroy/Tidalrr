@@ -10,11 +10,10 @@
 '''
 import aigpy
 from os.path import exists
-from tidalrr.paths import *
-from tidalrr.decryption import *
-from tidalrr.tidal import *
-from tidalrr.workers import *
-
+from tidalrr.model import File
+from tidalrr.database.queues import getTidalQueues, delTidalQueue
+from tidalrr.database.files import getFileById, addFiles
+from tidalrr.database.albums import getTidalAlbum
 import logging
 
 logger = logging.getLogger(__name__)

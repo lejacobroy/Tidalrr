@@ -9,7 +9,7 @@
 @Desc    :   
 '''
 import sqlite3
-from tidalrr.model import *
+from tidalrr.model import Album, convertToAlbum, getArtistsNameJSON
 from pathlib import Path
 
 db_path = Path(__file__).parent.joinpath('config/database.db').absolute()
@@ -63,7 +63,7 @@ def updateTidalAlbumsDownloaded():
     connection.commit()
     connection.close()
 
-def getTidalAlbums() -> [Album]:
+def getTidalAlbums() -> list[Album]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
@@ -79,7 +79,7 @@ def getTidalAlbums() -> [Album]:
             new_rows.append(a)
     return new_rows
 
-def getMonitoredTidalAlbums() -> [Album]:
+def getMonitoredTidalAlbums() -> list[Album]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \
@@ -95,7 +95,7 @@ def getMonitoredTidalAlbums() -> [Album]:
             new_rows.append(a)
     return new_rows
 
-def getAlbumsForArtist(artistId) -> [Album]:
+def getAlbumsForArtist(artistId) -> list[Album]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute('SELECT tidal_albums.* FROM tidal_albums \

@@ -6,8 +6,8 @@ import sys
 from flask import Flask, redirect, request, flash
 from flask_cors import CORS
 from flask_bootstrap import Bootstrap5
-from tidalrr.database import *
-from tidalrr.workers import *
+from tidalrr.database import createTables, migration, housekeeping
+from tidalrr.workers import tidalrrStart
 from tidalrr.webserver.routes.main_routes import main_bp
 from tidalrr.webserver.routes.tidal_routes import tidal_bp
 from tidalrr.webserver.routes.action_routes import actions_bp

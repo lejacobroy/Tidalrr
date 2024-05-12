@@ -8,9 +8,13 @@
 @Contact :   lejacobroy@gmail.com
 @Desc    :   
 '''
-
-from tidalrr.tidal import *
-from tidalrr.workers import *
+import requests
+import json
+from tidalrr.model import Album
+from tidalrr.tidal import TIDAL_API
+from tidalrr.database import getSettings
+from tidalrr.database.albums import addTidalAlbum
+from tidalrr.database.artists import addTidalArtist, getTidalArtist
 
 def syncLidarr():
     settings = getSettings()

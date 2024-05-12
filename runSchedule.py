@@ -18,9 +18,9 @@ from tidalrr.workers.scanQueuedArtists import scanQueuedArtists
 from tidalrr.workers.scanQueuedAlbums import scanQueuedAlbums
 from tidalrr.workers.scanQueuedPlaylists import scanQueuedPlaylists
 from tidalrr.workers.scanUserPlaylists import scanUserPlaylists
-from tidalrr.database import *
-from tidalrr.workers.downloadQueuedOthers import *
-from tidalrr.workers.downloadQueuedTracks import *
+from tidalrr.database import getSettings
+from tidalrr.workers.downloadQueuedOthers import downloadQueuedCovers
+from tidalrr.workers.downloadQueuedTracks import scanQueuedTracks
 
 @print_elapsed_time
 def startScans():

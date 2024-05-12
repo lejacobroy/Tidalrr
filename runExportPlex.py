@@ -14,7 +14,8 @@ import plexapi.exceptions
 from plexapi.server import PlexServer
 import re
 from time import gmtime, strftime
-from tidalrr.database import *
+from tidalrr.model import Playlist
+from tidalrr.database import getSettings, getTidalPlaylistTracks, updateTidalPlaylist, updateTidalTrack, updateTidalPlaylistTracksPlexUUID, getDownloadedTidalPlaylists
 from tidalrr.workers import print_elapsed_time
 
 # the goal of this script is to export a playlist to plex and backlink the uuid or the playlist and songs
