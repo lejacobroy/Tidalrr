@@ -23,6 +23,14 @@ There is a webserver to watch progression/logs and to control the software.
 
 ***
 
+## Project Life Disclaimer
+
+I currently have other projects that are taking most of my time for the next year or so, but I plan on enhancing this project someday.
+
+I want to thank every contributor who is raising issues and PR, this will help us focus on the most valuable enhancements.
+
+The project was hacked together rather hastly and is quite easy to enhance (python, no-oop). Please feel free to suggest PR and I will merge them quicker.
+
 ### Start everything:
 I recommend that you run it using docker or docker-compose.
 
@@ -93,4 +101,5 @@ This will download all the queued album covers and tracks.
 - Need a Tidal-HIFI subscription.
 - Do not use this method to distribute or pirate music.
 - It may be illegal to use this in your country, so be informed.
+
 
