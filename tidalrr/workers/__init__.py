@@ -180,8 +180,8 @@ def download_and_combine(path, urls):
         if file_part:
             file_parts.append(file_part)
         else:
-            # Skip to the next URL if there's an error downloading a part
-            continue
+            logging.error(f'Failed to download part {part_number}: {err}')
+            return False, err
 
     result = combine_file_parts(path, *file_parts)
     # Clean up: delete individual file parts
